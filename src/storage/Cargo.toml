@@ -49,3 +49,4 @@ anyhow.workspace     = true
 tokio-test.workspace = true
 tokio.workspace      = true
 test-case.workspace  = true
+wiremock.workspace   = true
