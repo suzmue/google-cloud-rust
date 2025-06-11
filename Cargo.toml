@@ -23,13 +23,11 @@ default-members = [
   "src/bigquery",
   "src/bigtable",
   "src/datastore",
-  "src/endurance-test",
   "src/firestore",
   "src/gax",
   "src/gax-internal",
   "src/integration-tests",
   "src/lro",
-  "src/protojson-conformance",
   "src/pubsub",
   "src/root",
   "src/spanner",
@@ -327,6 +325,7 @@ serial_test    = { default-features = false, version = "3" }
 tempfile       = { default-features = false, version = "3" }
 test-case      = { default-features = false, version = "3" }
 tokio-stream   = { default-features = false, version = "0.1" }
+wiremock       = { default-features = false, version = "0.6" }
 tokio-test     = { default-features = false, version = "0.4" }
 num-bigint-dig = { default-features = false, version = "0.8" }
 
