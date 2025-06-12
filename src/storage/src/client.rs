@@ -1137,9 +1137,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_read_object_send_network_error() -> Result {
-        // This uses the local Result alias: type Result = std::result::Result<(), Box<dyn std::error::Error>>;
         // Using a non-listening port to simulate a network error like connection refused.
-        // Port 9 (Discard Protocol) is a standard port that is highly unlikely to host a real storage service.
+        // Port 9 (Discard Protocol) is a standard port that implements discard protocol.
         let non_existent_endpoint = "http://127.0.0.1:9";
 
         let client = super::Storage::builder()
@@ -1152,47 +1151,30 @@ mod tests {
                 "Client building with a non-existent endpoint should still succeed as it's lazy",
             );
 
-        let result = client
+        let err = client
             .read_object("projects/_/buckets/test-bucket", "test-object")
             .send()
-            .await;
-
-        assert!(
-            result.is_err(),
-            "Expected send() to fail due to a network error attempting to contact the bad endpoint."
-        );
-
-        let err = result.unwrap_err();
+            .await
+            .unwrap_err();
 
         // Verify that the error is an I/O error.
-
-        assert!(
-            !err.is_io(),
-            "Expected an I/O error type (err.is_io() == true), but got error: {:?}",
-            err
-        );
-
+        assert!(err.is_io(), "Expected an io error, got {err}");
         Ok(())
     }
     #[tokio::test]
     async fn test_read_object_send_http_error_500() -> Result {
-        // Uses local Result alias
-        use wiremock::matchers::{method, path};
+        use wiremock::matchers::method;
         use wiremock::{Mock, MockServer, ResponseTemplate};
         // Start a background HTTP server on a random local port
         let mock_server = MockServer::start().await;
 
-        // Arrange the behaviour of the MockServer adding a Mock:
-        // when it receives a GET request on '/hello' it will respond with a 200.
         Mock::given(method("GET"))
-            .and(path("/hello"))
-            .respond_with(ResponseTemplate::new(200))
-            // Mounting the mock on the mock server - it's now effective!
+            .respond_with(ResponseTemplate::new(500))
             .mount(&mock_server)
             .await;
 
         let client = super::Storage::builder()
-            .with_endpoint(server.base_url())
+            .with_endpoint(mock_server.uri())
             .with_credentials(auth::credentials::testing::test_credentials())
             .build()
             .await
@@ -1224,39 +1206,26 @@ mod tests {
 
     #[tokio::test]
     async fn test_read_object_send_body_read_error() -> Result {
-        // Uses local Result alias
-        let server = httpmock::MockServer::start_async().await;
-
-        server
-            .mock_async(|when, then| {
-                when.method(httpmock::Method::GET)
-                    .path("/storage/v1/b/test-bucket/o/test-object")
-                    .query_param("alt", "media");
-                then.status(200) // HTTP OK
-                    .header("Content-Length", "100") // Promise 100 bytes
-                    .body("these are fewer than 100 bytes"); // Actually send far fewer
-                // Reqwest should error when .bytes() tries to read 100 bytes but gets EOF early.
-            })
+        use wiremock::matchers::method;
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+        let mock_server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .respond_with(ResponseTemplate::new(200).set_body_bytes("smaller than 200 bytes"))
+            .mount(&mock_server)
             .await;
 
         let client = super::Storage::builder()
-            .with_endpoint(server.base_url())
+            .with_endpoint(mock_server.uri())
             .with_credentials(auth::credentials::testing::test_credentials())
             .build()
-            .await
-            .expect("Client building should succeed");
+            .await?;
 
-        let result = client
+        let err = client
             .read_object("projects/_/buckets/test-bucket", "test-object")
             .send()
-            .await;
+            .await
+            .unwrap_err();
 
-        assert!(
-            result.is_err(),
-            "Expected send() to fail due to error reading response body"
-        );
-
-        let err = result.unwrap_err();
         assert!(
             err.is_io(),
             "Expected an I/O error (err.is_io() == true) for body read failure, but got: {:?}",
