@@ -12,34 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::publisher::{builder::PublisherBuilder, handle::PublishHandle};
+use tokio::sync::{mpsc, oneshot};
+
+// A message to be sent to the background worker.
+#[derive(Debug)]
+pub(crate) struct ToWorker {
+    pub message: crate::model::PubsubMessage,
+    pub tx: oneshot::Sender<Result<String, crate::Error>>,
+}
+
 /// Client for publishing messages to Pub/Sub topics.
 #[derive(Clone, Debug)]
 pub struct Publisher {
-    pub(crate) inner: crate::generated::gapic_dataplane::client::Publisher,
+    pub(crate) sender: mpsc::Sender<ToWorker>,
 }
 
-/// A builder for [Publisher].
-///
-/// ```
-/// # async fn sample() -> anyhow::Result<()> {
-/// # use google_cloud_pubsub::*;
-/// # use builder::publisher::ClientBuilder;
-/// # use client::Publisher;
-/// let builder : ClientBuilder = Publisher::builder();
-/// let client = builder
-///     .with_endpoint("https://pubsub.googleapis.com")
-///     .build().await?;
-/// # Ok(()) }
-/// ```
-pub type ClientBuilder =
-    gax::client_builder::ClientBuilder<client_builder::Factory, gaxi::options::Credentials>;
-
 pub(crate) mod client_builder {
-    use super::Publisher;
+    use crate::generated::gapic_dataplane;
 
     pub struct Factory;
     impl gax::client_builder::internal::ClientFactory for Factory {
-        type Client = Publisher;
+        type Client = gapic_dataplane::client::Publisher;
         type Credentials = gaxi::options::Credentials;
         #[allow(unused_mut)]
         async fn build(
@@ -54,29 +48,27 @@ pub(crate) mod client_builder {
 
 impl Publisher {
     /// Returns a builder for [Publisher].
-    ///
-    /// ```no_run
-    /// # tokio_test::block_on(async {
-    /// # use google_cloud_pubsub::client::Publisher;
-    /// let client = Publisher::builder().build().await?;
-    /// # gax::client_builder::Result::<()>::Ok(()) });
-    /// ```
-    pub fn builder() -> ClientBuilder {
-        gax::client_builder::internal::new_builder(client_builder::Factory)
+    pub fn builder() -> PublisherBuilder {
+        PublisherBuilder::new(gax::client_builder::internal::new_builder(
+            client_builder::Factory,
+        ))
     }
 
-    /// Creates a new Pub/Sub publisher client with the given configuration.
-    pub async fn new(
-        config: gaxi::options::ClientConfig,
-    ) -> Result<Self, gax::client_builder::Error> {
-        let inner = crate::generated::gapic_dataplane::client::Publisher::new(config).await?;
-        Ok(Self { inner })
-    }
+    /// Queues a message for publishing and returns a handle to the operation.
+    pub async fn publish(
+        &self,
+        message: crate::model::PubsubMessage,
+    ) -> Result<PublishHandle, crate::Error> {
+        let (tx, rx) = oneshot::channel();
+        let msg = ToWorker { message, tx };
 
-    /// Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic
-    /// does not exist.
-    pub fn publish(&self) -> crate::builder::publisher::Publish {
-        self.inner.publish()
+        // TODO: handle backpressure properly instead of just returning an error.
+        self.sender
+            .send(msg)
+            .await
+            .map_err(|_e| crate::Error::service(Default::default()))?;
+
+        Ok(PublishHandle { rx })
     }
 }
 
@@ -86,8 +78,9 @@ mod tests {
 
     #[tokio::test]
     async fn builder() -> anyhow::Result<()> {
-        let _ = Publisher::builder()
-            .with_credentials(auth::credentials::anonymous::Builder::new().build())
+        let _publisher = Publisher::builder()
+            .with_topic("projects/p/topics/t")
+            //.with_credentials(auth::credentials::anonymous::Builder::new().build())
             .build()
             .await?;
         Ok(())

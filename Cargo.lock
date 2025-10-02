@@ -3853,6 +3853,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "bytes",
+ "futures",
  "google-cloud-auth",
  "google-cloud-gax",
  "google-cloud-gax-internal",

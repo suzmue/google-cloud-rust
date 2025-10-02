@@ -14,28 +14,40 @@
 
 use crate::{Error, Result};
 
+use futures::future::join_all;
 use gax::paginator::ItemPaginator as _;
-use pubsub::client::{Publisher, TopicAdmin};
+use pubsub::Publisher;
+use pubsub::client::TopicAdmin;
 use pubsub::model::{PubsubMessage, Topic};
 use rand::{Rng, distr::Alphanumeric};
 
 pub async fn basic_publisher() -> Result<()> {
     let (topic_admin, topic) = create_test_topic().await?;
 
-    tracing::info!("testing publish()");
-    let publisher = Publisher::builder().build().await?;
     let messages: [PubsubMessage; 2] = [
         PubsubMessage::new().set_data("Hello"),
         PubsubMessage::new().set_data("World"),
     ];
-    let resp = publisher
-        .publish()
-        .set_topic(&topic.name)
-        .set_messages(messages)
-        .send()
+    tracing::info!("testing publish()");
+    let publisher = Publisher::builder()
+        .with_topic(topic.name.clone())
+        .build()
         .await?;
-    assert_eq!(resp.message_ids.len(), 2);
-    tracing::info!("successfully published messages: {:#?}", resp.message_ids);
+
+    let mut handles = Vec::new();
+
+    for msg in messages {
+        let handle = publisher.publish(msg).await?;
+        handles.push(handle);
+    }
+
+    let results = join_all(handles).await;
+    let message_ids: Vec<_> = results
+        .into_iter()
+        .collect::<std::result::Result<Vec<_>, _>>()
+        .map_err(Error::from)?;
+    assert_eq!(message_ids.len(), 2);
+    tracing::info!("successfully published messages: {:#?}", message_ids);
 
     cleanup_test_topic(&topic_admin, topic.name).await?;
 

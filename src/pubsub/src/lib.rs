@@ -30,13 +30,10 @@ pub mod publisher;
 
 pub use gax::Result;
 pub use gax::error::Error;
+pub use tonic::Status;
 
 pub mod builder {
     pub use crate::generated::gapic::builder::*;
-    pub mod publisher {
-        pub use crate::generated::gapic_dataplane::builder::publisher::*;
-        pub use crate::publisher::client::ClientBuilder;
-    }
 }
 pub mod model {
     pub use crate::generated::gapic::model::*;
@@ -44,11 +41,15 @@ pub mod model {
 }
 pub mod client {
     pub use crate::generated::gapic::client::*;
-    pub use crate::publisher::client::*;
 }
 pub mod stub {
     pub use crate::generated::gapic::stub::*;
 }
+
+// Handwritten veneer client exports.
+pub use publisher::builder::PublisherBuilder;
+pub use publisher::client::Publisher;
+pub use publisher::handle::PublishHandle;
 
 const DEFAULT_HOST: &str = "https://pubsub.googleapis.com";
 
