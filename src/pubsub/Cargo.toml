@@ -30,17 +30,17 @@ rust-version.workspace = true
 async-trait.workspace = true
 bytes.workspace       = true
 gax.workspace         = true
-gaxi                  = { workspace = true, features = ["_internal-common", "_internal-grpc-client", "_internal-http-client"] }
-http.workspace        = true
+gaxi                  = { workspace = true, features = ["_internal-common"] }
+http                  = { workspace = true, optional = true }
 iam_v1.workspace      = true
 lazy_static.workspace = true
-prost.workspace       = true
-prost-types.workspace = true
+prost                 = { workspace = true, optional = true }
+prost-types           = { workspace = true, optional = true }
 reqwest.workspace     = true
 serde.workspace       = true
 serde_json.workspace  = true
 serde_with.workspace  = true
-tonic.workspace       = true
+tonic                 = { workspace = true, optional = true }
 tracing.workspace     = true
 wkt.workspace         = true
 
@@ -49,3 +49,13 @@ auth.workspace       = true
 anyhow.workspace     = true
 tokio-test.workspace = true
 tokio.workspace      = true
+
+[features]
+grpc = [
+    "dep:http",
+    "dep:prost",
+    "dep:prost-types",
+    "dep:tonic",
+    "gaxi/_internal-grpc-client",
+    "gaxi/_internal-http-client",
+]

@@ -14,4 +14,5 @@
 
 pub(crate) mod gapic;
 #[allow(dead_code)]
+#[cfg(feature = "grpc")]
 pub(crate) mod gapic_dataplane;

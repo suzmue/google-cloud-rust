@@ -33,17 +33,22 @@ pub use gax::error::Error;
 
 pub mod builder {
     pub use crate::generated::gapic::builder::*;
+    #[cfg(feature = "grpc")]
     pub mod publisher {
+        #[cfg(feature = "grpc")]
         pub use crate::generated::gapic_dataplane::builder::publisher::*;
+        #[cfg(feature = "grpc")]
         pub use crate::publisher::client::ClientBuilder;
     }
 }
 pub mod model {
     pub use crate::generated::gapic::model::*;
+    #[cfg(feature = "grpc")]
     pub use crate::generated::gapic_dataplane::model::*;
 }
 pub mod client {
     pub use crate::generated::gapic::client::*;
+    #[cfg(feature = "grpc")]
     pub use crate::publisher::client::*;
 }
 pub mod stub {
@@ -71,6 +76,7 @@ mod info {
 pub(crate) mod google {
     pub mod pubsub {
         #[allow(clippy::enum_variant_names)]
+        #[cfg(feature = "grpc")]
         pub mod v1 {
             include!("generated/protos/pubsub/google.pubsub.v1.rs");
             include!("generated/convert/pubsub/convert.rs");
