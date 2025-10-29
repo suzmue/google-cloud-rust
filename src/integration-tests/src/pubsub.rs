@@ -16,8 +16,9 @@ use crate::{Error, Result};
 
 use futures::future::join_all;
 use gax::paginator::ItemPaginator as _;
-use pubsub::client::{PublisherClient, TopicAdmin};
+use pubsub::client::*;
 use pubsub::model::{PubsubMessage, Topic};
+use pubsub::strategy::*;
 use rand::{Rng, distr::Alphanumeric};
 
 pub async fn basic_publisher() -> Result<()> {
@@ -25,23 +26,53 @@ pub async fn basic_publisher() -> Result<()> {
 
     tracing::info!("testing publish()");
     let client = PublisherClient::builder().build().await?;
-    let publisher = client.publisher(topic.name.clone());
-    let messages: [PubsubMessage; 2] = [
-        PubsubMessage::new().set_data("Hello"),
-        PubsubMessage::new().set_data("World"),
-    ];
 
-    let mut handles = Vec::new();
-    for msg in messages {
-        handles.push(publisher.publish(msg));
-    }
+    // Simple publish.
+    let simple_publisher: Publisher<Unordered, FlowControlIgnored> =
+        client.publisher(topic.name.clone()).build();
+    let _handle = simple_publisher.publish(Message::new("msg".into()));
 
-    let results = join_all(handles).await;
-    let message_ids: Vec<_> = results
-        .into_iter()
-        .collect::<std::result::Result<Vec<_>, _>>()
-        .map_err(Error::from)?;
-    tracing::info!("successfully published messages: {:#?}", message_ids);
+    // Unordered.
+    let ordered_publisher: Publisher<Ordered, FlowControlIgnored> = client
+        .publisher(topic.name.clone())
+        .enable_message_ordering()
+        .build();
+    let _handle = ordered_publisher.publish(Message::new("msg".into()));
+    let _handle =
+        ordered_publisher.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+
+    // Flow Control publish.
+    let flow_control_publisher: Publisher<Unordered, FlowControlEnabled> = client
+        .publisher(topic.name.clone())
+        .with_flow_control(FlowControlSettings)
+        .build();
+    let permit = flow_control_publisher.acquire(5).await;
+    let _handle = permit.publish(Message::new("msg".into()));
+    let permit = flow_control_publisher
+        .try_acquire(5)
+        .map_err(|()| anyhow::Error::msg("err"))?;
+    let _handle = permit.publish(Message::new("msg".into()));
+
+    // Both.
+    let flow_control_publisher: Publisher<Ordered, FlowControlEnabled> = client
+        .publisher(topic.name.clone())
+        .with_flow_control(FlowControlSettings)
+        .enable_message_ordering()
+        .build();
+    let permit = flow_control_publisher.acquire(5).await;
+    let _handle = permit.publish(Message::new("msg".into()));
+    let permit = flow_control_publisher
+        .try_acquire(5)
+        .map_err(|()| anyhow::Error::msg("err"))?;
+    let _handle = permit.publish(Message::new("msg".into()));
+
+    let permit = flow_control_publisher.acquire(5).await;
+    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+    let permit = flow_control_publisher
+        .try_acquire(5)
+        .map_err(|()| anyhow::Error::msg("err"))?;
+    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+
     cleanup_test_topic(&topic_admin, topic.name).await?;
 
     Ok(())

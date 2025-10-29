@@ -12,7 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::result::Result::*;
+use std::marker::PhantomData;
+
+pub use crate::strategy;
+use strategy::{
+    FlowControlEnabled, FlowControlIgnored, FlowControlStrategy, Ordered, PublishingStrategy,
+    Unordered,
+};
+
 /// Client for publishing messages to Pub/Sub topics.
 #[derive(Clone, Debug)]
 pub struct PublisherClient {
@@ -91,85 +98,168 @@ impl PublisherClient {
     /// let message_id = publisher.publish(PubsubMessage::new().set_data("Hello, World")).await?;
     /// # Ok(()) }
     /// ```
-    pub fn publisher<T>(&self, topic: T) -> Publisher
+    pub fn publisher<T>(&self, topic: T) -> PublisherBuilder<Unordered, FlowControlIgnored>
     where
         T: Into<String>,
     {
-        // In order to configure the Publisher, we will probably want
-        // to return a builder.
-        Publisher {
-            inner: self.inner.clone(),
-            topic: topic.into(),
-        }
+        unimplemented!()
     }
 }
 
-/// Publishes messages to a single topic.
+/// A publisher for a specific topic.
 ///
-/// ```
-/// # async fn sample() -> anyhow::Result<()> {
-/// # use google_cloud_pubsub::*;
-/// # use builder::publisher::ClientBuilder;
-/// # use client::PublisherClient;
-/// # use model::PubsubMessage;
-/// let client = PublisherClient::builder()
-///     .with_endpoint("https://pubsub.googleapis.com")
-///     .build().await?;
-/// let publisher = client.publisher("projects/my-project/topics/my-topic");
-/// let message_id = publisher.publish(PubsubMessage::new().set_data("Hello, World"));
-/// # Ok(()) }
-/// ```
-pub struct Publisher {
-    pub(crate) inner: crate::generated::gapic_dataplane::client::Publisher,
-    topic: String,
+/// This struct is generic over a `PublishingStrategy` (Ordered vs. Unordered)
+/// and a `FlowControlStrategy` (Ignored vs. Enabled). The available methods
+/// will change depending on its generic parameters.
+#[derive(Clone, Debug)]
+pub struct Publisher<S: PublishingStrategy, F: FlowControlStrategy> {
+    // topic: String,
+    // settings: PublisherSettings,
+    _strategy: PhantomData<(S, F)>,
 }
 
-impl Publisher {
-    /// Publishes a message to the topic.
-    ///
-    /// ```
-    /// # use google_cloud_pubsub::client::Publisher;
-    /// # async fn sample(publisher: Publisher) -> anyhow::Result<()> {
-    /// # use google_cloud_pubsub::model::PubsubMessage;
-    /// let message_id = publisher.publish(PubsubMessage::new().set_data("Hello, World")).await?;
-    /// # Ok(()) }
-    /// ```
-    // This function will eventually return a type that implements Future instead,
-    // which will remove the warning.
-    #[allow(clippy::manual_async_fn)]
-    pub fn publish(
-        &self,
-        msg: crate::model::PubsubMessage,
-    ) -> impl Future<Output = crate::Result<String>> {
-        async {
-            // This will need to be done on the background task. For now, just
-            // do it here to make the types work.
-            let resp = self
-                .inner
-                .publish()
-                .set_topic(self.topic.clone())
-                .set_messages([msg])
-                .send()
-                .await?;
-            match resp.message_ids.first() {
-                Some(value) => Ok(value.to_owned()),
-                _ => Err(crate::Error::io("service returned no message ID")),
-            }
-        }
+/// A builder for creating and configuring a `Publisher`.
+#[derive(Clone, Debug)]
+pub struct PublisherBuilder<S: PublishingStrategy, F: FlowControlStrategy> {
+    // settings: PublisherSettings,
+    _strategy: PhantomData<(S, F)>,
+}
+
+// --- Builder Implementation ---
+
+// Generic implementation for methods that don't change the builder's state.
+impl<S: PublishingStrategy, F: FlowControlStrategy> PublisherBuilder<S, F> {
+    pub fn set_batch_delay_threshold(self, duration: std::time::Duration) -> Self {
+        unimplemented!()
+    }
+    // ... other common settings ...
+}
+
+// Implementation block for the default "Unordered" builder.
+impl<F: FlowControlStrategy> PublisherBuilder<Unordered, F> {
+    /// Enables message ordering, returning a builder for an ordered publisher.
+    pub fn enable_message_ordering(self) -> PublisherBuilder<Ordered, F> {
+        unimplemented!()
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::PublisherClient;
-
-    #[tokio::test]
-    async fn builder() -> anyhow::Result<()> {
-        let client = PublisherClient::builder()
-            .with_credentials(auth::credentials::anonymous::Builder::new().build())
-            .build()
-            .await?;
-        let _ = client.publisher("projects/my-project/topics/my-topic".to_string());
-        Ok(())
+// Implementation block for the default "FlowControlIgnored" builder.
+impl<S: PublishingStrategy> PublisherBuilder<S, FlowControlIgnored> {
+    /// Enables permit-based flow control.
+    /// This transforms the builder, unlocking the `acquire()` and `try_acquire()` methods
+    /// on the final publisher, while disabling the simple `publish()` method.
+    pub fn with_flow_control(
+        self,
+        settings: FlowControlSettings,
+    ) -> PublisherBuilder<S, FlowControlEnabled> {
+        unimplemented!()
     }
 }
+
+// Final `build` methods for each concrete builder type.
+
+impl PublisherBuilder<Unordered, FlowControlIgnored> {
+    pub fn build(self) -> Publisher<Unordered, FlowControlIgnored> {
+        unimplemented!()
+    }
+}
+
+impl PublisherBuilder<Ordered, FlowControlIgnored> {
+    pub fn build(self) -> Publisher<Ordered, FlowControlIgnored> {
+        unimplemented!()
+    }
+}
+
+impl PublisherBuilder<Unordered, FlowControlEnabled> {
+    pub fn build(self) -> Publisher<Unordered, FlowControlEnabled> {
+        unimplemented!()
+    }
+}
+
+impl PublisherBuilder<Ordered, FlowControlEnabled> {
+    pub fn build(self) -> Publisher<Ordered, FlowControlEnabled> {
+        unimplemented!()
+    }
+}
+
+// --- Publisher API Implementation ---
+
+// --- API for "Simple" Publishers (FlowControlIgnored) ---
+
+impl Publisher<Unordered, FlowControlIgnored> {
+    /// Publishes a standard message, ignoring flow control limits.
+    pub fn publish(&self, msg: Message) -> PublishHandle {
+        unimplemented!()
+    }
+}
+
+impl Publisher<Ordered, FlowControlIgnored> {
+    /// Publishes a standard message, ignoring flow control limits.
+    pub fn publish(&self, msg: Message) -> PublishHandle {
+        unimplemented!()
+    }
+
+    /// Publishes a message with an ordering key, ignoring flow control limits.
+    pub fn publish_ordered(&self, msg: OrderedMessage) -> PublishHandle {
+        unimplemented!()
+    }
+}
+
+// --- API for "Flow Controlled" Publishers (FlowControlEnabled) ---
+
+// A permit that grants the right to publish a single message.
+pub struct PublishPermit<S: PublishingStrategy> {
+    _strategy: PhantomData<S>,
+}
+
+impl<S: PublishingStrategy> Publisher<S, FlowControlEnabled> {
+    /// Asynchronously waits for a permit to publish.
+    pub async fn acquire(&self, message_size: u32) -> PublishPermit<S> {
+        unimplemented!()
+    }
+
+    /// Tries to acquire a permit without waiting.
+    pub fn try_acquire(&self, message_size: u32) -> Result<PublishPermit<S>, ()> {
+        unimplemented!()
+    }
+}
+
+// --- API for PublishPermits ---
+
+impl PublishPermit<Unordered> {
+    /// Consumes the permit to publish a standard message.
+    pub fn publish(self, msg: Message) -> PublishHandle {
+        unimplemented!()
+    }
+}
+
+impl PublishPermit<Ordered> {
+    /// Consumes the permit to publish a standard message.
+    pub fn publish(self, msg: Message) -> PublishHandle {
+        unimplemented!()
+    }
+
+    /// Consumes the permit to publish a message with an ordering key.
+    pub fn publish_ordered(self, msg: OrderedMessage) -> PublishHandle {
+        unimplemented!()
+    }
+}
+
+// Other structs (e.g., PublishHandle, Message, etc.) would be defined here or in other modules.
+pub struct PublishHandle;
+pub struct Message;
+
+impl Message {
+    pub fn new(msg: String) -> Self {
+        Self
+    }
+}
+pub struct OrderedMessage;
+
+impl OrderedMessage {
+    pub fn new(msg: String, key: String) -> Self {
+        Self
+    }
+}
+
+pub struct FlowControlSettings;

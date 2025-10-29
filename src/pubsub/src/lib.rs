@@ -50,6 +50,8 @@ pub mod stub {
     pub use crate::generated::gapic::stub::*;
 }
 
+pub use crate::publisher::strategy;
+
 const DEFAULT_HOST: &str = "https://pubsub.googleapis.com";
 
 mod info {
