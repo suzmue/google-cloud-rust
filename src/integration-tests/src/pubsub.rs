@@ -17,11 +17,11 @@ use crate::{Error, Result};
 use futures::future::join_all;
 use gax::paginator::ItemPaginator as _;
 use pubsub::client::*;
-use pubsub::model::{PubsubMessage, Topic};
+use pubsub::model::Topic;
 use pubsub::strategy::*;
 use pubsub::traits::{
-    FlowControlledPublisher, OrderedFlowControlledPublisher, OrderedPermitApi,
-    SimpleOrderedPublisher, SimplePublisher, UnorderedPermitApi,
+    CanPublish, FlowControlledPublisher, OrderedFlowControlledPublisher, OrderedPermitApi,
+    SimplePublisher, UnorderedPermitApi,
 };
 use rand::{Rng, distr::Alphanumeric};
 
@@ -72,10 +72,10 @@ where
 
 fn ordered<P>(publisher: &P) -> Result<()>
 where
-    P: SimplePublisher + SimpleOrderedPublisher,
+    P: SimplePublisher + CanPublish<OrderedMessage>,
 {
     let _handle = publisher.publish(Message::new("msg".into()));
-    let _handle = publisher.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+    let _handle = publisher.publish(OrderedMessage::new("msg".into(), "key".into()));
     Ok(())
 }
 

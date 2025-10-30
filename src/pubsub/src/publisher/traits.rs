@@ -3,18 +3,33 @@
 use crate::publisher::client::{Message, OrderedMessage, PublishHandle};
 use std::future::Future;
 
-// --- Traits for the "Simple" API ---
+// --- Core Message Trait ---
 
-/// A publisher that uses the simple, fire-and-forget API.
-pub trait SimplePublisher {
-    /// Publishes a standard, unordered message.
-    fn publish(&self, msg: Message) -> PublishHandle;
+/// A trait for types that can be published to Pub/Sub.
+pub trait Publishable {
+    fn ordering_key(&self) -> Option<&str>;
+    // ... other methods for data, attributes ...
 }
 
-/// Extends the simple publisher with the ability to publish ordered messages.
-pub trait SimpleOrderedPublisher: SimplePublisher {
-    /// Publishes a message with an ordering key.
-    fn publish_ordered(&self, msg: OrderedMessage) -> PublishHandle;
+/// A marker trait indicating that a publisher `P` can publish a message of type `M`.
+pub trait CanPublish<M: Publishable> {}
+
+// --- Publisher API Traits ---
+
+/// The API of a permit that can publish messages.
+pub trait PermitApi {
+    /// Publishes a message, consuming the permit.
+    fn publish<M: Publishable>(self: Box<Self>, msg: M) -> PublishHandle
+    where
+        Self: CanPublish<M>;
+}
+
+/// A publisher that uses the simple, fire-and-forget API.
+pub trait SimplePublisher: CanPublish<Message> {
+    /// Publishes a message.
+    fn publish<M: Publishable>(&self, msg: M) -> PublishHandle
+    where
+        Self: CanPublish<M>;
 }
 
 // --- Traits for the "Flow Control" API ---

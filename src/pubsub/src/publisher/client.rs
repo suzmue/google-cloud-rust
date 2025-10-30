@@ -16,18 +16,16 @@ use std::future::Future;
 use std::marker::PhantomData;
 
 pub use crate::strategy;
-pub use crate::traits;
-use crate::traits::BoxedOrderedPermit;
-use crate::traits::BoxedUnorderedPermit;
-use crate::traits::OrderedFlowControlledPublisher;
-use crate::traits::OrderedPermitApi;
-use crate::traits::UnorderedPermitApi;
-
-use strategy::{
-    FlowControlEnabled, FlowControlIgnored, FlowControlStrategy, Ordered, PublishingStrategy,
-    Unordered,
+use crate::{
+    strategy::{
+        FlowControlEnabled, FlowControlIgnored, FlowControlStrategy, Ordered, PublishingStrategy,
+        Unordered,
+    },
+    traits::{
+        CanPublish, FlowControlledPublisher, OrderedFlowControlledPublisher, OrderedPermitApi,
+        PermitApi, Publishable, SimplePublisher, UnorderedPermitApi,
+    },
 };
-use traits::{FlowControlledPublisher, SimpleOrderedPublisher, SimplePublisher};
 
 /// Client for publishing messages to Pub/Sub topics.
 #[derive(Clone, Debug)]
@@ -191,24 +189,35 @@ impl PublisherBuilder<Ordered, FlowControlEnabled> {
     }
 }
 
-// --- Publisher API Implementation ---
+// --- Marker Trait Impls for Compile-Time Safety ---
 
-// --- Trait Impls for "Simple" Publishers (FlowControlIgnored) ---
+// Any publisher can publish a standard Message.
+impl<S: PublishingStrategy, F: FlowControlStrategy> CanPublish<Message> for Publisher<S, F> {}
+impl<S: PublishingStrategy> CanPublish<Message> for PublishPermit<S> {}
 
-impl SimplePublisher for Publisher<Unordered, FlowControlIgnored> {
-    fn publish(&self, msg: Message) -> PublishHandle {
+// ONLY an Ordered publisher can publish an OrderedMessage.
+impl<F: FlowControlStrategy> CanPublish<OrderedMessage> for Publisher<Ordered, F> {}
+impl CanPublish<OrderedMessage> for PublishPermit<Ordered> {}
+
+// --- Trait Impls for Concrete Types ---
+
+impl<S: PublishingStrategy> PermitApi for PublishPermit<S> {
+    fn publish<M: Publishable>(self: Box<Self>, msg: M) -> PublishHandle
+    where
+        Self: CanPublish<M>,
+    {
         unimplemented!()
     }
 }
 
-impl SimplePublisher for Publisher<Ordered, FlowControlIgnored> {
-    fn publish(&self, msg: Message) -> PublishHandle {
-        unimplemented!()
-    }
-}
-
-impl SimpleOrderedPublisher for Publisher<Ordered, FlowControlIgnored> {
-    fn publish_ordered(&self, msg: OrderedMessage) -> PublishHandle {
+impl<S: PublishingStrategy, F: FlowControlStrategy> SimplePublisher for Publisher<S, F>
+where
+    Self: CanPublish<Message>, // Constrain this to simple publishers if needed
+{
+    fn publish<M: Publishable>(&self, msg: M) -> PublishHandle
+    where
+        Self: CanPublish<M>,
+    {
         unimplemented!()
     }
 }
@@ -268,19 +277,30 @@ impl OrderedPermitApi for PublishPermit<Ordered> {
 
 // Other structs (e.g., PublishHandle, Message, etc.) would be defined here or in other modules.
 pub struct PublishHandle;
+#[derive(Clone)]
 pub struct Message;
-
 impl Message {
     pub fn new(msg: String) -> Self {
         Self
     }
 }
+#[derive(Clone)]
 pub struct OrderedMessage;
-
 impl OrderedMessage {
     pub fn new(msg: String, key: String) -> Self {
         Self
     }
 }
 
+// Dummy impls for Publishable
+impl Publishable for Message {
+    fn ordering_key(&self) -> Option<&str> {
+        None
+    }
+}
+impl Publishable for OrderedMessage {
+    fn ordering_key(&self) -> Option<&str> {
+        Some("dummy_key")
+    }
+}
 pub struct FlowControlSettings;
