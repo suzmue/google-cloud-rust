@@ -14,3 +14,4 @@
 
 pub mod client;
 pub mod strategy;
+pub mod traits;

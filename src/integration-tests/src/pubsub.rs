@@ -19,6 +19,9 @@ use gax::paginator::ItemPaginator as _;
 use pubsub::client::*;
 use pubsub::model::{PubsubMessage, Topic};
 use pubsub::strategy::*;
+use pubsub::traits::{
+    FlowControlledPublisher, OrderedFlowControlPublisher, SimpleOrderedPublisher, SimplePublisher,
+};
 use rand::{Rng, distr::Alphanumeric};
 
 pub async fn basic_publisher() -> Result<()> {
@@ -30,28 +33,21 @@ pub async fn basic_publisher() -> Result<()> {
     // Simple publish.
     let simple_publisher: Publisher<Unordered, FlowControlIgnored> =
         client.publisher(topic.name.clone()).build();
-    let _handle = simple_publisher.publish(Message::new("msg".into()));
+    simple(&simple_publisher)?;
 
     // Unordered.
     let ordered_publisher: Publisher<Ordered, FlowControlIgnored> = client
         .publisher(topic.name.clone())
         .enable_message_ordering()
         .build();
-    let _handle = ordered_publisher.publish(Message::new("msg".into()));
-    let _handle =
-        ordered_publisher.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+    ordered(&ordered_publisher)?;
 
     // Flow Control publish.
     let flow_control_publisher: Publisher<Unordered, FlowControlEnabled> = client
         .publisher(topic.name.clone())
         .with_flow_control(FlowControlSettings)
         .build();
-    let permit = flow_control_publisher.acquire(5).await;
-    let _handle = permit.publish(Message::new("msg".into()));
-    let permit = flow_control_publisher
-        .try_acquire(5)
-        .map_err(|()| anyhow::Error::msg("err"))?;
-    let _handle = permit.publish(Message::new("msg".into()));
+    flow_control(&flow_control_publisher).await?;
 
     // Both.
     let flow_control_publisher: Publisher<Ordered, FlowControlEnabled> = client
@@ -59,21 +55,58 @@ pub async fn basic_publisher() -> Result<()> {
         .with_flow_control(FlowControlSettings)
         .enable_message_ordering()
         .build();
-    let permit = flow_control_publisher.acquire(5).await;
-    let _handle = permit.publish(Message::new("msg".into()));
-    let permit = flow_control_publisher
-        .try_acquire(5)
-        .map_err(|()| anyhow::Error::msg("err"))?;
-    let _handle = permit.publish(Message::new("msg".into()));
-
-    let permit = flow_control_publisher.acquire(5).await;
-    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
-    let permit = flow_control_publisher
-        .try_acquire(5)
-        .map_err(|()| anyhow::Error::msg("err"))?;
-    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
-
+    both(&flow_control_publisher).await?;
     cleanup_test_topic(&topic_admin, topic.name).await?;
+
+    Ok(())
+}
+
+fn simple<P>(publisher: &P) -> Result<()>
+where
+    P: SimplePublisher,
+{
+    let _handle = publisher.publish(Message::new("msg".into()));
+    Ok(())
+}
+
+fn ordered<P>(publisher: &P) -> Result<()>
+where
+    P: SimpleOrderedPublisher,
+{
+    let _handle = publisher.publish(Message::new("msg".into()));
+    let _handle = publisher.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+    Ok(())
+}
+
+async fn flow_control<P>(publisher: &P) -> Result<()>
+where
+    P: FlowControlledPublisher,
+{
+    let permit = publisher.acquire(5).await;
+    let _handle = permit.publish(Message::new("msg".into()));
+    let permit = publisher
+        .try_acquire(5)
+        .map_err(|()| anyhow::Error::msg("err"))?;
+    let _handle = permit.publish(Message::new("msg".into()));
+    Ok(())
+}
+
+async fn both<P>(publisher: &P) -> Result<()>
+where
+    P: OrderedFlowControlPublisher,
+{
+    let permit = publisher.acquire(5).await;
+    let _handle = permit.publish(Message::new("msg".into()));
+    let permit = publisher
+        .try_acquire(5)
+        .map_err(|()| anyhow::Error::msg("err"))?;
+    let _handle = permit.publish(Message::new("msg".into()));
+    let permit = publisher.acquire(5).await;
+    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
+    let permit = publisher
+        .try_acquire(5)
+        .map_err(|()| anyhow::Error::msg("err"))?;
+    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
 
     Ok(())
 }

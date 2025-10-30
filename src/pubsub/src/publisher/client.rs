@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::future::Future;
 use std::marker::PhantomData;
 
 pub use crate::strategy;
+pub use crate::traits;
+
 use strategy::{
     FlowControlEnabled, FlowControlIgnored, FlowControlStrategy, Ordered, PublishingStrategy,
     Unordered,
+};
+use traits::{
+    BoxedOrderedPublishPermit, BoxedPublishPermit, FlowControlledPublisher,
+    OrderedFlowControlPublisher, OrderedPublishPermitApi, PublishPermitApi, SimpleOrderedPublisher,
+    SimplePublisher,
 };
 
 /// Client for publishing messages to Pub/Sub topics.
@@ -184,63 +192,87 @@ impl PublisherBuilder<Ordered, FlowControlEnabled> {
 
 // --- Publisher API Implementation ---
 
-// --- API for "Simple" Publishers (FlowControlIgnored) ---
+// --- Trait Impls for "Simple" Publishers (FlowControlIgnored) ---
 
-impl Publisher<Unordered, FlowControlIgnored> {
-    /// Publishes a standard message, ignoring flow control limits.
-    pub fn publish(&self, msg: Message) -> PublishHandle {
+impl SimplePublisher for Publisher<Unordered, FlowControlIgnored> {
+    fn publish(&self, msg: Message) -> PublishHandle {
         unimplemented!()
     }
 }
 
-impl Publisher<Ordered, FlowControlIgnored> {
-    /// Publishes a standard message, ignoring flow control limits.
-    pub fn publish(&self, msg: Message) -> PublishHandle {
-        unimplemented!()
-    }
-
-    /// Publishes a message with an ordering key, ignoring flow control limits.
-    pub fn publish_ordered(&self, msg: OrderedMessage) -> PublishHandle {
+impl SimplePublisher for Publisher<Ordered, FlowControlIgnored> {
+    fn publish(&self, msg: Message) -> PublishHandle {
         unimplemented!()
     }
 }
 
-// --- API for "Flow Controlled" Publishers (FlowControlEnabled) ---
+impl SimpleOrderedPublisher for Publisher<Ordered, FlowControlIgnored> {
+    fn publish_ordered(&self, msg: OrderedMessage) -> PublishHandle {
+        unimplemented!()
+    }
+}
+
+// --- Trait Impls for "Flow Controlled" Publishers (FlowControlEnabled) ---
 
 // A permit that grants the right to publish a single message.
 pub struct PublishPermit<S: PublishingStrategy> {
     _strategy: PhantomData<S>,
 }
 
-impl<S: PublishingStrategy> Publisher<S, FlowControlEnabled> {
-    /// Asynchronously waits for a permit to publish.
-    pub async fn acquire(&self, message_size: u32) -> PublishPermit<S> {
-        unimplemented!()
+impl OrderedFlowControlPublisher for Publisher<Ordered, FlowControlEnabled> {
+    async fn acquire(&self, message_size: u32) -> BoxedOrderedPublishPermit {
+        // The concrete implementation would await a real permit...
+        let permit: PublishPermit<Ordered> = PublishPermit {
+            _strategy: PhantomData,
+        };
+        // ...and then return it as a boxed trait object.
+        Box::new(permit)
     }
 
-    /// Tries to acquire a permit without waiting.
-    pub fn try_acquire(&self, message_size: u32) -> Result<PublishPermit<S>, ()> {
+    fn try_acquire(&self, message_size: u32) -> Result<BoxedOrderedPublishPermit, ()> {
+        // The concrete implementation would await a real permit...
+        let permit: PublishPermit<Ordered> = PublishPermit {
+            _strategy: PhantomData,
+        };
+        // ...and then return it as a boxed trait object.
+        Ok(Box::new(permit))
+    }
+}
+
+impl FlowControlledPublisher for Publisher<Unordered, FlowControlEnabled> {
+    async fn acquire(&self, message_size: u32) -> BoxedPublishPermit {
+        // The concrete implementation would await a real permit...
+        let permit: PublishPermit<Unordered> = PublishPermit {
+            _strategy: PhantomData,
+        };
+        // ...and then return it as a boxed trait object.
+        Box::new(permit)
+    }
+
+    fn try_acquire(&self, message_size: u32) -> Result<BoxedPublishPermit, ()> {
+        // The concrete implementation would await a real permit...
+        let permit: PublishPermit<Unordered> = PublishPermit {
+            _strategy: PhantomData,
+        };
+        // ...and then return it as a boxed trait object.
+        Ok(Box::new(permit))
+    }
+}
+
+// --- Trait Impls for PublishPermits ---
+
+impl PublishPermitApi for PublishPermit<Unordered> {
+    fn publish(self: Box<Self>, msg: Message) -> PublishHandle {
         unimplemented!()
     }
 }
 
-// --- API for PublishPermits ---
-
-impl PublishPermit<Unordered> {
-    /// Consumes the permit to publish a standard message.
-    pub fn publish(self, msg: Message) -> PublishHandle {
-        unimplemented!()
-    }
-}
-
-impl PublishPermit<Ordered> {
-    /// Consumes the permit to publish a standard message.
-    pub fn publish(self, msg: Message) -> PublishHandle {
+impl OrderedPublishPermitApi for PublishPermit<Ordered> {
+    fn publish(self: Box<Self>, msg: Message) -> PublishHandle {
         unimplemented!()
     }
 
-    /// Consumes the permit to publish a message with an ordering key.
-    pub fn publish_ordered(self, msg: OrderedMessage) -> PublishHandle {
+    fn publish_ordered(self: Box<Self>, msg: OrderedMessage) -> PublishHandle {
         unimplemented!()
     }
 }

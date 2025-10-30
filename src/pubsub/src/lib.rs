@@ -51,6 +51,7 @@ pub mod stub {
 }
 
 pub use crate::publisher::strategy;
+pub use crate::publisher::traits;
 
 const DEFAULT_HOST: &str = "https://pubsub.googleapis.com";
 
