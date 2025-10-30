@@ -17,16 +17,17 @@ use std::marker::PhantomData;
 
 pub use crate::strategy;
 pub use crate::traits;
+use crate::traits::BoxedOrderedPermit;
+use crate::traits::BoxedUnorderedPermit;
+use crate::traits::OrderedFlowControlledPublisher;
+use crate::traits::OrderedPermitApi;
+use crate::traits::UnorderedPermitApi;
 
 use strategy::{
     FlowControlEnabled, FlowControlIgnored, FlowControlStrategy, Ordered, PublishingStrategy,
     Unordered,
 };
-use traits::{
-    BoxedOrderedPublishPermit, BoxedPublishPermit, FlowControlledPublisher,
-    OrderedFlowControlPublisher, OrderedPublishPermitApi, PublishPermitApi, SimpleOrderedPublisher,
-    SimplePublisher,
-};
+use traits::{FlowControlledPublisher, SimpleOrderedPublisher, SimplePublisher};
 
 /// Client for publishing messages to Pub/Sub topics.
 #[derive(Clone, Debug)]
@@ -219,59 +220,47 @@ pub struct PublishPermit<S: PublishingStrategy> {
     _strategy: PhantomData<S>,
 }
 
-impl OrderedFlowControlPublisher for Publisher<Ordered, FlowControlEnabled> {
-    async fn acquire(&self, message_size: u32) -> BoxedOrderedPublishPermit {
-        // The concrete implementation would await a real permit...
-        let permit: PublishPermit<Ordered> = PublishPermit {
-            _strategy: PhantomData,
-        };
-        // ...and then return it as a boxed trait object.
-        Box::new(permit)
-    }
-
-    fn try_acquire(&self, message_size: u32) -> Result<BoxedOrderedPublishPermit, ()> {
-        // The concrete implementation would await a real permit...
-        let permit: PublishPermit<Ordered> = PublishPermit {
-            _strategy: PhantomData,
-        };
-        // ...and then return it as a boxed trait object.
-        Ok(Box::new(permit))
-    }
-}
-
 impl FlowControlledPublisher for Publisher<Unordered, FlowControlEnabled> {
-    async fn acquire(&self, message_size: u32) -> BoxedPublishPermit {
-        // The concrete implementation would await a real permit...
+    type Permit = dyn UnorderedPermitApi + Send + Sync;
+
+    async fn acquire(&self, message_size: u32) -> Box<Self::Permit> {
         let permit: PublishPermit<Unordered> = PublishPermit {
             _strategy: PhantomData,
         };
-        // ...and then return it as a boxed trait object.
         Box::new(permit)
     }
+}
 
-    fn try_acquire(&self, message_size: u32) -> Result<BoxedPublishPermit, ()> {
-        // The concrete implementation would await a real permit...
-        let permit: PublishPermit<Unordered> = PublishPermit {
+impl FlowControlledPublisher for Publisher<Ordered, FlowControlEnabled> {
+    type Permit = dyn OrderedPermitApi + Send + Sync;
+
+    async fn acquire(&self, message_size: u32) -> Box<Self::Permit> {
+        let permit: PublishPermit<Ordered> = PublishPermit {
             _strategy: PhantomData,
         };
-        // ...and then return it as a boxed trait object.
-        Ok(Box::new(permit))
+        Box::new(permit)
     }
 }
+
+// Implement the marker trait for the ordered flow controlled publisher.
+// The `where` clause on the trait definition now correctly resolves.
+impl OrderedFlowControlledPublisher for Publisher<Ordered, FlowControlEnabled> {}
 
 // --- Trait Impls for PublishPermits ---
 
-impl PublishPermitApi for PublishPermit<Unordered> {
+impl UnorderedPermitApi for PublishPermit<Unordered> {
     fn publish(self: Box<Self>, msg: Message) -> PublishHandle {
         unimplemented!()
     }
 }
 
-impl OrderedPublishPermitApi for PublishPermit<Ordered> {
+impl UnorderedPermitApi for PublishPermit<Ordered> {
     fn publish(self: Box<Self>, msg: Message) -> PublishHandle {
         unimplemented!()
     }
+}
 
+impl OrderedPermitApi for PublishPermit<Ordered> {
     fn publish_ordered(self: Box<Self>, msg: OrderedMessage) -> PublishHandle {
         unimplemented!()
     }

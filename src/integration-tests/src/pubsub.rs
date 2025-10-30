@@ -20,7 +20,8 @@ use pubsub::client::*;
 use pubsub::model::{PubsubMessage, Topic};
 use pubsub::strategy::*;
 use pubsub::traits::{
-    FlowControlledPublisher, OrderedFlowControlPublisher, SimpleOrderedPublisher, SimplePublisher,
+    FlowControlledPublisher, OrderedFlowControlledPublisher, OrderedPermitApi,
+    SimpleOrderedPublisher, SimplePublisher, UnorderedPermitApi,
 };
 use rand::{Rng, distr::Alphanumeric};
 
@@ -71,7 +72,7 @@ where
 
 fn ordered<P>(publisher: &P) -> Result<()>
 where
-    P: SimpleOrderedPublisher,
+    P: SimplePublisher + SimpleOrderedPublisher,
 {
     let _handle = publisher.publish(Message::new("msg".into()));
     let _handle = publisher.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
@@ -84,28 +85,17 @@ where
 {
     let permit = publisher.acquire(5).await;
     let _handle = permit.publish(Message::new("msg".into()));
-    let permit = publisher
-        .try_acquire(5)
-        .map_err(|()| anyhow::Error::msg("err"))?;
-    let _handle = permit.publish(Message::new("msg".into()));
     Ok(())
 }
 
 async fn both<P>(publisher: &P) -> Result<()>
 where
-    P: OrderedFlowControlPublisher,
+    P: OrderedFlowControlledPublisher,
+    <P as FlowControlledPublisher>::Permit: OrderedPermitApi,
 {
     let permit = publisher.acquire(5).await;
     let _handle = permit.publish(Message::new("msg".into()));
-    let permit = publisher
-        .try_acquire(5)
-        .map_err(|()| anyhow::Error::msg("err"))?;
-    let _handle = permit.publish(Message::new("msg".into()));
     let permit = publisher.acquire(5).await;
-    let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
-    let permit = publisher
-        .try_acquire(5)
-        .map_err(|()| anyhow::Error::msg("err"))?;
     let _handle = permit.publish_ordered(OrderedMessage::new("msg".into(), "key".into()));
 
     Ok(())
