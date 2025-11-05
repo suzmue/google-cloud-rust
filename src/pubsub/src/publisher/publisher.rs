@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use crate::generated::gapic_dataplane::client::Publisher as GapicPublisher;
+use crate::model_ext::Message;
 use crate::publisher::options::BatchingOptions;
 use std::sync::Arc;
 use std::time::Duration;
@@ -32,12 +33,12 @@ const MAX_BYTES: u32 = 1e7 as u32; // 10MB
 /// # use google_cloud_pubsub::*;
 /// # use builder::publisher::ClientBuilder;
 /// # use client::PublisherFactory;
-/// # use model::PubsubMessage;
+/// # use model_ext::Message;
 /// let client = PublisherFactory::builder()
 ///     .with_endpoint("https://pubsub.googleapis.com")
 ///     .build().await?;
 /// let publisher = client.publisher("projects/my-project/topics/my-topic").build();
-/// let message_id = publisher.publish(PubsubMessage::new().set_data("Hello, World"));
+/// let message_id = publisher.publish(Message::new().set_data("Hello, World"));
 /// # Ok(()) }
 /// ```
 #[derive(Debug)]
@@ -53,16 +54,23 @@ impl Publisher {
     /// ```
     /// # use google_cloud_pubsub::client::Publisher;
     /// # async fn sample(publisher: Publisher) -> anyhow::Result<()> {
-    /// # use google_cloud_pubsub::model::PubsubMessage;
-    /// let message_id = publisher.publish(PubsubMessage::new().set_data("Hello, World")).await?;
+    /// # use google_cloud_pubsub::model_ext::Message;
+    /// let message_id = publisher.publish(Message::new().set_data("Hello, World")).await?;
     /// # Ok(()) }
     /// ```
-    pub fn publish(&self, msg: crate::model::PubsubMessage) -> crate::model_ext::PublishHandle {
+    pub fn publish(&self, msg: Message) -> crate::model_ext::PublishHandle {
         let (tx, rx) = tokio::sync::oneshot::channel();
 
         // If this fails, the worker is gone, which indicates something bad has happened.
         // The PublishHandle will automatically receive an error when `tx` is dropped.
-        if self.tx.send(BundledMessage { msg, tx }).is_err() {
+        if self
+            .tx
+            .send(BundledMessage {
+                msg: msg.into(),
+                tx,
+            })
+            .is_err()
+        {
             // `tx` is dropped here if the send errors.
         }
         crate::model_ext::PublishHandle { rx }
@@ -365,8 +373,8 @@ mod tests {
             .build();
 
         let messages = vec![
-            PubsubMessage::new().set_data("hello".to_string()),
-            PubsubMessage::new().set_data("world".to_string()),
+            Message::new().set_data("hello".to_string()),
+            Message::new().set_data("world".to_string()),
         ];
         let mut handles = Vec::new();
         for msg in messages {
@@ -400,8 +408,8 @@ mod tests {
             .build();
 
         let messages = vec![
-            PubsubMessage::new().set_data("hello".to_string()),
-            PubsubMessage::new().set_data("world".to_string()),
+            Message::new().set_data("hello".to_string()),
+            Message::new().set_data("world".to_string()),
         ];
 
         let mut handles = Vec::new();
@@ -446,8 +454,8 @@ mod tests {
             .build();
 
         let messages = vec![
-            PubsubMessage::new().set_data("hello".to_string()),
-            PubsubMessage::new().set_data("world".to_string()),
+            Message::new().set_data("hello".to_string()),
+            Message::new().set_data("world".to_string()),
         ];
         let mut handles = Vec::new();
         for msg in messages {
@@ -486,8 +494,8 @@ mod tests {
             .build();
 
         let messages = vec![
-            PubsubMessage::new().set_data("hello".to_string()),
-            PubsubMessage::new().set_data("world".to_string()),
+            Message::new().set_data("hello".to_string()),
+            Message::new().set_data("world".to_string()),
         ];
         let mut handles = Vec::new();
         for msg in messages {
@@ -533,8 +541,8 @@ mod tests {
         for _ in 0..3 {
             let start = tokio::time::Instant::now();
             let messages = vec![
-                PubsubMessage::new().set_data("hello".to_string()),
-                PubsubMessage::new().set_data("world".to_string()),
+                Message::new().set_data("hello".to_string()),
+                Message::new().set_data("world".to_string()),
             ];
             let mut handles = Vec::new();
             for msg in messages {

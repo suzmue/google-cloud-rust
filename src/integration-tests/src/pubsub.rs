@@ -16,7 +16,7 @@ use crate::{Error, Result};
 
 use futures::future::join_all;
 use pubsub::client::PublisherFactory;
-use pubsub::model::PubsubMessage;
+use pubsub::model_ext::Message;
 pub use pubsub_samples::{cleanup_test_topic, create_test_topic};
 
 pub async fn basic_publisher() -> Result<()> {
@@ -25,9 +25,9 @@ pub async fn basic_publisher() -> Result<()> {
     tracing::info!("testing publish()");
     let client = PublisherFactory::builder().build().await?;
     let publisher = client.publisher(topic.name.clone()).build();
-    let messages: [PubsubMessage; 2] = [
-        PubsubMessage::new().set_data("Hello"),
-        PubsubMessage::new().set_data("World"),
+    let messages: [Message; 2] = [
+        Message::new().set_data("Hello"),
+        Message::new().set_data("World"),
     ];
 
     let mut handles = Vec::new();
