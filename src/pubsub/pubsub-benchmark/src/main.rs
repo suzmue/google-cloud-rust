@@ -1,30 +1,33 @@
 use clap::Parser;
-use futures::future::join_all;
 use google_cloud_pubsub::client::Client;
 use google_cloud_pubsub::model::PubsubMessage;
-use std::sync::Arc;
 use tokio::{
     runtime::Builder,
-    sync::mpsc::{self, Receiver, Sender},
+    sync::Semaphore,
     task::JoinSet,
     time::{Instant},
 };
+use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, AtomicBool, Ordering};
+use std::time::Duration;
 
 #[derive(Parser, Debug)]
 #[clap(name = "pubsub-benchmark", version)]
 struct Args {
-    #[clap(long, help = "Project ID")]
+    #[clap(long = "project_id", help = "Project ID")]
     project_id: String,
-    #[clap(long, help = "Topic ID")]
+    #[clap(long = "topic_id", help = "Topic ID")]
     topic_id: String,
-    #[clap(long, help = "Message size in bytes")]
-    payload_size: usize,
-    #[clap(long, help = "Number of publisher threads")]
-    publisher_thread_count: usize,
-    #[clap(long, help = "Maximum runtime for the benchmark")]
+    #[clap(long = "message-size", help = "Message size in bytes")]
+    message_size: usize,
+    #[clap(long = "maximum-runtime", help = "Maximum runtime for the benchmark")]
     maximum_runtime: humantime::Duration,
-    #[clap(long, help = "Iteration duration for reporting throughput")]
+    #[clap(long = "iteration-duration", help = "Iteration duration for reporting throughput", default_value = "5s")]
     iteration_duration: humantime::Duration,
+    #[clap(long = "max-messages", help = "Maximum number of messages to have outstanding", default_value = "100000")]
+    max_outstanding_messages: usize,
+    #[clap(long = "publisher-target-messages-per-second", help = "Target messages per second (0 for unlimited)", default_value = "0")]
+    target_messages_per_second: u64,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -32,7 +35,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     let runtime = Builder::new_multi_thread()
-        .worker_threads(args.publisher_thread_count + 2) // +2 for main and metrics
         .enable_all()
         .build()?;
 
@@ -48,110 +50,150 @@ async fn run_benchmark(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
     let client = Client::builder().build().await?;
     let topic_name = format!("projects/{}/topics/{}", args.project_id, args.topic_id);
-    let publisher = Arc::new(client.publisher(topic_name).build());
+    
+    let publisher = client.publisher(topic_name)
+        .set_message_count_threshold(1000)
+        .set_byte_threshold(10 * 1024 * 1024)
+        .set_delay_threshold(Duration::from_secs(60))
+        .build();
 
-    let (tx_published, mut rx_published): (Sender<usize>, Receiver<usize>) = mpsc::channel(100_000);
-    let (tx_acknowledged, mut rx_acknowledged): (Sender<usize>, Receiver<usize>) = mpsc::channel(100_000);
+    let pub_count = Arc::new(AtomicU64::new(0));
+    let ack_count = Arc::new(AtomicU64::new(0));
+    let err_count = Arc::new(AtomicU64::new(0));
+    let semaphore = Arc::new(Semaphore::new(args.max_outstanding_messages));
+    let cancelled = Arc::new(AtomicBool::new(false));
 
     let mut workers = JoinSet::new();
-    for i in 0..args.publisher_thread_count {
-        let p = Arc::clone(&publisher);
-        let tx_pub = tx_published.clone();
-        let tx_ack = tx_acknowledged.clone();
-        let payload = vec![0u8; args.payload_size];
-        workers.spawn(async move {
-            log::info!("Publisher worker {} started", i);
-            let mut handles = Vec::new();
-            loop {
-                let msg = PubsubMessage::new().set_data(payload.clone());
-                
-                // The publish call returns a future (handle).
-                handles.push(p.publish(msg));
-                if tx_pub.send(1).await.is_err() {
-                    // Main thread has dropped the receiver, time to shut down.
-                    break;
-                }
-                
-                // Once we have a decent batch of futures, await them all.
-                if handles.len() >= 1000 {
-                    let results = join_all(handles.drain(..)).await;
-                    let ack_count = results.into_iter().filter(|r| r.is_ok()).count();
-                    if tx_ack.send(ack_count).await.is_err() {
-                        break;
+    
+    let p = publisher.clone();
+    let pub_c = Arc::clone(&pub_count);
+    let ack_c = Arc::clone(&ack_count);
+    let err_c = Arc::clone(&err_count);
+    let sem = Arc::clone(&semaphore);
+    let is_cancelled = Arc::clone(&cancelled);
+    let payload = bytes::Bytes::from(vec![0u8; args.message_size]);
+    let target_qps = args.target_messages_per_second;
+
+    workers.spawn(async move {
+        log::info!("Publisher loop started");
+        let pacing_count = 8192;
+        let mut iteration_count = 0u64;
+        let pacing_period = if target_qps > 0 {
+            Some(Duration::from_micros(1_000_000 * pacing_count / target_qps))
+        } else {
+            None
+        };
+        let mut pacing_time = Instant::now();
+
+        loop {
+            if is_cancelled.load(Ordering::Relaxed) {
+                break;
+            }
+
+            let permit = match sem.clone().acquire_owned().await {
+                Ok(p) => p,
+                Err(_) => break,
+            };
+
+            let msg = PubsubMessage::new().set_data(payload.clone());
+            let handle = p.publish(msg);
+            pub_c.fetch_add(1, Ordering::Relaxed);
+
+            let ack_c = Arc::clone(&ack_c);
+            let err_c = Arc::clone(&err_c);
+            tokio::spawn(async move {
+                let _permit = permit;
+                match handle.await {
+                    Ok(_) => {
+                        ack_c.fetch_add(1, Ordering::Relaxed);
+                    }
+                    Err(e) => {
+                        err_c.fetch_add(1, Ordering::Relaxed);
+                        log::error!("Publish error: {:?}", e);
                     }
                 }
+            });
+
+            iteration_count += 1;
+            if let Some(period) = pacing_period {
+                if iteration_count % pacing_count == 0 {
+                    let now = Instant::now();
+                    if now < pacing_time + period {
+                        tokio::time::sleep(pacing_time + period - now).await;
+                    }
+                    pacing_time = Instant::now();
+                }
             }
-            // Await any remaining handles before exiting.
-            if !handles.is_empty() {
-                let results = join_all(handles.drain(..)).await;
-                let ack_count = results.into_iter().filter(|r| r.is_ok()).count();
-                tx_ack.send(ack_count).await.unwrap_or_default();
-            }
-            log::info!("Publisher worker {} finished", i);
-        });
-    }
+        }
+        log::info!("Publisher loop finished");
+    });
 
     let start_time = Instant::now();
     let mut last_report_time = start_time;
-    let mut total_published = 0;
-    let mut total_acknowledged = 0;
-    let mut interval_published = 0;
-    let mut interval_acknowledged = 0;
+    let mut last_pub = 0;
+    let mut last_ack = 0;
+    let mut last_err = 0;
 
-    println!("Time(s),Publish(msg/s),Ack(msg/s)");
+    println!("Time(s),Publish(msg/s),Ack(msg/s),Error(msg/s)");
 
-    let main_loop = async {
-        loop {
-            tokio::select! {
-                Some(p_count) = rx_published.recv() => {
-                    interval_published += p_count;
-                    total_published += p_count;
-                },
-                Some(a_count) = rx_acknowledged.recv() => {
-                    interval_acknowledged += a_count;
-                    total_acknowledged += a_count;
-                },
-                else => break,
-            }
+    let iteration_duration = Duration::from(args.iteration_duration);
+    let maximum_runtime = Duration::from(args.maximum_runtime);
 
-            let now = Instant::now();
-            if now - last_report_time >= std::time::Duration::from(args.iteration_duration) {
-                let elapsed = now - last_report_time;
-                let publish_throughput = interval_published as f64 / elapsed.as_secs_f64();
-                let ack_throughput = interval_acknowledged as f64 / elapsed.as_secs_f64();
+    loop {
+        tokio::select! {
+            _ = tokio::time::sleep(iteration_duration) => {
+                let now = Instant::now();
+                let elapsed = now.duration_since(start_time);
+                let interval_elapsed = now.duration_since(last_report_time).as_secs_f64();
+                
+                let current_pub = pub_count.load(Ordering::Relaxed);
+                let current_ack = ack_count.load(Ordering::Relaxed);
+                let current_err = err_count.load(Ordering::Relaxed);
+
+                let publish_throughput = (current_pub - last_pub) as f64 / interval_elapsed;
+                let ack_throughput = (current_ack - last_ack) as f64 / interval_elapsed;
+                let err_throughput = (current_err - last_err) as f64 / interval_elapsed;
+
                 println!(
-                    "{},{},{}",
-                    now.duration_since(start_time).as_secs_f64(),
+                    "{:.1}, {:.2}, {:.2}, {:.2}",
+                    elapsed.as_secs_f64(),
                     publish_throughput,
-                    ack_throughput
+                    ack_throughput,
+                    err_throughput
                 );
-                interval_published = 0;
-                interval_acknowledged = 0;
+
+                last_pub = current_pub;
+                last_ack = current_ack;
+                last_err = current_err;
                 last_report_time = now;
+
+                if elapsed >= maximum_runtime {
+                    println!("Maximum runtime reached. Shutting down.");
+                    break;
+                }
+            },
+            _ = tokio::signal::ctrl_c() => {
+                println!("Ctrl-C received. Shutting down.");
+                break;
             }
-        }
-    };
-    
-    tokio::select! {
-        _ = main_loop => {},
-        _ = tokio::time::sleep(args.maximum_runtime.into()) => {
-            println!("Maximum runtime reached. Shutting down.");
         }
     }
 
-    // To shut down, we drop the senders and the publisher.
-    // Dropping the publisher will close the worker channel, causing the publisher's background
-    // task to exit. Dropping our metric senders will cause the worker loops to exit.
-    drop(tx_published);
-    drop(tx_acknowledged);
+    cancelled.store(true, Ordering::Relaxed);
+    println!("Waiting for workers to finish...");
+    while workers.join_next().await.is_some() {}
+    
+    println!("Waiting for all messages to be acknowledged...");
+    // We need to drop the publisher so any buffered messages are flushed/sent.
     drop(publisher);
     
-    // Wait for all worker tasks to complete.
-    while workers.join_next().await.is_some() {}
-
+    // Acquire the whole semaphore to ensure all background result tasks are done.
+    let _ = semaphore.acquire_many(args.max_outstanding_messages as u32).await;
+    
     println!("Benchmark finished.");
-    println!("Total published messages: {}", total_published);
-    println!("Total acknowledged messages: {}", total_acknowledged);
+    println!("Total published messages: {}", pub_count.load(Ordering::Relaxed));
+    println!("Total acknowledged messages: {}", ack_count.load(Ordering::Relaxed));
+    println!("Total error messages: {}", err_count.load(Ordering::Relaxed));
 
     Ok(())
 }
