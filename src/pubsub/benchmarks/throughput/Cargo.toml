@@ -13,11 +13,13 @@ categories.workspace = true
 workspace = true
 
 [dependencies]
-anyhow              = { workspace = true }
+anyhow.workspace              = true
+bytes.workspace               = true
 clap                = { workspace = true, features = ["derive", "env", "std"] }
-google-cloud-pubsub = { workspace = true }
-futures             = { workspace = true }
-rand                = { workspace = true }
+google-cloud-pubsub = {workspace = true, features = ["default-rustls-provider"]}
+futures.workspace             = true
+humantime.workspace           = true
+rand.workspace                = true
 tokio               = { workspace = true, features = ["full"] }
-tracing             = { workspace = true }
+tracing.workspace             = true
 tracing-subscriber  = { workspace = true, features = ["fmt", "std"] }

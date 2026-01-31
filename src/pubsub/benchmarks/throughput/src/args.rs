@@ -1,11 +1,25 @@
-use clap::Parser;
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-/// A throughput vs. CPU benchmark for the Cloud Pub/Sub C++ client library.
+use clap::Parser;
+use humantime::parse_duration;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Config {
     #[arg(long, default_value = "", env = "GOOGLE_CLOUD_PROJECT")]
-    pub project_id: String,
+    pub project: String,
 
     #[arg(long, default_value = "")]
     pub topic_id: String,
@@ -13,17 +27,14 @@ pub struct Config {
     #[arg(long, default_value_t = 1024)]
     pub payload_size: i64,
 
-    #[arg(long, default_value_t = 5)]
-    pub iteration_duration: u64,
-
-    #[arg(long, default_value_t = 1)]
-    pub publisher_thread_count: usize,
+    #[arg(long, value_parser = parse_duration, default_value = "5s")]
+    pub iteration_duration: std::time::Duration,
 
     #[arg(long, default_value_t = 1000)]
-    pub publisher_max_batch_size: usize,
+    pub publisher_max_batch_size: u32,
 
     #[arg(long, default_value_t = 10 * 1024 * 1024)] // 10 MB
-    pub publisher_max_batch_bytes: usize,
+    pub publisher_max_batch_bytes: u32,
 
     #[arg(long, default_value_t = 10)]
     pub minimum_samples: i64,
@@ -31,29 +42,14 @@ pub struct Config {
     #[arg(long, default_value_t = i64::MAX)]
     pub maximum_samples: i64,
 
-    #[arg(long, default_value_t = 5)]
-    pub minimum_runtime: u64,
+    #[arg(long, value_parser = parse_duration, default_value = "5s")]
+    pub minimum_runtime: std::time::Duration,
 
-    #[arg(long, default_value_t = 300)]
-    pub maximum_runtime: u64,
+    #[arg(long, value_parser = parse_duration, default_value = "5m")]
+    pub maximum_runtime: std::time::Duration,
 
-    #[arg(long, default_value = "")]
-    pub endpoint: String,
-
-    #[arg(long, default_value_t = 0)]
-    pub publisher_io_threads: usize,
-
-    #[arg(long, default_value_t = 0)]
+    #[arg(long, default_value_t = 1)]
     pub publisher_io_channels: usize,
-
-    #[arg(long, default_value_t = 112 * 1024 * 1024)] // 112 MiB
-    pub publisher_pending_lwm: usize,
-
-    #[arg(long, default_value_t = 128 * 1024 * 1024)] // 128 MiB
-    pub publisher_pending_hwm: usize,
-
-    #[arg(long, default_value_t = 1200 * 2000)]
-    pub publisher_target_messages_per_second: i64,
 }
 
 pub fn parse_args() -> Config {
