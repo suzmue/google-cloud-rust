@@ -15,25 +15,27 @@ Then run it:
 ```bash
 ./benchmark \
     -project <YOUR_PROJECT_ID> \
-    -topic_id <YOUR_TOPIC_ID> \
-    -payload_size 1024 \
-    -iteration_duration 5s \
-    -maximum_runtime 60s
+    -topic-id <YOUR_TOPIC_ID> \
+    -payload-size 1024 \
+    -iteration-duration 5s \
+    -maximum-runtime 60s \
+    -max-outstanding-messages 100000
 ```
 
 ### Arguments
 
 *   `-project`: Google Cloud Project ID.
-*   `-topic_id`: Pub/Sub Topic ID.
-*   `-payload_size`: Size of the message payload in bytes (default: 1024).
-*   `-iteration_duration`: Duration of each reporting interval (default: 5s).
-*   `-publisher_max_batch_size`: Maximum number of messages in a batch (default: 1000).
-*   `-publisher_max_batch_bytes`: Maximum size of a batch in bytes (default: 10MB).
-*   `-minimum_samples`: Minimum number of samples to collect (default: 10).
-*   `-maximum_samples`: Maximum number of samples to collect (default: MaxInt64).
-*   `-minimum_runtime`: Minimum duration to run the benchmark (default: 5s).
-*   `-maximum_runtime`: Maximum duration to run the benchmark (default: 5m).
-*   `-publisher_io_channels`: Number of gRPC channels to use (default: 1).
+*   `-topic-id`: Pub/Sub Topic ID.
+*   `-payload-size`: Size of the message payload in bytes (default: 1024).
+*   `-iteration-duration`: Duration of each reporting interval (default: 5s).
+*   `-publisher-max-batch-size`: Maximum number of messages in a batch (default: 1000).
+*   `-publisher-max-batch-bytes`: Maximum size of a batch in bytes (default: 10MB).
+*   `-minimum-samples`: Minimum number of samples to collect (default: 10).
+*   `-maximum-samples`: Maximum number of samples to collect (default: MaxInt64).
+*   `-minimum-runtime`: Minimum duration to run the benchmark (default: 5s).
+*   `-maximum-runtime`: Maximum duration to run the benchmark (default: 5m).
+*   `-publisher-io-channels`: Number of gRPC channels to use (default: 1).
+*   `-max-outstanding-messages`: Maximum number of unacknowledged messages (default: 100000).
 
 ## Output Format
 

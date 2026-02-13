@@ -114,20 +114,18 @@ async fn run_publisher(config: Arc<args::Config>, topic_name: String) {
     let publisher = create_publisher(config.clone(), topic_name).await;
     let payload_size = config.payload_size;
     let data = bytes::Bytes::from(vec![0u8; payload_size as usize]);
+    let semaphore = Arc::new(tokio::sync::Semaphore::new(config.max_outstanding_messages));
 
     // Start a background task to publish messages.
-    tokio::task::spawn_blocking(move || {
+    tokio::task::spawn(async move {
         loop {
+            let permit = semaphore.clone().acquire_owned().await.unwrap();
             let p = publisher.publish(Message::new().set_data(data.clone()));
-            // let p = publisher.publish(Message::new().set_data(data.clone()).set_attributes([
-            //     ("sendTime", "123123423"),
-            //     ("clientId", "HELLO"),
-            //     ("sequenceNumber", "SEQUENCE"),
-            // ]));
             SEND_COUNT.fetch_add(1, Ordering::Relaxed);
             SEND_BYTES.fetch_add(payload_size, Ordering::Relaxed);
 
             tokio::spawn(async move {
+                let _permit = permit;
                 match p.await {
                     Ok(_) => {
                         ACK_COUNT.fetch_add(1, Ordering::Relaxed);
