@@ -40,7 +40,7 @@ cargo run --release -- \
 The benchmark outputs data in CSV format with the following columns:
 
 *   `timestamp`: The Unix timestamp in milliseconds.
-*   `elapsed(us)`: The elapsed time for the operation in microseconds.
+*   `elapsed(s)`: The elapsed time for the operation in seconds.
 *   `op`: The operation being measured (`Pub` for publishing, `Ack` for acknowledged messages).
 *   `iteration`: The current iteration number.
 *   `count`: The number of messages processed in the operation.
