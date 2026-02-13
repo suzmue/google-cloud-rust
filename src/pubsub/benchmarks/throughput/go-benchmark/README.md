@@ -30,8 +30,6 @@ Then run it:
 *   `-iteration-duration`: Duration of each reporting interval (default: 5s).
 *   `-publisher-max-batch-size`: Maximum number of messages in a batch (default: 1000).
 *   `-publisher-max-batch-bytes`: Maximum size of a batch in bytes (default: 10MB).
-*   `-minimum-samples`: Minimum number of samples to collect (default: 10).
-*   `-maximum-samples`: Maximum number of samples to collect (default: MaxInt64).
 *   `-minimum-runtime`: Minimum duration to run the benchmark (default: 5s).
 *   `-maximum-runtime`: Maximum duration to run the benchmark (default: 5m).
 *   `-publisher-io-channels`: Number of gRPC channels to use (default: 1).

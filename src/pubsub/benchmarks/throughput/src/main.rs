@@ -61,18 +61,12 @@ async fn main() -> Result<(), anyhow::Error> {
     Ok(())
 }
 
-fn done(config: &args::Config, samples: i64, start: Instant) -> bool {
+fn done(config: &args::Config, start: Instant) -> bool {
     let now = Instant::now();
     if now >= start + config.maximum_runtime {
         return true;
     }
-    if samples >= config.maximum_samples {
-        return true;
-    }
-    if now < start + config.minimum_runtime {
-        return false;
-    }
-    samples >= config.minimum_samples
+    now >= start + config.minimum_runtime
 }
 
 fn timestamp() -> u128 {
@@ -141,7 +135,7 @@ async fn run_publisher(config: Arc<args::Config>, topic_name: String) {
 
     let start = Instant::now();
     for i in 0.. {
-        if done(&config, i, start) {
+        if done(&config,start) {
             break;
         }
         let timer = Instant::now();
