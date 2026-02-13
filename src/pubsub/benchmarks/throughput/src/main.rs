@@ -50,7 +50,7 @@ async fn main() -> Result<(), anyhow::Error> {
         topic_owned = false;
     }
 
-    println!("timestamp,elapsed(us),op,iteration,count,msgs/s,bytes,MiB/s");
+    println!("timestamp,elapsed(s),op,iteration,count,msgs/s,bytes,MB/s");
     let topic_name = format!("projects/{}/topics/{}", config.project, topic_id);
     run_publisher(config.clone(), topic_name.clone()).await;
 
