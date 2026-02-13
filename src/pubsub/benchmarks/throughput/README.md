@@ -18,7 +18,8 @@ cargo run --release -- \
     --maximum_samples <samples> \
     --minimum_runtime <duration> \
     --maximum_runtime <duration> \
-    --publisher_io_channels <count>
+    --publisher_io_channels <count> \
+    --max_outstanding_messages <count>
 ```
 
 ### Arguments
@@ -34,6 +35,7 @@ cargo run --release -- \
 *   `--minimum_runtime`: The minimum duration to run the benchmark (e.g., `5s`, `1m`; default: `5s`).
 *   `--maximum_runtime`: The maximum duration to run the benchmark (e.g., `5m`, `1h`; default: `5m`).
 *   `--publisher_io_channels`: The number of gRPC channels to use for publishing (default: `1`).
+*   `--max_outstanding_messages`: The maximum number of unacknowledged messages (default: `100000`).
 
 ## Output Format
 

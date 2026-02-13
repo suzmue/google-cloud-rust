@@ -50,6 +50,9 @@ pub struct Config {
 
     #[arg(long, default_value_t = 1)]
     pub publisher_io_channels: usize,
+
+    #[arg(long, default_value_t = 100000)]
+    pub max_outstanding_messages: usize,
 }
 
 pub fn parse_args() -> Config {

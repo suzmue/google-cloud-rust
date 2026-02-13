@@ -14,21 +14,23 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub/v2"
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/api/option"
 )
 
 type Config struct {
-	Project                string
+	Project                 string
 	TopicID                 string
-	PayloadSize            int64
-	IterationDuration      time.Duration
-	PublisherMaxBatchSize  int
-	PublisherMaxBatchBytes int
-	MinimumSamples         int64
-	MaximumSamples         int64
-	MinimumRuntime         time.Duration
-	MaximumRuntime         time.Duration
-	PublisherIOChannels    int
+	PayloadSize             int64
+	IterationDuration       time.Duration
+	PublisherMaxBatchSize   int
+	PublisherMaxBatchBytes  int
+	MinimumSamples          int64
+	MaximumSamples          int64
+	MinimumRuntime          time.Duration
+	MaximumRuntime          time.Duration
+	PublisherIOChannels     int
+	MaxOutstandingMessages int64
 }
 
 var (
@@ -52,6 +54,7 @@ func main() {
 	flag.DurationVar(&config.MinimumRuntime, "minimum-runtime", 5*time.Second, "Minimum runtime")
 	flag.DurationVar(&config.MaximumRuntime, "maximum-runtime", 5*time.Minute, "Maximum runtime")
 	flag.IntVar(&config.PublisherIOChannels, "publisher-io-channels", 1, "Number of gRPC channels")
+	flag.Int64Var(&config.MaxOutstandingMessages, "max-outstanding-messages", 100000, "Maximum number of outstanding messages")
 	flag.Parse()
 
 	if config.Project == "" {
@@ -90,6 +93,7 @@ func main() {
 	payload := make([]byte, config.PayloadSize)
 
 	var wg sync.WaitGroup
+	sem := semaphore.NewWeighted(config.MaxOutstandingMessages)
 
 	// Publisher loop
 	go func() {
@@ -98,6 +102,9 @@ func main() {
 			case <-ctx.Done():
 				return
 			default:
+				if err := sem.Acquire(ctx, 1); err != nil {
+					return
+				}
 				msg := &pubsub.Message{
 					Data: payload,
 				}
@@ -108,6 +115,7 @@ func main() {
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
+					defer sem.Release(1)
 					_, err := res.Get(ctx)
 					if err != nil {
 						if err != context.Canceled {
