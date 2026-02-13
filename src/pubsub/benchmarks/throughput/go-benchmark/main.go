@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"os/signal"
 	"sync"
@@ -25,8 +24,6 @@ type Config struct {
 	IterationDuration       time.Duration
 	PublisherMaxBatchSize   int
 	PublisherMaxBatchBytes  int
-	MinimumSamples          int64
-	MaximumSamples          int64
 	MinimumRuntime          time.Duration
 	MaximumRuntime          time.Duration
 	PublisherIOChannels     int
@@ -49,8 +46,6 @@ func main() {
 	flag.DurationVar(&config.IterationDuration, "iteration-duration", 5*time.Second, "Iteration duration")
 	flag.IntVar(&config.PublisherMaxBatchSize, "publisher-max-batch-size", 1000, "Max batch size in messages")
 	flag.IntVar(&config.PublisherMaxBatchBytes, "publisher-max-batch-bytes", 10*1024*1024, "Max batch size in bytes")
-	flag.Int64Var(&config.MinimumSamples, "minimum-samples", 10, "Minimum number of samples")
-	flag.Int64Var(&config.MaximumSamples, "maximum-samples", math.MaxInt64, "Maximum number of samples")
 	flag.DurationVar(&config.MinimumRuntime, "minimum-runtime", 5*time.Second, "Minimum runtime")
 	flag.DurationVar(&config.MaximumRuntime, "maximum-runtime", 5*time.Minute, "Maximum runtime")
 	flag.IntVar(&config.PublisherIOChannels, "publisher-io-channels", 1, "Number of gRPC channels")
@@ -169,13 +164,7 @@ func done(config *Config, samples int64, start time.Time) bool {
 	if now.After(start.Add(config.MaximumRuntime)) {
 		return true
 	}
-	if samples >= config.MaximumSamples {
-		return true
-	}
-	if now.Before(start.Add(config.MinimumRuntime)) {
-		return false
-	}
-	return samples >= config.MinimumSamples
+	return now.After(start.Add(config.MinimumRuntime))
 }
 
 func printResult(operation string, iteration int64, count int64, bytes int64, elapsed time.Duration) {
