@@ -119,6 +119,11 @@ async fn run_publisher(config: Arc<args::Config>, topic_name: String) {
     tokio::task::spawn_blocking(move || {
         loop {
             let p = publisher.publish(Message::new().set_data(data.clone()));
+            // let p = publisher.publish(Message::new().set_data(data.clone()).set_attributes([
+            //     ("sendTime", "123123423"),
+            //     ("clientId", "HELLO"),
+            //     ("sequenceNumber", "SEQUENCE"),
+            // ]));
             SEND_COUNT.fetch_add(1, Ordering::Relaxed);
             SEND_BYTES.fetch_add(payload_size, Ordering::Relaxed);
 
