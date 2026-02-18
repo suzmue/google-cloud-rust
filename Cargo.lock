@@ -6819,6 +6819,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "pubsub-throughput-subscriber"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "clap",
+ "futures",
+ "google-cloud-pubsub",
+ "humantime",
+ "rand 0.10.0",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "quinn"
 version = "0.11.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
