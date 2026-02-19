@@ -37,7 +37,14 @@ async fn main() -> Result<(), anyhow::Error> {
         "projects/{}/subscriptions/{}",
         config.project, config.subscription_id
     );
-    run_subscriber(config.clone(), &subscription_name).await;
+
+    let subscriber = Subscriber::builder()
+        .with_grpc_subchannel_count(config.subscriber_io_channels)
+        .build()
+        .await
+        .unwrap();
+
+    run_subscriber(config.clone(), subscriber, &subscription_name).await;
 
     Ok(())
 }
@@ -81,16 +88,14 @@ fn print_result(
     );
 }
 
-async fn subscriber_task(config: Arc<args::Config>, subscription_name: String) {
-    let subscriber = Subscriber::builder()
-        .with_grpc_subchannel_count(config.subscriber_io_channels)
-        .build()
-        .await
-        .unwrap();
-
+async fn subscriber_task(
+    subscriber: Subscriber,
+    subscription_name: String,
+    max_outstanding_messages: i64,
+) {
     let mut stream = subscriber
         .streaming_pull(subscription_name)
-        .set_max_outstanding_messages(config.max_outstanding_messages)
+        .set_max_outstanding_messages(max_outstanding_messages)
         .start();
     while let Some(result) = stream.next().await {
         match result {
@@ -99,19 +104,23 @@ async fn subscriber_task(config: Arc<args::Config>, subscription_name: String) {
                 RECV_BYTES.fetch_add(m.data.len() as i64, Ordering::Relaxed);
                 h.ack();
             }
-            Err(_) => {
+            Err(e) => {
+                eprintln!("Error: {}", e);
                 ERROR_COUNT.fetch_add(1, Ordering::Relaxed);
             }
         }
     }
 }
 
-async fn run_subscriber(config: Arc<args::Config>, subscription_name: &str) {
+async fn run_subscriber(config: Arc<args::Config>, subscriber: Subscriber, subscription_name: &str) {
     let mut tasks = Vec::new();
+    let max_outstanding_per_task =
+        config.max_outstanding_messages / (config.subscriber_thread_count as i64);
     for _ in 0..config.subscriber_thread_count {
         tasks.push(tokio::spawn(subscriber_task(
-            config.clone(),
+            subscriber.clone(),
             subscription_name.to_string(),
+            max_outstanding_per_task,
         )));
     }
 
