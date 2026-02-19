@@ -125,7 +125,8 @@ async fn run_publisher(config: Arc<args::Config>, topic_name: String) {
                         ACK_COUNT.fetch_add(1, Ordering::Relaxed);
                         ACK_BYTES.fetch_add(payload_size, Ordering::Relaxed);
                     }
-                    Err(_) => {
+                    Err(e) => {
+                        eprintln!("Error: {}", e);
                         ERROR_COUNT.fetch_add(1, Ordering::Relaxed);
                     }
                 }
