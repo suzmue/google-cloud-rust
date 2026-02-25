@@ -63,10 +63,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
 fn done(config: &args::Config, start: Instant) -> bool {
     let now = Instant::now();
-    if now >= start + config.maximum_runtime {
-        return true;
-    }
-    now >= start + config.minimum_runtime
+    now >= start + config.maximum_runtime
 }
 
 fn timestamp() -> u128 {

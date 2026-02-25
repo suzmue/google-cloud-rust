@@ -36,9 +36,6 @@ pub struct Config {
     #[arg(long, default_value_t = 10 * 1024 * 1024)] // 10 MB
     pub publisher_max_batch_bytes: u32,
 
-    #[arg(long, value_parser = parse_duration, default_value = "5s")]
-    pub minimum_runtime: std::time::Duration,
-
     #[arg(long, value_parser = parse_duration, default_value = "5m")]
     pub maximum_runtime: std::time::Duration,
 
