@@ -94,10 +94,10 @@ async fn subscriber_task(
     max_outstanding_messages: i64,
 ) {
     let mut stream = subscriber
-        .streaming_pull(subscription_name)
+        .stream(subscription_name)
         .set_max_outstanding_messages(max_outstanding_messages)
         .set_max_outstanding_bytes(1_000_000_000) // 1 GB
-        .start();
+        .build();
     while let Some(result) = stream.next().await {
         match result {
             Ok((m, h)) => {
