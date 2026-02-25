@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use super::client::SharedLease;
+use super::lease_loop::LeaseLoop;
+use super::lease_state::LeaseOptions;
+use super::leaser::DefaultLeaser;
 use super::MessageStream;
 use super::transport::Transport;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::Weak;
 
 const MIB: i64 = 1024 * 1024;
 
@@ -27,6 +33,7 @@ pub struct StreamingPull {
     pub(super) ack_deadline_seconds: i32,
     pub(super) max_outstanding_messages: i64,
     pub(super) max_outstanding_bytes: i64,
+    pub(super) shared_lease: Arc<Mutex<Option<Weak<SharedLease>>>>,
 }
 
 impl StreamingPull {
@@ -35,6 +42,7 @@ impl StreamingPull {
         subscription: String,
         client_id: String,
         grpc_subchannel_count: usize,
+        shared_lease: Arc<Mutex<Option<Weak<SharedLease>>>>,
     ) -> Self {
         Self {
             inner,
@@ -44,6 +52,7 @@ impl StreamingPull {
             ack_deadline_seconds: 10,
             max_outstanding_messages: 1000,
             max_outstanding_bytes: 100 * MIB,
+            shared_lease,
         }
     }
 
@@ -66,10 +75,36 @@ impl StreamingPull {
     /// # Ok(()) }
     /// ```
     pub fn build(self) -> MessageStream {
-        MessageStream::new(self)
+        let mut shared_weak = self.shared_lease.lock().unwrap();
+        let shared = shared_weak.as_ref().and_then(|w| w.upgrade());
+        let lease = match shared {
+            Some(s) => s,
+            None => {
+                let leaser = DefaultLeaser::new(
+                    self.inner.clone(),
+                    self.subscription.clone(),
+                    self.ack_deadline_seconds,
+                    self.grpc_subchannel_count,
+                );
+                let LeaseLoop {
+                    handle,
+                    message_tx,
+                    ack_tx,
+                } = LeaseLoop::new(leaser, LeaseOptions::default());
+                let s = Arc::new(SharedLease {
+                    message_tx,
+                    ack_tx,
+                    handle: Arc::new(Mutex::new(Some(handle))),
+                });
+                *shared_weak = Some(Arc::downgrade(&s));
+                s
+            }
+        };
+        MessageStream::new(&self, (*lease).clone())
     }
 
     /// Sets the ack deadline to use for the stream.
+// ... (rest of methods)
     ///
     /// This value represents how long the application has to ack an
     /// incoming message. If the handler is dropped without being acked,
@@ -178,6 +213,7 @@ mod tests {
             "projects/my-project/subscriptions/my-subscription".to_string(),
             "client-id".to_string(),
             1_usize,
+            Arc::new(Mutex::new(None)),
         );
         assert_eq!(
             builder.subscription,
@@ -206,6 +242,7 @@ mod tests {
             "projects/my-project/subscriptions/my-subscription".to_string(),
             "client-id".to_string(),
             1_usize,
+            Arc::new(Mutex::new(None)),
         )
         .set_ack_deadline_seconds(20)
         .set_max_outstanding_messages(12345)

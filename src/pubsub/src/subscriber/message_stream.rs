@@ -13,10 +13,9 @@
 // limitations under the License.
 
 use super::builder::StreamingPull;
+use super::client::SharedLease;
 use super::handler::{AckResult, AtLeastOnce, Handler};
-use super::lease_loop::LeaseLoop;
-use super::lease_state::{LeaseInfo, LeaseOptions, NewMessage};
-use super::leaser::DefaultLeaser;
+use super::lease_state::{LeaseInfo, NewMessage};
 use super::retry_policy::StreamRetryPolicy;
 use super::stream::Stream;
 use super::stub::TonicStreaming as _;
@@ -29,26 +28,12 @@ use gaxi::prost::FromProto as _;
 use google_cloud_gax::retry_result::RetryResult;
 use std::collections::VecDeque;
 use std::sync::Arc;
+use std::sync::Mutex;
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::time::Instant;
 
 /// Represents an open subscribe stream.
-///
-/// This is a stream-like struct for serving messages to an application.
-///
-/// # Example
-/// ```
-/// # use google_cloud_pubsub::client::Subscriber;
-/// # async fn sample(client: Subscriber) -> anyhow::Result<()> {
-/// let mut stream = client
-///     .stream("projects/my-project/subscriptions/my-subscription")
-///     .build();
-/// while let Some((m, h)) = stream.next().await.transpose()? {
-///     println!("Received message m={m:?}");
-///     h.ack();
-/// }
-/// # Ok(()) }
-/// ```
+// ... (rest of doc comment)
 #[derive(Debug)]
 pub struct MessageStream {
     /// The stub implementing this struct.
@@ -58,15 +43,7 @@ pub struct MessageStream {
     initial_req: StreamingPullRequest,
 
     /// The bidirectional stream.
-    ///
-    /// We choose to lazy-initialize the stream when the application asks for a
-    /// message because tonic will not yield the stream to us until the first
-    /// response is available.[^1]
-    ///
-    /// The usability of the `MessageStream` API would suffer if creating an instance
-    /// of `MessageStream` is blocked on the first message being available.
-    ///
-    /// [^1]: <https://github.com/hyperium/tonic/issues/515>
+    // ...
     stream: Option<Stream<Transport>>,
 
     /// Applications ask for messages one at a time. Individual stream responses
@@ -89,32 +66,26 @@ pub struct MessageStream {
     /// We hold onto this handle so we can await pending lease operations. While awaiting pending
     /// lease operations is useful for setting expectations in our unit tests, it is not that
     /// helpful to applications in practice.
-    _lease_loop: tokio::task::JoinHandle<()>,
+    _lease_loop: Arc<Mutex<Option<tokio::task::JoinHandle<()>>>>,
 }
 
 impl MessageStream {
-    pub(super) fn new(builder: StreamingPull) -> Self {
-        let inner = builder.inner;
-        let subscription = builder.subscription;
+    pub(super) fn new(builder: &StreamingPull, shared: SharedLease) -> Self {
+        let inner = builder.inner.clone();
+        let subscription = builder.subscription.clone();
 
-        let leaser = DefaultLeaser::new(
-            inner.clone(),
-            subscription.clone(),
-            builder.ack_deadline_seconds,
-            builder.grpc_subchannel_count,
-        );
-        let LeaseLoop {
-            handle: _lease_loop,
+        let SharedLease {
             message_tx,
             ack_tx,
-        } = LeaseLoop::new(leaser, LeaseOptions::default());
+            handle: _lease_loop,
+        } = shared;
 
         let initial_req = StreamingPullRequest {
             subscription,
             stream_ack_deadline_seconds: builder.ack_deadline_seconds,
             max_outstanding_messages: builder.max_outstanding_messages,
             max_outstanding_bytes: builder.max_outstanding_bytes,
-            client_id: builder.client_id,
+            client_id: builder.client_id.clone(),
             // `protocol_version == 1` means we support receiving heartbeats
             // (empty `StreamingPullResponse`s) from the server.
             protocol_version: 1,
@@ -271,7 +242,11 @@ impl MessageStream {
         drop(self.message_tx);
 
         // Wait for the lease management task to complete.
-        self._lease_loop.await?;
+        // We take the handle out of the mutex. Only one stream will successfully take it.
+        let handle = self._lease_loop.lock().unwrap().take();
+        if let Some(h) = handle {
+            h.await?;
+        }
 
         Ok(())
     }

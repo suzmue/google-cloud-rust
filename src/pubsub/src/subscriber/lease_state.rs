@@ -162,16 +162,23 @@ where
     }
 
     /// Flush pending acks/nacks
-    pub(super) async fn flush(&mut self) {
+    pub(super) async fn flush(&mut self)
+    where L: Send + 'static {
         let to_ack = std::mem::take(&mut self.to_ack);
         let to_nack = std::mem::take(&mut self.to_nack);
 
         // TODO(#3975) - await these concurrently.
         if !to_ack.is_empty() {
-            self.leaser.ack(to_ack).await;
+            let leaser = self.leaser.clone();
+            tokio::spawn(async move {
+                leaser.ack(to_ack).await;
+            });
         }
         if !to_nack.is_empty() {
-            self.leaser.nack(to_nack).await;
+            let leaser = self.leaser.clone();
+            tokio::spawn(async move {
+                leaser.nack(to_nack).await;
+            });
         }
     }
 
