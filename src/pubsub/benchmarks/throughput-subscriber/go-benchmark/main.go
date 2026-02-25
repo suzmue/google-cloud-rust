@@ -64,6 +64,7 @@ func main() {
 	sub := client.Subscriber(fmt.Sprintf("projects/%s/subscriptions/%s", *project, *subscriptionName))
 	sub.ReceiveSettings.MaxOutstandingMessages = *maxOutstandingMessages
 	sub.ReceiveSettings.NumGoroutines = *subscriberThreadCount
+	sub.ReceiveSettings.MaxOutstandingBytes = 1_000_000_000 // 1 GB
 
 	go func() {
 		err := sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
