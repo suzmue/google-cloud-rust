@@ -94,7 +94,7 @@ async fn subscriber_task(
     max_outstanding_messages: i64,
 ) {
     let mut stream = subscriber
-        .stream(subscription_name)
+        .subscribe(subscription_name)
         .set_max_outstanding_messages(max_outstanding_messages)
         .set_max_outstanding_bytes(1_000_000_000) // 1 GB
         .build();
