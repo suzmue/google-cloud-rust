@@ -138,6 +138,7 @@ where
     /// to be reported before the entire operation completes.
     async fn confirmed_ack(&self, ack_ids: Vec<String>) {
         // TODO(#4804): implement retries
+        println!("acking {}", ack_ids.len());
         let req = AcknowledgeRequest::new()
             .set_subscription(self.subscription.clone())
             .set_ack_ids(ack_ids.clone());

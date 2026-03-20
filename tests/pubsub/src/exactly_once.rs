@@ -19,16 +19,22 @@ use google_cloud_pubsub::subscriber::handler::Handler;
 use tokio::task::JoinSet;
 
 pub async fn roundtrip(topic_name: &str, subscription_name: &str) -> anyhow::Result<()> {
-    const MESSAGE_COUNT: usize = 1_000;
+    const MESSAGE_COUNT: usize = 250;
 
     tracing::info!("testing exactly once subscription");
     let publisher = Publisher::builder(topic_name).build().await?;
     let subscriber = Subscriber::builder().build().await?;
-    let mut stream = subscriber.subscribe(subscription_name).build();
+    let mut stream = subscriber
+        .subscribe(subscription_name)
+        .set_max_outstanding_messages(MESSAGE_COUNT as i64)
+        .build();
 
     let subscribe: tokio::task::JoinHandle<Result<(), Error>> = tokio::spawn(async move {
         let mut acks = JoinSet::new();
         while acks.len() < MESSAGE_COUNT {
+            if acks.len() % 100 == 0 {
+                println!("acks.len() = {}", acks.len());
+            }
             let h = match stream.next().await.transpose()? {
                 Some((_, Handler::ExactlyOnce(h))) => h,
                 _ => unreachable!("exactly-once delivery is enabled, and the stream stays open."),

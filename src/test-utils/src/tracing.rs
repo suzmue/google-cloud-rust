@@ -19,7 +19,7 @@ use tracing_subscriber::fmt::format::FmtSpan;
 /// Enables tracing for the application.
 pub fn enable_tracing() -> ::tracing::subscriber::DefaultGuard {
     #[cfg(feature = "log-integration-tests")]
-    let max_level = tracing::Level::INFO;
+    let max_level = tracing::Level::TRACE;
     #[cfg(not(feature = "log-integration-tests"))]
     let max_level = tracing::Level::WARN;
     let builder = tracing_subscriber::fmt()

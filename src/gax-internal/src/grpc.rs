@@ -440,7 +440,9 @@ impl Client {
         } else {
             endpoint
         };
-        Ok(endpoint.origin(origin).concurrency_limit(100))
+        Ok(
+            endpoint.origin(origin).concurrency_limit(100), // .http2_max_header_list_size(8000)
+        )
     }
 
     async fn make_credentials(

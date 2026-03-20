@@ -32,7 +32,7 @@ use tokio_util::task::TaskTracker;
 // be safe to fit 2500 Ack IDs in a single RPC.
 //
 // https://docs.cloud.google.com/pubsub/quotas
-const MAX_IDS_PER_RPC: usize = 2500;
+const MAX_IDS_PER_RPC: usize = 150;
 
 // Helper function to chunk ack ids into chunks of MAX_IDS_PER_RPC.
 fn batch(ack_ids: Vec<String>) -> Vec<Vec<String>> {
@@ -61,8 +61,8 @@ pub(super) struct LeaseOptions {
 impl Default for LeaseOptions {
     fn default() -> Self {
         LeaseOptions {
-            flush_period: Duration::from_millis(100),
-            flush_start: Duration::from_millis(100),
+            flush_period: Duration::from_secs(365 * 24 * 60 * 60), // 1 year
+            flush_start: Duration::from_secs(365 * 24 * 60 * 60),  // 1 year
             extend_period: Duration::from_secs(3),
             extend_start: Duration::from_millis(500),
             max_lease: Duration::from_secs(600),
@@ -188,12 +188,16 @@ where
     pub(super) fn add(&mut self, ack_id: String, info: LeaseInfo) {
         match info {
             LeaseInfo::AtLeastOnce(i) => {
-                self.leases.add(ack_id, i);
+                self.leases.add(ack_id.clone(), i);
             }
             LeaseInfo::ExactlyOnce(i) => {
-                self.eo_leases.add(ack_id, i);
+                self.eo_leases.add(ack_id.clone(), i);
             }
         }
+        let leaser = self.leaser.clone();
+        tokio::spawn(async move {
+            leaser.nack(vec![ack_id]).await;
+        });
     }
 
     /// Process an action from the application.
