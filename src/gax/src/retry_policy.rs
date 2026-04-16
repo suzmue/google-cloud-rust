@@ -341,6 +341,7 @@ impl RetryPolicy for NeverRetry {
 }
 
 #[derive(thiserror::Error, Debug)]
+/// Error type returned when the retry policy is exhausted due to elapsed time.
 pub struct LimitedElapsedTimeError {
     maximum_duration: Duration,
     #[source]

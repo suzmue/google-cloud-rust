@@ -231,6 +231,7 @@ pub enum Code {
 }
 
 impl Code {
+    /// Returns the name of the error code.
     pub fn name(&self) -> &'static str {
         match self {
             Code::Ok => "OK",
@@ -399,26 +400,37 @@ impl From<&google_cloud_rpc::model::Status> for Status {
 #[non_exhaustive]
 #[serde(tag = "@type")]
 pub enum StatusDetails {
+    /// Detailed error information for a bad request.
     #[serde(rename = "type.googleapis.com/google.rpc.BadRequest")]
     BadRequest(google_cloud_rpc::model::BadRequest),
+    /// Debug information for the error.
     #[serde(rename = "type.googleapis.com/google.rpc.DebugInfo")]
     DebugInfo(google_cloud_rpc::model::DebugInfo),
+    /// Error information containing reason and domain.
     #[serde(rename = "type.googleapis.com/google.rpc.ErrorInfo")]
     ErrorInfo(google_cloud_rpc::model::ErrorInfo),
+    /// Links to help pages or documentation.
     #[serde(rename = "type.googleapis.com/google.rpc.Help")]
     Help(google_cloud_rpc::model::Help),
+    /// A localized error message.
     #[serde(rename = "type.googleapis.com/google.rpc.LocalizedMessage")]
     LocalizedMessage(google_cloud_rpc::model::LocalizedMessage),
+    /// Information about preconditions that failed.
     #[serde(rename = "type.googleapis.com/google.rpc.PreconditionFailure")]
     PreconditionFailure(google_cloud_rpc::model::PreconditionFailure),
+    /// Information about quota failures.
     #[serde(rename = "type.googleapis.com/google.rpc.QuotaFailure")]
     QuotaFailure(google_cloud_rpc::model::QuotaFailure),
+    /// Information about the request.
     #[serde(rename = "type.googleapis.com/google.rpc.RequestInfo")]
     RequestInfo(google_cloud_rpc::model::RequestInfo),
+    /// Information about the resource associated with the error.
     #[serde(rename = "type.googleapis.com/google.rpc.ResourceInfo")]
     ResourceInfo(google_cloud_rpc::model::ResourceInfo),
+    /// Information about retrying the request.
     #[serde(rename = "type.googleapis.com/google.rpc.RetryInfo")]
     RetryInfo(google_cloud_rpc::model::RetryInfo),
+    /// Other arbitrary error details.
     #[serde(untagged)]
     Other(wkt::Any),
 }

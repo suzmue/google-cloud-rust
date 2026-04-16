@@ -16,6 +16,7 @@ pub mod builder {
     pub use crate::generated::gapic::builder::storage_control::*;
     pub use crate::generated::gapic_control::builder::storage_control::*;
 }
+/// The messages and enums that are part of this client library.
 pub mod model {
     pub use crate::generated::gapic::model::*;
     pub use crate::generated::gapic_control::model::*;
@@ -33,4 +34,5 @@ pub use generated::stub;
 mod convert;
 mod status;
 
+#[allow(missing_docs)]
 mod generated;

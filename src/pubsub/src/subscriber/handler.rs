@@ -108,7 +108,11 @@ pub(super) enum Action {
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum Handler {
+    /// Handler for messages from a subscription configured for at-least-once delivery.
+    /// Acknowledgments are best-effort and redelivery may occur.
     AtLeastOnce(AtLeastOnce),
+    /// Handler for messages from a subscription configured for exactly-once delivery.
+    /// Provides stronger delivery guarantees, but acknowledgment may still fail.
     ExactlyOnce(ExactlyOnce),
 }
 

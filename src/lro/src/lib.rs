@@ -86,6 +86,7 @@
 //! ```
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![warn(missing_docs)]
 
 use google_cloud_gax::Result;
 use google_cloud_gax::error::Error;

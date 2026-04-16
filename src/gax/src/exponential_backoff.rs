@@ -29,15 +29,20 @@ use std::time::Duration;
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
 pub enum Error {
+    /// The scaling factor must be greater than or equal to 1.0.
     #[error("the scaling value ({0}) should be >= 1.0")]
     InvalidScalingFactor(f64),
+    /// The initial delay must be greater than zero.
     #[error("the initial delay ({0:?}) should be greater than zero")]
     InvalidInitialDelay(Duration),
+    /// The maximum delay must be greater than or equal to the initial delay.
     #[error(
         "the maximum delay ({maximum:?}) should be greater than or equal to the initial delay ({initial:?})"
     )]
     EmptyRange {
+        /// The maximum delay requested.
         maximum: Duration,
+        /// The initial delay requested.
         initial: Duration,
     },
 }

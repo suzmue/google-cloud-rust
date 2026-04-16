@@ -48,6 +48,7 @@ impl<T> Payload<T>
 where
     T: StreamingSource,
 {
+    /// Creates a new `Payload` from a streaming source.
     pub fn from_stream(payload: T) -> Self {
         Self { payload }
     }
