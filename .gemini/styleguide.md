@@ -60,6 +60,9 @@ When reviewing or generating code, apply rigorous scrutiny:
   keep the main logic flow linear.
 - **Documentation:** Document all public items in crates that we publish with
   `///`. Doctests describing usage are highly encouraged.
+- **Unused Functions for Future Release:** When adding a new function planned for
+  a future release that is currently internal for development purposes, use
+  `#[expect(unused)]` to silence warnings while explicitly documenting the intent.
 
 ## Google Cloud SDK Specifics
 
