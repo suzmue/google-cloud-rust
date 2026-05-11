@@ -3527,16 +3527,12 @@ version = "1.6.0"
 dependencies = [
  "anyhow",
  "futures",
- "google-cloud-auth",
  "google-cloud-gax",
  "google-cloud-longrunning",
  "google-cloud-lro",
  "google-cloud-rpc",
  "google-cloud-wkt",
- "httptest",
- "pin-project",
  "serde",
- "serde_json",
  "tokio",
  "tracing",
 ]
