@@ -37,6 +37,8 @@ pub mod error;
 
 pub mod paginator;
 
+pub mod streaming;
+
 pub mod response;
 
 pub mod backoff_policy;
