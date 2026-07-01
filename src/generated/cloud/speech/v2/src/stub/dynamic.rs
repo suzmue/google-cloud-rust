@@ -59,6 +59,14 @@ pub trait Speech: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::RecognizeResponse>>;
 
+    async fn streaming_recognize(
+        &self,
+        req: google_cloud_gax::streaming::RequestStream<crate::model::StreamingRecognizeRequest>,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        google_cloud_gax::streaming::ResponseStream<crate::model::StreamingRecognizeResponse>,
+    >;
+
     async fn batch_recognize(
         &self,
         req: crate::model::BatchRecognizeRequest,
@@ -266,6 +274,17 @@ impl<T: super::Speech> Speech for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::RecognizeResponse>> {
         T::recognize(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    async fn streaming_recognize(
+        &self,
+        req: google_cloud_gax::streaming::RequestStream<crate::model::StreamingRecognizeRequest>,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        google_cloud_gax::streaming::ResponseStream<crate::model::StreamingRecognizeResponse>,
+    > {
+        T::streaming_recognize(self, req, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

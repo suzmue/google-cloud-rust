@@ -337,6 +337,12 @@ impl Speech {
         super::builder::speech::Recognize::new(self.inner.clone())
     }
 
+    /// Performs bidirectional streaming speech recognition: receive results while
+    /// sending audio. This method is only available via the gRPC API (not REST).
+    pub fn streaming_recognize(&self) -> super::builder::speech::StreamingRecognize {
+        super::builder::speech::StreamingRecognize::new(self.inner.clone())
+    }
+
     /// Performs batch asynchronous speech recognition: send a request with N
     /// audio files and receive a long running operation that can be polled to see
     /// when the transcriptions are finished.

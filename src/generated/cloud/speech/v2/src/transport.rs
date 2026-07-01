@@ -22,12 +22,14 @@ use crate::Result;
 #[derive(Clone)]
 pub struct Speech {
     inner: gaxi::http::ReqwestClient,
+    grpc_client: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Speech {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Speech")
             .field("inner", &self.inner)
+            .field("grpc_client", &self.grpc_client)
             .finish()
     }
 }
@@ -35,13 +37,23 @@ impl std::fmt::Debug for Speech {
 impl Speech {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        let grpc_client = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self { inner, grpc_client })
     }
 }
 
@@ -115,7 +127,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.recognizer, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn list_recognizers(
         &self,
         req: crate::model::ListRecognizersRequest,
@@ -186,7 +197,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn get_recognizer(
         &self,
         req: crate::model::GetRecognizerRequest,
@@ -258,7 +268,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn update_recognizer(
         &self,
         req: crate::model::UpdateRecognizerRequest,
@@ -347,7 +356,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.recognizer, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn delete_recognizer(
         &self,
         req: crate::model::DeleteRecognizerRequest,
@@ -422,7 +430,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn undelete_recognizer(
         &self,
         req: crate::model::UndeleteRecognizerRequest,
@@ -494,7 +501,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn recognize(
         &self,
         req: crate::model::RecognizeRequest,
@@ -566,7 +572,50 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
     }
+    async fn streaming_recognize(
+        &self,
+        req: google_cloud_gax::streaming::RequestStream<crate::model::StreamingRecognizeRequest>,
+        options: crate::RequestOptions,
+    ) -> Result<google_cloud_gax::streaming::ResponseStream<crate::model::StreamingRecognizeResponse>>
+    {
+        use crate::convert::{FromProto, ToProto};
+        use futures_util::StreamExt as _;
+        use gaxi::grpc::tonic::{Extensions, GrpcMethod};
 
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.speech.v2.Speech",
+                "StreamingRecognize",
+            ));
+            e
+        };
+        let path = ::http::uri::PathAndQuery::from_static(
+            "/google.cloud.speech.v2.Speech/StreamingRecognize",
+        );
+        let x_goog_request_params = "";
+
+        let result = self.grpc_client
+            .bidi_stream::<
+                crate::prost::google::cloud::speech::v2::StreamingRecognizeRequest,
+                crate::prost::google::cloud::speech::v2::StreamingRecognizeResponse,
+            >(
+                extensions,
+                path,
+                req.map(|v| v.to_proto().expect("request serialization failed")),
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+        Ok(google_cloud_gax::streaming::ResponseStream::from_stream(
+            result.into_inner().map(|res| {
+                res.map_err(gaxi::grpc::from_status::to_gax_error)
+                    .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+            }),
+        ))
+    }
     async fn batch_recognize(
         &self,
         req: crate::model::BatchRecognizeRequest,
@@ -638,7 +687,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn get_config(
         &self,
         req: crate::model::GetConfigRequest,
@@ -708,7 +756,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn update_config(
         &self,
         req: crate::model::UpdateConfigRequest,
@@ -794,7 +841,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.config, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn create_custom_class(
         &self,
         req: crate::model::CreateCustomClassRequest,
@@ -864,7 +910,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.custom_class, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn list_custom_classes(
         &self,
         req: crate::model::ListCustomClassesRequest,
@@ -935,7 +980,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn get_custom_class(
         &self,
         req: crate::model::GetCustomClassRequest,
@@ -1007,7 +1051,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn update_custom_class(
         &self,
         req: crate::model::UpdateCustomClassRequest,
@@ -1096,7 +1139,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.custom_class, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn delete_custom_class(
         &self,
         req: crate::model::DeleteCustomClassRequest,
@@ -1171,7 +1213,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn undelete_custom_class(
         &self,
         req: crate::model::UndeleteCustomClassRequest,
@@ -1243,7 +1284,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn create_phrase_set(
         &self,
         req: crate::model::CreatePhraseSetRequest,
@@ -1313,7 +1353,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.phrase_set, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn list_phrase_sets(
         &self,
         req: crate::model::ListPhraseSetsRequest,
@@ -1384,7 +1423,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn get_phrase_set(
         &self,
         req: crate::model::GetPhraseSetRequest,
@@ -1456,7 +1494,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn update_phrase_set(
         &self,
         req: crate::model::UpdatePhraseSetRequest,
@@ -1545,7 +1582,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(req.phrase_set, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn delete_phrase_set(
         &self,
         req: crate::model::DeletePhraseSetRequest,
@@ -1620,7 +1656,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn undelete_phrase_set(
         &self,
         req: crate::model::UndeletePhraseSetRequest,
@@ -1692,7 +1727,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn list_locations(
         &self,
         req: google_cloud_location::model::ListLocationsRequest,
@@ -1751,7 +1785,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn get_location(
         &self,
         req: google_cloud_location::model::GetLocationRequest,
@@ -1817,7 +1850,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn list_operations(
         &self,
         req: google_cloud_longrunning::model::ListOperationsRequest,
@@ -1888,7 +1920,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn get_operation(
         &self,
         req: google_cloud_longrunning::model::GetOperationRequest,
@@ -1958,7 +1989,6 @@ impl super::stub::Speech for Speech {
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
     }
-
     async fn delete_operation(
         &self,
         req: google_cloud_longrunning::model::DeleteOperationRequest,
@@ -2034,7 +2064,6 @@ impl super::stub::Speech for Speech {
                 crate::Response::from_parts(parts, ())
             })
     }
-
     async fn cancel_operation(
         &self,
         req: google_cloud_longrunning::model::CancelOperationRequest,
@@ -2110,7 +2139,6 @@ impl super::stub::Speech for Speech {
                 crate::Response::from_parts(parts, ())
             })
     }
-
     fn get_polling_error_policy(
         &self,
         options: &crate::RequestOptions,

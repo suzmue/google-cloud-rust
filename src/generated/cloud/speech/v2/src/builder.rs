@@ -1005,6 +1005,65 @@ pub mod speech {
         }
     }
 
+    /// The request builder for [Speech::streaming_recognize][crate::client::Speech::streaming_recognize] calls.
+    ///
+    /// # Example
+    /// ```
+    /// # use google_cloud_speech_v2::builder::speech::StreamingRecognize;
+    /// # async fn sample() -> google_cloud_speech_v2::Result<()> {
+    ///
+    /// let builder = prepare_request_builder();
+    /// let request = prepare_request();
+    /// let rx = google_cloud_gax::streaming::RequestStream::from_iter(vec![request]);
+    /// let response = builder.send(rx).await?;
+    /// # Ok(()) }
+    ///
+    /// fn prepare_request_builder() -> StreamingRecognize {
+    ///   # panic!();
+    ///   // ... details omitted ...
+    /// }
+    ///
+    /// fn prepare_request() -> google_cloud_speech_v2::model::StreamingRecognizeRequest {
+    ///   # panic!();
+    ///   // ... details omitted ...
+    /// }
+    /// ```
+    #[derive(Clone, Debug)]
+    pub struct StreamingRecognize(RequestBuilder<crate::model::StreamingRecognizeRequest>);
+
+    impl StreamingRecognize {
+        pub(crate) fn new(stub: std::sync::Arc<dyn super::super::stub::dynamic::Speech>) -> Self {
+            Self(RequestBuilder::new(stub))
+        }
+
+        /// Sets all the options, replacing any prior values.
+        pub fn with_options<V: Into<crate::RequestOptions>>(mut self, v: V) -> Self {
+            self.0.options = v.into();
+            self
+        }
+
+        /// Sends the request.
+        pub async fn send(
+            self,
+            req: google_cloud_gax::streaming::RequestStream<
+                crate::model::StreamingRecognizeRequest,
+            >,
+        ) -> Result<
+            google_cloud_gax::streaming::ResponseStream<crate::model::StreamingRecognizeResponse>,
+        > {
+            (*self.0.stub)
+                .streaming_recognize(req, self.0.options)
+                .await
+        }
+    }
+
+    #[doc(hidden)]
+    impl crate::RequestBuilder for StreamingRecognize {
+        fn request_options(&mut self) -> &mut crate::RequestOptions {
+            &mut self.0.options
+        }
+    }
+
     /// The request builder for [Speech::batch_recognize][crate::client::Speech::batch_recognize] calls.
     ///
     /// # Example

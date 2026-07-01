@@ -4798,7 +4798,10 @@ version = "1.12.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "base64",
  "bytes",
+ "futures-core",
+ "futures-util",
  "google-cloud-gax",
  "google-cloud-gax-internal",
  "google-cloud-location",
@@ -4806,9 +4809,13 @@ dependencies = [
  "google-cloud-lro",
  "google-cloud-rpc",
  "google-cloud-wkt",
+ "http",
+ "prost",
+ "prost-types",
  "serde",
  "serde_json",
  "serde_with",
+ "thiserror",
  "tracing",
 ]
 

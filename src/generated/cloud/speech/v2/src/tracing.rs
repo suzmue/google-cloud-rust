@@ -140,6 +140,21 @@ where
     }
 
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
+    async fn streaming_recognize(
+        &self,
+        req: google_cloud_gax::streaming::RequestStream<crate::model::StreamingRecognizeRequest>,
+        options: crate::RequestOptions,
+    ) -> Result<google_cloud_gax::streaming::ResponseStream<crate::model::StreamingRecognizeResponse>>
+    {
+        let (_span, pending) = gaxi::client_request_signals!(
+            metric: self.duration.clone(),
+            info: *info::INSTRUMENTATION_CLIENT_INFO,
+            method: "client::Speech::streaming_recognize",
+            self.inner.streaming_recognize(req, options));
+        pending.await
+    }
+
+    #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn batch_recognize(
         &self,
         req: crate::model::BatchRecognizeRequest,

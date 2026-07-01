@@ -16,13 +16,6 @@
 
 //! Google Cloud Client Libraries for Rust - Cloud Speech-to-Text API
 //!
-//! **WARNING:** some RPCs have no corresponding Rust function to call them.
-//! Typically these are streaming RPCs. We expect adding these RPCs in a
-//! way that does not break the existing APIs or changes their behavior in a
-//! significant way. We do anticipate a number of new crate dependencies
-//! will be required. If you need these RPCs please open an issue in our
-//! GitHub repository.
-//!
 //! This crate contains traits, types, and functions to interact with Cloud Speech-to-Text API
 //! Most applications will use the structs defined in the [client] module.
 //!
@@ -115,3 +108,15 @@ pub(crate) use google_cloud_gax::client_builder::internal::new_builder as new_cl
 pub(crate) use google_cloud_gax::options::RequestOptions;
 pub(crate) use google_cloud_gax::options::internal::RequestBuilder;
 pub(crate) use google_cloud_gax::response::Response;
+
+#[allow(missing_docs)]
+#[allow(dead_code)]
+#[allow(clippy::enum_variant_names)]
+#[allow(clippy::large_enum_variant)]
+pub(crate) mod prost;
+
+#[allow(missing_docs)]
+#[allow(dead_code)]
+#[allow(clippy::enum_variant_names)]
+#[allow(clippy::large_enum_variant)]
+pub(crate) mod convert;

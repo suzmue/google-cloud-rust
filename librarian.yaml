@@ -1436,6 +1436,8 @@ libraries:
   - name: google-cloud-speech-v2
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_streaming_methods: true
   - name: google-cloud-sql-v1
     version: 2.7.0
     copyright_year: "2025"

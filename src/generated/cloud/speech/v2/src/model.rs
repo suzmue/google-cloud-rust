@@ -18,17 +18,24 @@
 #![allow(rustdoc::broken_intra_doc_links)]
 #![no_implicit_prelude]
 extern crate async_trait;
+extern crate base64;
 extern crate bytes;
+extern crate futures_core;
+extern crate futures_util;
 extern crate gaxi;
 extern crate google_cloud_gax;
 extern crate google_cloud_location;
 extern crate google_cloud_longrunning;
 extern crate google_cloud_lro;
 extern crate google_cloud_rpc;
+extern crate http;
+extern crate prost;
+extern crate prost_types;
 extern crate serde;
 extern crate serde_json;
 extern crate serde_with;
 extern crate std;
+extern crate thiserror;
 extern crate tracing;
 extern crate wkt;
 
@@ -1199,12 +1206,108 @@ pub mod operation_metadata {
         UpdateConfigRequest(std::boxed::Box<crate::model::UpdateConfigRequest>),
     }
 
+    impl Request {
+        /// Initializes the enum to the [BatchRecognizeRequest](Self::BatchRecognizeRequest) branch.
+        pub fn from_batch_recognize_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::BatchRecognizeRequest>>,
+        ) -> Self {
+            Self::BatchRecognizeRequest(value.into())
+        }
+        /// Initializes the enum to the [CreateRecognizerRequest](Self::CreateRecognizerRequest) branch.
+        pub fn from_create_recognizer_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::CreateRecognizerRequest>>,
+        ) -> Self {
+            Self::CreateRecognizerRequest(value.into())
+        }
+        /// Initializes the enum to the [UpdateRecognizerRequest](Self::UpdateRecognizerRequest) branch.
+        pub fn from_update_recognizer_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UpdateRecognizerRequest>>,
+        ) -> Self {
+            Self::UpdateRecognizerRequest(value.into())
+        }
+        /// Initializes the enum to the [DeleteRecognizerRequest](Self::DeleteRecognizerRequest) branch.
+        pub fn from_delete_recognizer_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::DeleteRecognizerRequest>>,
+        ) -> Self {
+            Self::DeleteRecognizerRequest(value.into())
+        }
+        /// Initializes the enum to the [UndeleteRecognizerRequest](Self::UndeleteRecognizerRequest) branch.
+        pub fn from_undelete_recognizer_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UndeleteRecognizerRequest>>,
+        ) -> Self {
+            Self::UndeleteRecognizerRequest(value.into())
+        }
+        /// Initializes the enum to the [CreateCustomClassRequest](Self::CreateCustomClassRequest) branch.
+        pub fn from_create_custom_class_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::CreateCustomClassRequest>>,
+        ) -> Self {
+            Self::CreateCustomClassRequest(value.into())
+        }
+        /// Initializes the enum to the [UpdateCustomClassRequest](Self::UpdateCustomClassRequest) branch.
+        pub fn from_update_custom_class_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UpdateCustomClassRequest>>,
+        ) -> Self {
+            Self::UpdateCustomClassRequest(value.into())
+        }
+        /// Initializes the enum to the [DeleteCustomClassRequest](Self::DeleteCustomClassRequest) branch.
+        pub fn from_delete_custom_class_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::DeleteCustomClassRequest>>,
+        ) -> Self {
+            Self::DeleteCustomClassRequest(value.into())
+        }
+        /// Initializes the enum to the [UndeleteCustomClassRequest](Self::UndeleteCustomClassRequest) branch.
+        pub fn from_undelete_custom_class_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UndeleteCustomClassRequest>>,
+        ) -> Self {
+            Self::UndeleteCustomClassRequest(value.into())
+        }
+        /// Initializes the enum to the [CreatePhraseSetRequest](Self::CreatePhraseSetRequest) branch.
+        pub fn from_create_phrase_set_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::CreatePhraseSetRequest>>,
+        ) -> Self {
+            Self::CreatePhraseSetRequest(value.into())
+        }
+        /// Initializes the enum to the [UpdatePhraseSetRequest](Self::UpdatePhraseSetRequest) branch.
+        pub fn from_update_phrase_set_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UpdatePhraseSetRequest>>,
+        ) -> Self {
+            Self::UpdatePhraseSetRequest(value.into())
+        }
+        /// Initializes the enum to the [DeletePhraseSetRequest](Self::DeletePhraseSetRequest) branch.
+        pub fn from_delete_phrase_set_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::DeletePhraseSetRequest>>,
+        ) -> Self {
+            Self::DeletePhraseSetRequest(value.into())
+        }
+        /// Initializes the enum to the [UndeletePhraseSetRequest](Self::UndeletePhraseSetRequest) branch.
+        pub fn from_undelete_phrase_set_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UndeletePhraseSetRequest>>,
+        ) -> Self {
+            Self::UndeletePhraseSetRequest(value.into())
+        }
+        /// Initializes the enum to the [UpdateConfigRequest](Self::UpdateConfigRequest) branch.
+        pub fn from_update_config_request(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::UpdateConfigRequest>>,
+        ) -> Self {
+            Self::UpdateConfigRequest(value.into())
+        }
+    }
+
     /// Specific metadata per RPC.
     #[derive(Clone, Debug, PartialEq)]
     #[non_exhaustive]
     pub enum Metadata {
         /// Metadata specific to the BatchRecognize method.
         BatchRecognizeMetadata(std::boxed::Box<crate::model::BatchRecognizeMetadata>),
+    }
+
+    impl Metadata {
+        /// Initializes the enum to the [BatchRecognizeMetadata](Self::BatchRecognizeMetadata) branch.
+        pub fn from_batch_recognize_metadata(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::BatchRecognizeMetadata>>,
+        ) -> Self {
+            Self::BatchRecognizeMetadata(value.into())
+        }
     }
 }
 
@@ -3473,6 +3576,19 @@ pub mod speech_adaptation {
             /// An inline defined PhraseSet.
             InlinePhraseSet(std::boxed::Box<crate::model::PhraseSet>),
         }
+
+        impl Value {
+            /// Initializes the enum to the [PhraseSet](Self::PhraseSet) branch.
+            pub fn from_phrase_set(value: impl std::convert::Into<std::string::String>) -> Self {
+                Self::PhraseSet(value.into())
+            }
+            /// Initializes the enum to the [InlinePhraseSet](Self::InlinePhraseSet) branch.
+            pub fn from_inline_phrase_set(
+                value: impl std::convert::Into<std::boxed::Box<crate::model::PhraseSet>>,
+            ) -> Self {
+                Self::InlinePhraseSet(value.into())
+            }
+        }
     }
 }
 
@@ -3915,6 +4031,21 @@ pub mod recognition_config {
         /// Required if using headerless PCM audio (linear16, mulaw, alaw).
         ExplicitDecodingConfig(std::boxed::Box<crate::model::ExplicitDecodingConfig>),
     }
+
+    impl DecodingConfig {
+        /// Initializes the enum to the [AutoDecodingConfig](Self::AutoDecodingConfig) branch.
+        pub fn from_auto_decoding_config(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::AutoDetectDecodingConfig>>,
+        ) -> Self {
+            Self::AutoDecodingConfig(value.into())
+        }
+        /// Initializes the enum to the [ExplicitDecodingConfig](Self::ExplicitDecodingConfig) branch.
+        pub fn from_explicit_decoding_config(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::ExplicitDecodingConfig>>,
+        ) -> Self {
+            Self::ExplicitDecodingConfig(value.into())
+        }
+    }
 }
 
 /// Request message for the
@@ -4175,6 +4306,17 @@ pub mod recognize_request {
         ///
         /// [google.cloud.speech.v2.RecognitionConfig]: crate::model::RecognitionConfig
         Uri(std::string::String),
+    }
+
+    impl AudioSource {
+        /// Initializes the enum to the [Content](Self::Content) branch.
+        pub fn from_content(value: impl std::convert::Into<::bytes::Bytes>) -> Self {
+            Self::Content(value.into())
+        }
+        /// Initializes the enum to the [Uri](Self::Uri) branch.
+        pub fn from_uri(value: impl std::convert::Into<std::string::String>) -> Self {
+            Self::Uri(value.into())
+        }
     }
 }
 
@@ -5283,6 +5425,7 @@ impl wkt::message::Message for StreamingRecognitionConfig {
 /// [audio][google.cloud.speech.v2.StreamingRecognizeRequest.audio] set.
 ///
 /// [google.cloud.speech.v2.Recognizer]: crate::model::Recognizer
+/// [google.cloud.speech.v2.Speech.StreamingRecognize]: crate::client::Speech::streaming_recognize
 /// [google.cloud.speech.v2.StreamingRecognizeRequest]: crate::model::StreamingRecognizeRequest
 /// [google.cloud.speech.v2.StreamingRecognizeRequest.audio]: crate::model::StreamingRecognizeRequest::streaming_request
 /// [google.cloud.speech.v2.StreamingRecognizeRequest.recognizer]: crate::model::StreamingRecognizeRequest::recognizer
@@ -5444,6 +5587,19 @@ pub mod streaming_recognize_request {
         /// Inline audio bytes to be Recognized.
         /// Maximum size for this field is 15 KB per request.
         Audio(::bytes::Bytes),
+    }
+
+    impl StreamingRequest {
+        /// Initializes the enum to the [StreamingConfig](Self::StreamingConfig) branch.
+        pub fn from_streaming_config(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::StreamingRecognitionConfig>>,
+        ) -> Self {
+            Self::StreamingConfig(value.into())
+        }
+        /// Initializes the enum to the [Audio](Self::Audio) branch.
+        pub fn from_audio(value: impl std::convert::Into<::bytes::Bytes>) -> Self {
+            Self::Audio(value.into())
+        }
     }
 }
 
@@ -6240,6 +6396,21 @@ pub mod recognition_output_config {
         /// [google.cloud.speech.v2.Speech.BatchRecognize]: crate::client::Speech::batch_recognize
         InlineResponseConfig(std::boxed::Box<crate::model::InlineOutputConfig>),
     }
+
+    impl Output {
+        /// Initializes the enum to the [GcsOutputConfig](Self::GcsOutputConfig) branch.
+        pub fn from_gcs_output_config(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::GcsOutputConfig>>,
+        ) -> Self {
+            Self::GcsOutputConfig(value.into())
+        }
+        /// Initializes the enum to the [InlineResponseConfig](Self::InlineResponseConfig) branch.
+        pub fn from_inline_response_config(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::InlineOutputConfig>>,
+        ) -> Self {
+            Self::InlineResponseConfig(value.into())
+        }
+    }
 }
 
 /// Response message for
@@ -6846,6 +7017,21 @@ pub mod batch_recognize_file_result {
         /// [google.cloud.speech.v2.InlineOutputConfig]: crate::model::InlineOutputConfig
         InlineResult(std::boxed::Box<crate::model::InlineResult>),
     }
+
+    impl Result {
+        /// Initializes the enum to the [CloudStorageResult](Self::CloudStorageResult) branch.
+        pub fn from_cloud_storage_result(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::CloudStorageResult>>,
+        ) -> Self {
+            Self::CloudStorageResult(value.into())
+        }
+        /// Initializes the enum to the [InlineResult](Self::InlineResult) branch.
+        pub fn from_inline_result(
+            value: impl std::convert::Into<std::boxed::Box<crate::model::InlineResult>>,
+        ) -> Self {
+            Self::InlineResult(value.into())
+        }
+    }
 }
 
 /// Metadata about transcription for a single file (for example, progress
@@ -7173,6 +7359,13 @@ pub mod batch_recognize_file_metadata {
     pub enum AudioSource {
         /// Cloud Storage URI for the audio file.
         Uri(std::string::String),
+    }
+
+    impl AudioSource {
+        /// Initializes the enum to the [Uri](Self::Uri) branch.
+        pub fn from_uri(value: impl std::convert::Into<std::string::String>) -> Self {
+            Self::Uri(value.into())
+        }
     }
 }
 
