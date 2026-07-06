@@ -57,6 +57,7 @@ _internal-grpc-client = [
   "dep:tonic-prost",
   "dep:tower",
   "dep:wkt",
+  "dep:base64",
 ]
 # Enable support for the multipart requests in the HTTP client.
 #
@@ -98,6 +99,7 @@ _internal-grpc-server-streaming = []
 [dependencies]
 h2                                 = { workspace = true, optional = true }
 bytes                              = { workspace = true, optional = true, features = ["serde"] }
+base64                             = { workspace = true, optional = true }
 futures                            = { workspace = true, optional = true }
 lazy_static                        = { workspace = true, optional = true }
 http                               = { workspace = true, optional = true }

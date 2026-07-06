@@ -3020,6 +3020,7 @@ name = "google-cloud-gax-internal"
 version = "0.7.15"
 dependencies = [
  "anyhow",
+ "base64",
  "bytes",
  "echo-server",
  "futures",

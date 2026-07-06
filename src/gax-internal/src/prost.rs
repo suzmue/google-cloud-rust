@@ -16,6 +16,7 @@
 //! Prost versions.
 
 use std::collections::BTreeMap;
+use prost::Message as _;
 
 type BoxError = Box<dyn std::error::Error + Send + Sync>;
 
@@ -256,6 +257,190 @@ impl ToProto<Empty> for wkt::Empty {
 impl FromProto<wkt::Empty> for Empty {
     fn cnv(self) -> Result<wkt::Empty> {
         Ok(wkt::Empty::default())
+    }
+}
+
+impl ToProto<prost_types::Any> for wkt::Any {
+    type Output = prost_types::Any;
+    fn to_proto(self) -> Result<prost_types::Any> {
+        let value = serde_json::to_value(self).map_err(ConvertError::other)?;
+        let map = value.as_object().ok_or_else(|| {
+            ConvertError::other("Any serialization did not produce a JSON object")
+        })?;
+        let type_url = map
+            .get("@type")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+            .unwrap_or_default();
+
+        match type_url.as_str() {
+            "type.googleapis.com/google.protobuf.Duration" => {
+                let inner = map
+                    .get("value")
+                    .ok_or_else(|| ConvertError::other("value field is missing"))?;
+                let veneer: wkt::Duration = serde_json::from_value(inner.clone())
+                    .map_err(ConvertError::other)?;
+                let raw: prost_types::Duration = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            "type.googleapis.com/google.protobuf.Timestamp" => {
+                let inner = map
+                    .get("value")
+                    .ok_or_else(|| ConvertError::other("value field is missing"))?;
+                let veneer: wkt::Timestamp = serde_json::from_value(inner.clone())
+                    .map_err(ConvertError::other)?;
+                let raw: prost_types::Timestamp = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            "type.googleapis.com/google.protobuf.FieldMask" => {
+                let inner = map
+                    .get("value")
+                    .ok_or_else(|| ConvertError::other("value field is missing"))?;
+                let veneer: wkt::FieldMask = serde_json::from_value(inner.clone())
+                    .map_err(ConvertError::other)?;
+                let raw: prost_types::FieldMask = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            "type.googleapis.com/google.protobuf.Struct" => {
+                let veneer: wkt::Struct = serde_json::from_value(serde_json::Value::Object(map.clone()))
+                    .map_err(ConvertError::other)?;
+                let raw: prost_types::Struct = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            "type.googleapis.com/google.protobuf.Value" => {
+                let inner = map
+                    .get("value")
+                    .ok_or_else(|| ConvertError::other("value field is missing"))?;
+                let veneer: wkt::Value = serde_json::from_value(inner.clone())
+                    .map_err(ConvertError::other)?;
+                let raw: prost_types::Value = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            "type.googleapis.com/google.protobuf.ListValue" => {
+                let inner = map
+                    .get("value")
+                    .ok_or_else(|| ConvertError::other("value field is missing"))?;
+                let veneer: wkt::ListValue = serde_json::from_value(inner.clone())
+                    .map_err(ConvertError::other)?;
+                let raw: prost_types::ListValue = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            "type.googleapis.com/google.protobuf.Empty" => {
+                let veneer: wkt::Empty = serde_json::from_value(serde_json::Value::Object(map.clone()))
+                    .map_err(ConvertError::other)?;
+                let raw: Empty = veneer.to_proto()?;
+                let value = ::prost::Message::encode_to_vec(&raw);
+                return Ok(prost_types::Any { type_url, value });
+            }
+            _ => {}
+        }
+
+        let value = if let Some(serde_json::Value::String(b64)) = map.get("value") {
+            use base64::Engine as _;
+            base64::engine::general_purpose::STANDARD
+                .decode(b64)
+                .map_err(ConvertError::other)?
+        } else {
+            return Err(ConvertError::Unimplemented);
+        };
+        Ok(prost_types::Any { type_url, value })
+    }
+}
+
+impl FromProto<wkt::Any> for prost_types::Any {
+    fn cnv(self) -> Result<wkt::Any> {
+        let type_url = self.type_url.clone();
+
+        match type_url.as_str() {
+            "type.googleapis.com/google.protobuf.Duration" => {
+                let raw = prost_types::Duration::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::Duration = raw.cnv()?;
+                let mut map = serde_json::Map::new();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                map.insert("value".to_string(), serde_json::to_value(veneer).map_err(ConvertError::other)?);
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            "type.googleapis.com/google.protobuf.Timestamp" => {
+                let raw = prost_types::Timestamp::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::Timestamp = raw.cnv()?;
+                let mut map = serde_json::Map::new();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                map.insert("value".to_string(), serde_json::to_value(veneer).map_err(ConvertError::other)?);
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            "type.googleapis.com/google.protobuf.FieldMask" => {
+                let raw = prost_types::FieldMask::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::FieldMask = raw.cnv()?;
+                let mut map = serde_json::Map::new();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                map.insert("value".to_string(), serde_json::to_value(veneer).map_err(ConvertError::other)?);
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            "type.googleapis.com/google.protobuf.Struct" => {
+                let raw = prost_types::Struct::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::Struct = raw.cnv()?;
+                let value = serde_json::to_value(veneer).map_err(ConvertError::other)?;
+                let mut map = value.as_object().ok_or_else(|| {
+                    ConvertError::other("Serialization did not produce a JSON object")
+                })?.clone();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            "type.googleapis.com/google.protobuf.Value" => {
+                let raw = prost_types::Value::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::Value = raw.cnv()?;
+                let mut map = serde_json::Map::new();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                map.insert("value".to_string(), serde_json::to_value(veneer).map_err(ConvertError::other)?);
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            "type.googleapis.com/google.protobuf.ListValue" => {
+                let raw = prost_types::ListValue::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::ListValue = raw.cnv()?;
+                let mut map = serde_json::Map::new();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                map.insert("value".to_string(), serde_json::to_value(veneer).map_err(ConvertError::other)?);
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            "type.googleapis.com/google.protobuf.Empty" => {
+                let raw = Empty::decode(self.value.as_ref())
+                    .map_err(ConvertError::other)?;
+                let veneer: wkt::Empty = raw.cnv()?;
+                let value = serde_json::to_value(veneer).map_err(ConvertError::other)?;
+                let mut map = value.as_object().ok_or_else(|| {
+                    ConvertError::other("Serialization did not produce a JSON object")
+                })?.clone();
+                map.insert("@type".to_string(), serde_json::Value::String(type_url));
+                return serde_json::from_value(serde_json::Value::Object(map))
+                    .map_err(ConvertError::other);
+            }
+            _ => {}
+        }
+
+        let mut map = serde_json::Map::new();
+        map.insert("@type".to_string(), serde_json::Value::String(self.type_url));
+        use base64::Engine as _;
+        let b64 = base64::engine::general_purpose::STANDARD.encode(self.value);
+        map.insert("value".to_string(), serde_json::Value::String(b64));
+        serde_json::from_value(serde_json::Value::Object(map)).map_err(ConvertError::other)
     }
 }
 
@@ -521,6 +706,19 @@ mod tests {
         let url = super::Empty::type_url();
         let want = format!("type.googleapis.com/{full}");
         assert_eq!(url, want);
+        Ok(())
+    }
+
+    #[test]
+    fn any_conversions() -> anyhow::Result<()> {
+        let duration = wkt::Duration::clamp(123, 456);
+        let wkt_any = wkt::Any::from_msg(&duration)?;
+        let prost_any: prost_types::Any = wkt_any.clone().to_proto()?;
+        assert_eq!(prost_any.type_url, "type.googleapis.com/google.protobuf.Duration");
+        let got_wkt_any: wkt::Any = prost_any.cnv()?;
+        assert_eq!(got_wkt_any, wkt_any);
+        let extracted = got_wkt_any.to_msg::<wkt::Duration>()?;
+        assert_eq!(extracted, duration);
         Ok(())
     }
 }
