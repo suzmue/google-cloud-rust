@@ -92,6 +92,11 @@ pub(crate) mod tracing;
 #[doc(hidden)]
 pub(crate) mod transport;
 
+#[cfg(google_cloud_unstable_gapic_streaming)]
+#[doc(hidden)]
+#[allow(missing_docs, dead_code, unused_imports, clippy::all)]
+pub(crate) mod prost;
+
 /// The default host used by the service.
 const DEFAULT_HOST: &str = "https://localhost:7469/";
 

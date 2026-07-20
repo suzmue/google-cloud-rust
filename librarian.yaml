@@ -1389,7 +1389,8 @@ libraries:
       - path: schema/google/showcase/v1beta1
     copyright_year: "2025"
     output: src/generated/showcase
-    include_bidi_streaming_methods: true
+    rust:
+      include_bidi_streaming_methods: true
     roots:
       - showcase
       - googleapis
