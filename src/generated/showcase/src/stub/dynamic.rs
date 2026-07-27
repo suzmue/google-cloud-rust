@@ -330,15 +330,6 @@ pub trait Echo: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::FailEchoWithDetailsResponse>>;
 
-    #[cfg(google_cloud_unstable_gapic_streaming)]
-    async fn chat(
-        &self,
-        options: crate::RequestOptions,
-    ) -> (
-        google_cloud_gax::streaming::RequestSender<crate::model::EchoRequest>,
-        google_cloud_gax::streaming::ResponseReceiver<crate::model::EchoResponse>,
-    );
-
     async fn paged_expand(
         &self,
         req: crate::model::PagedExpandRequest,
@@ -467,18 +458,6 @@ impl<T: super::Echo> Echo for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::FailEchoWithDetailsResponse>> {
         T::fail_echo_with_details(self, req, options).await
-    }
-
-    /// Forwards the call to the implementation provided by `T`.
-    #[cfg(google_cloud_unstable_gapic_streaming)]
-    async fn chat(
-        &self,
-        options: crate::RequestOptions,
-    ) -> (
-        google_cloud_gax::streaming::RequestSender<crate::model::EchoRequest>,
-        google_cloud_gax::streaming::ResponseReceiver<crate::model::EchoResponse>,
-    ) {
-        T::chat(self, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

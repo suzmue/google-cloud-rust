@@ -295,23 +295,6 @@ pub trait Echo: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
-    /// Implements [super::client::Echo::chat].
-    #[cfg(google_cloud_unstable_gapic_streaming)]
-    fn chat(
-        &self,
-        _options: crate::RequestOptions,
-    ) -> impl std::future::Future<
-        Output = (
-            google_cloud_gax::streaming::RequestSender<crate::model::EchoRequest>,
-            google_cloud_gax::streaming::ResponseReceiver<crate::model::EchoResponse>,
-        ),
-    > + Send {
-        async {
-            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
-            unreachable!() // satisfies the type checker; the stub above always panics.
-        }
-    }
-
     /// Implements [super::client::Echo::paged_expand].
     fn paged_expand(
         &self,

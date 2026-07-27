@@ -12,6 +12,7 @@ pub mod google {
     pub mod showcase {
         pub mod v1beta1 {
             include!("google.showcase.v1beta1.rs");
+            include!("../convert.rs");
         }
     }
 }

@@ -730,20 +730,6 @@ impl Echo {
         super::builder::echo::FailEchoWithDetails::new(self.inner.clone())
     }
 
-    #[cfg(google_cloud_unstable_gapic_streaming)]
-    /// This method, upon receiving a request on the stream, will pass the same
-    /// content back on the stream. This method showcases bidirectional
-    /// streaming RPCs.
-    pub async fn chat(
-        &self,
-        options: crate::RequestOptions,
-    ) -> (
-        google_cloud_gax::streaming::RequestSender<crate::model::EchoRequest>,
-        google_cloud_gax::streaming::ResponseReceiver<crate::model::EchoResponse>,
-    ) {
-        self.inner.chat(options).await
-    }
-
     /// This is similar to the Expand method but instead of returning a stream of
     /// expanded words, this method returns a paged list of expanded words.
     ///

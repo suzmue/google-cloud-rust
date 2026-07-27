@@ -1406,9 +1406,7 @@ libraries:
     rust:
       include_bidi_streaming_methods: true
       skipped_ids:
-        - Expand
-        - Collect
-        - Chat
+        - .google.showcase.v1beta1.Echo.Chat
   - name: google-cloud-spanner
     version: 0.34.3-preview
     copyright_year: "2026"
