@@ -4884,6 +4884,8 @@ dependencies = [
  "google-cloud-lro",
  "google-cloud-rpc",
  "google-cloud-wkt",
+ "prost",
+ "prost-types",
  "serde",
  "serde_json",
  "serde_with",
