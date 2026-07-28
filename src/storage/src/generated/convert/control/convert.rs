@@ -879,8 +879,8 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_config::filter::CloudStorageLocationsOneOf, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_config::filter::CloudStorageLocationsOneOf as T;
         match self {
-            Self::IncludedCloudStorageLocations(v) => Ok(T::from_included_cloud_storage_locations(v.cnv()?)),
-            Self::ExcludedCloudStorageLocations(v) => Ok(T::from_excluded_cloud_storage_locations(v.cnv()?)),
+            Self::IncludedCloudStorageLocations(v) => Ok(T::IncludedCloudStorageLocations(std::boxed::Box::new(v.cnv()?))),
+            Self::ExcludedCloudStorageLocations(v) => Ok(T::ExcludedCloudStorageLocations(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -899,8 +899,8 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_config::filter::CloudStorageBucketsOneOf, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_config::filter::CloudStorageBucketsOneOf as T;
         match self {
-            Self::IncludedCloudStorageBuckets(v) => Ok(T::from_included_cloud_storage_buckets(v.cnv()?)),
-            Self::ExcludedCloudStorageBuckets(v) => Ok(T::from_excluded_cloud_storage_buckets(v.cnv()?)),
+            Self::IncludedCloudStorageBuckets(v) => Ok(T::IncludedCloudStorageBuckets(std::boxed::Box::new(v.cnv()?))),
+            Self::ExcludedCloudStorageBuckets(v) => Ok(T::ExcludedCloudStorageBuckets(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -1183,8 +1183,8 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_finding::coldline_and_archival_storage_operations_spike::bucket_contribution::Details, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_finding::coldline_and_archival_storage_operations_spike::bucket_contribution::Details as T;
         match self {
-            Self::Contribution(v) => Ok(T::from_contribution(v.cnv()?)),
-            Self::Error(v) => Ok(T::from_error(v.cnv()?)),
+            Self::Contribution(v) => Ok(T::Contribution(std::boxed::Box::new(v.cnv()?))),
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -1297,8 +1297,8 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_finding::cross_region_egress_spike::bucket_contribution::Details, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_finding::cross_region_egress_spike::bucket_contribution::Details as T;
         match self {
-            Self::Contribution(v) => Ok(T::from_contribution(v.cnv()?)),
-            Self::Error(v) => Ok(T::from_error(v.cnv()?)),
+            Self::Contribution(v) => Ok(T::Contribution(std::boxed::Box::new(v.cnv()?))),
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -1411,8 +1411,8 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_finding::throttled_request_spike::bucket_contribution::Details, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_finding::throttled_request_spike::bucket_contribution::Details as T;
         match self {
-            Self::Contribution(v) => Ok(T::from_contribution(v.cnv()?)),
-            Self::Error(v) => Ok(T::from_error(v.cnv()?)),
+            Self::Contribution(v) => Ok(T::Contribution(std::boxed::Box::new(v.cnv()?))),
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -1480,7 +1480,7 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_finding::storage_growth_above_trend::bucket_contribution::Details, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_finding::storage_growth_above_trend::bucket_contribution::Details as T;
         match self {
-            Self::Error(v) => Ok(T::from_error(v.cnv()?)),
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -1551,10 +1551,10 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::intelligence
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::intelligence_finding::IntelligenceFindingDetails, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::intelligence_finding::IntelligenceFindingDetails as T;
         match self {
-            Self::ColdlineAndArchivalStorageOperationsSpike(v) => Ok(T::from_coldline_and_archival_storage_operations_spike(v.cnv()?)),
-            Self::ThrottledRequestsSpike(v) => Ok(T::from_throttled_requests_spike(v.cnv()?)),
-            Self::CrossRegionEgressSpike(v) => Ok(T::from_cross_region_egress_spike(v.cnv()?)),
-            Self::StorageGrowthAboveTrend(v) => Ok(T::from_storage_growth_above_trend(v.cnv()?)),
+            Self::ColdlineAndArchivalStorageOperationsSpike(v) => Ok(T::ColdlineAndArchivalStorageOperationsSpike(std::boxed::Box::new(v.cnv()?))),
+            Self::ThrottledRequestsSpike(v) => Ok(T::ThrottledRequestsSpike(std::boxed::Box::new(v.cnv()?))),
+            Self::CrossRegionEgressSpike(v) => Ok(T::CrossRegionEgressSpike(std::boxed::Box::new(v.cnv()?))),
+            Self::StorageGrowthAboveTrend(v) => Ok(T::StorageGrowthAboveTrend(std::boxed::Box::new(v.cnv()?))),
         }
     }
 }
@@ -1831,8 +1831,8 @@ impl gaxi::prost::FromProto<crate::generated::gapic_control::model::finding_summ
     fn cnv(self) -> std::result::Result<crate::generated::gapic_control::model::finding_summary::summary_details::Magnitude, gaxi::prost::ConvertError> {
         use crate::generated::gapic_control::model::finding_summary::summary_details::Magnitude as T;
         match self {
-            Self::Count(v) => Ok(T::from_count(v.cnv()?)),
-            Self::Percentage(v) => Ok(T::from_percentage(v.cnv()?)),
+            Self::Count(v) => Ok(T::Count(v.cnv()?)),
+            Self::Percentage(v) => Ok(T::Percentage(v.cnv()?)),
         }
     }
 }

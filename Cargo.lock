@@ -4473,6 +4473,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "google-cloud-pubsub-bidi-test"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "futures",
+ "google-cloud-auth",
+ "google-cloud-gax",
+ "google-cloud-gax-internal",
+ "google-cloud-iam-v1",
+ "google-cloud-wkt",
+ "http",
+ "prost",
+ "prost-types",
+ "pubsub-grpc-mock",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "google-cloud-rapidmigrationassessment-v1"
 version = "1.13.0"
 dependencies = [
@@ -4876,6 +4903,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "bytes",
+ "futures",
  "google-cloud-gax",
  "google-cloud-gax-internal",
  "google-cloud-iam-v1",
@@ -4884,11 +4912,14 @@ dependencies = [
  "google-cloud-lro",
  "google-cloud-rpc",
  "google-cloud-wkt",
+ "http",
  "prost",
  "prost-types",
  "serde",
  "serde_json",
  "serde_with",
+ "tokio",
+ "tokio-stream",
  "tracing",
  "uuid",
 ]

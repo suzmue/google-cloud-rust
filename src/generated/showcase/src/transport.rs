@@ -4943,12 +4943,77 @@ impl super::stub::Messaging for Messaging {
     #[cfg(google_cloud_unstable_gapic_streaming)]
     async fn connect(
         &self,
-        _options: crate::RequestOptions,
+        options: crate::RequestOptions,
     ) -> (
         google_cloud_gax::streaming::RequestSender<crate::model::ConnectRequest>,
         google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamBlurbsResponse>,
     ) {
-        unimplemented!()
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let (req_tx, mut req_rx) = tokio::sync::mpsc::channel::<crate::model::ConnectRequest>(100);
+        let (resp_tx, resp_rx) =
+            tokio::sync::mpsc::channel::<crate::Result<crate::model::StreamBlurbsResponse>>(100);
+
+        let grpc_client = self.grpc_inner.clone();
+        tokio::spawn(async move {
+            let first_req = match req_rx.recv().await {
+                Some(req) => req,
+                None => return,
+            };
+
+            let req_stream = futures::stream::once(async move { first_req })
+                .chain(tokio_stream::wrappers::ReceiverStream::new(req_rx))
+                .map(|v| v.to_proto().expect("request serialization failed"));
+
+            let extensions = {
+                let mut e = gaxi::grpc::tonic::Extensions::new();
+                e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                    "google.showcase.v1beta1.Messaging",
+                    "Connect",
+                ));
+                e
+            };
+            let path =
+                http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/Connect");
+            let x_goog_request_params = "";
+
+            let result = grpc_client
+                .bidi_stream::<
+                    crate::prost::google::showcase::v1beta1::ConnectRequest,
+                    crate::prost::google::showcase::v1beta1::StreamBlurbsResponse,
+                >(
+                    extensions,
+                    path,
+                    req_stream,
+                    options,
+                    &crate::info::X_GOOG_API_CLIENT_HEADER,
+                    x_goog_request_params,
+                )
+                .await;
+
+            match result {
+                Ok(response) => {
+                    let mut response_stream = response.into_inner();
+                    while let Some(res) = response_stream.next().await {
+                        let item = res
+                            .map_err(gaxi::grpc::from_status::to_gax_error)
+                            .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser));
+                        if resp_tx.send(item).await.is_err() {
+                            break;
+                        }
+                    }
+                }
+                Err(err) => {
+                    let _ = resp_tx.send(Err(err.into())).await;
+                }
+            }
+        });
+
+        (
+            google_cloud_gax::streaming::RequestSender::new(req_tx),
+            google_cloud_gax::streaming::ResponseReceiver::new(resp_rx),
+        )
     }
 
     async fn list_locations(

@@ -303,6 +303,7 @@ members = [
   "src/generated/openapi-validation",
   "src/generated/oslogin/common",
   "src/generated/privacy/dlp/v2",
+  "src/generated/pubsub-bidi-test",
   "src/generated/rpc/context",
   "src/generated/rpc/types",
   "src/generated/shopping/gtype",
@@ -554,6 +555,7 @@ google-cloud-dns-v1                  = { default-features = false, path = "src/g
 google-cloud-firestore               = { default-features = false, path = "src/firestore" }
 google-cloud-monitoring-v3           = { default-features = false, path = "src/generated/monitoring/v3" }
 google-cloud-showcase-v1beta1        = { default-features = false, path = "src/generated/showcase" }
+google-cloud-pubsub-bidi-test        = { default-features = false, path = "src/generated/pubsub-bidi-test" }
 google-cloud-telcoautomation-v1      = { default-features = false, path = "src/generated/cloud/telcoautomation/v1" }
 google-cloud-trace-v1                = { default-features = false, path = "src/generated/devtools/cloudtrace/v1" }
 google-cloud-workflows-v1            = { default-features = false, path = "src/generated/cloud/workflows/v1" }
