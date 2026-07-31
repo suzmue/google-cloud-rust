@@ -1881,6 +1881,15 @@ pub trait FeatureOnlineStoreService: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SearchNearestEntitiesResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn feature_view_direct_write(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::FeatureViewDirectWriteRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::FeatureViewDirectWriteResponse>,
+    );
+
     async fn generate_fetch_access_token(
         &self,
         req: crate::model::GenerateFetchAccessTokenRequest,
@@ -1968,6 +1977,18 @@ impl<T: super::FeatureOnlineStoreService> FeatureOnlineStoreService for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SearchNearestEntitiesResponse>> {
         T::search_nearest_entities(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn feature_view_direct_write(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::FeatureViewDirectWriteRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::FeatureViewDirectWriteResponse>,
+    ) {
+        T::feature_view_direct_write(self, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

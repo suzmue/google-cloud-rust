@@ -44051,42 +44051,7 @@ impl<'de> serde::de::Deserialize<'de> for super::SearchNearestEntitiesResponse {
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 #[doc(hidden)]
 impl<'de> serde::de::Deserialize<'de> for super::FeatureViewDirectWriteRequest {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
@@ -44183,42 +44148,7 @@ impl<'de> serde::de::Deserialize<'de> for super::FeatureViewDirectWriteRequest {
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 #[doc(hidden)]
 impl<'de> serde::de::Deserialize<'de>
     for super::feature_view_direct_write_request::DataKeyAndFeatureValues
@@ -44311,42 +44241,7 @@ impl<'de> serde::de::Deserialize<'de>
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 #[doc(hidden)]
 impl<'de> serde::de::Deserialize<'de>
     for super::feature_view_direct_write_request::data_key_and_feature_values::Feature
@@ -44449,42 +44344,7 @@ impl<'de> serde::de::Deserialize<'de>
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 #[doc(hidden)]
 impl<'de> serde::de::Deserialize<'de> for super::FeatureViewDirectWriteResponse {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
@@ -44576,42 +44436,7 @@ impl<'de> serde::de::Deserialize<'de> for super::FeatureViewDirectWriteResponse 
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 #[doc(hidden)]
 impl<'de> serde::de::Deserialize<'de> for super::feature_view_direct_write_response::WriteResponse {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>

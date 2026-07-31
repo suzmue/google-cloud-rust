@@ -2154,6 +2154,17 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn feature_view_direct_write(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::FeatureViewDirectWriteRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::FeatureViewDirectWriteResponse>,
+    ) {
+        self.inner.feature_view_direct_write(options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn generate_fetch_access_token(
         &self,

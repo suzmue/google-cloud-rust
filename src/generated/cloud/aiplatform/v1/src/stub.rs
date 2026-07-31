@@ -1494,6 +1494,25 @@ pub trait FeatureOnlineStoreService: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::FeatureOnlineStoreService::feature_view_direct_write].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn feature_view_direct_write(
+        &self,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = (
+            google_cloud_gax::streaming::RequestSender<crate::model::FeatureViewDirectWriteRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<
+                crate::model::FeatureViewDirectWriteResponse,
+            >,
+        ),
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!() // satisfies the type checker; the stub above always panics.
+        }
+    }
+
     /// Implements [super::client::FeatureOnlineStoreService::generate_fetch_access_token].
     fn generate_fetch_access_token(
         &self,

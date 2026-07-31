@@ -123,7 +123,10 @@ pub(crate) mod tracing;
 pub(crate) mod transport;
 
 #[cfg(google_cloud_unstable_gapic_streaming)]
-#[cfg(any(feature = "prediction-service",))]
+#[cfg(any(
+    feature = "feature-online-store-service",
+    feature = "prediction-service",
+))]
 #[doc(hidden)]
 #[allow(clippy::all)]
 #[allow(unused_imports)]

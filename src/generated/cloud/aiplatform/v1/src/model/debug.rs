@@ -5609,42 +5609,7 @@ impl std::fmt::Debug for super::SearchNearestEntitiesResponse {
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 impl std::fmt::Debug for super::FeatureViewDirectWriteRequest {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut debug_struct = f.debug_struct("FeatureViewDirectWriteRequest");
@@ -5660,42 +5625,7 @@ impl std::fmt::Debug for super::FeatureViewDirectWriteRequest {
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 impl std::fmt::Debug for super::feature_view_direct_write_request::DataKeyAndFeatureValues {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut debug_struct = f.debug_struct("DataKeyAndFeatureValues");
@@ -5708,42 +5638,7 @@ impl std::fmt::Debug for super::feature_view_direct_write_request::DataKeyAndFea
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 impl std::fmt::Debug
     for super::feature_view_direct_write_request::data_key_and_feature_values::Feature
 {
@@ -5758,42 +5653,7 @@ impl std::fmt::Debug
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 impl std::fmt::Debug for super::FeatureViewDirectWriteResponse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut debug_struct = f.debug_struct("FeatureViewDirectWriteResponse");
@@ -5806,42 +5666,7 @@ impl std::fmt::Debug for super::FeatureViewDirectWriteResponse {
     }
 }
 
-#[cfg(all(
-    feature = "data-foundry-service",
-    feature = "dataset-service",
-    feature = "deployment-resource-pool-service",
-    feature = "endpoint-service",
-    feature = "evaluation-service",
-    feature = "feature-online-store-admin-service",
-    feature = "feature-online-store-service",
-    feature = "feature-registry-service",
-    feature = "featurestore-online-serving-service",
-    feature = "featurestore-service",
-    feature = "gen-ai-cache-service",
-    feature = "gen-ai-tuning-service",
-    feature = "index-endpoint-service",
-    feature = "index-service",
-    feature = "job-service",
-    feature = "llm-utility-service",
-    feature = "match-service",
-    feature = "metadata-service",
-    feature = "migration-service",
-    feature = "model-garden-service",
-    feature = "model-service",
-    feature = "notebook-service",
-    feature = "persistent-resource-service",
-    feature = "pipeline-service",
-    feature = "prediction-service",
-    feature = "reasoning-engine-execution-service",
-    feature = "reasoning-engine-service",
-    feature = "schedule-service",
-    feature = "session-service",
-    feature = "specialist-pool-service",
-    feature = "tensorboard-service",
-    feature = "vertex-rag-data-service",
-    feature = "vertex-rag-service",
-    feature = "vizier-service",
-))]
+#[cfg(feature = "feature-online-store-service")]
 impl std::fmt::Debug for super::feature_view_direct_write_response::WriteResponse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut debug_struct = f.debug_struct("WriteResponse");

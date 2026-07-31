@@ -3640,6 +3640,20 @@ impl FeatureOnlineStoreService {
         super::builder::feature_online_store_service::SearchNearestEntities::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Bidirectional streaming RPC to directly write to feature values in a
+    /// feature view. Requests may not have a one-to-one mapping to responses and
+    /// responses may be returned out-of-order to reduce latency.
+    pub async fn feature_view_direct_write(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::FeatureViewDirectWriteRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::FeatureViewDirectWriteResponse>,
+    ) {
+        self.inner.feature_view_direct_write(options).await
+    }
+
     /// RPC to generate an access token for the given feature view. FeatureViews
     /// under the same FeatureOnlineStore share the same access token.
     ///
