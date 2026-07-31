@@ -55414,7 +55414,44 @@ impl wkt::message::Message for SearchNearestEntitiesResponse {
 
 /// Request message for
 /// [FeatureOnlineStoreService.FeatureViewDirectWrite][google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite].
-#[cfg(feature = "feature-online-store-service")]
+///
+/// [google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite]: crate::client::FeatureOnlineStoreService::feature_view_direct_write
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
 pub struct FeatureViewDirectWriteRequest {
@@ -55429,7 +55466,42 @@ pub struct FeatureViewDirectWriteRequest {
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
 
-#[cfg(feature = "feature-online-store-service")]
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 impl FeatureViewDirectWriteRequest {
     /// Creates a new default instance.
     pub fn new() -> Self {
@@ -55477,7 +55549,42 @@ impl FeatureViewDirectWriteRequest {
     }
 }
 
-#[cfg(feature = "feature-online-store-service")]
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 impl wkt::message::Message for FeatureViewDirectWriteRequest {
     fn typename() -> &'static str {
         "type.googleapis.com/google.cloud.aiplatform.v1.FeatureViewDirectWriteRequest"
@@ -55485,13 +55592,83 @@ impl wkt::message::Message for FeatureViewDirectWriteRequest {
 }
 
 /// Defines additional types related to [FeatureViewDirectWriteRequest].
-#[cfg(feature = "feature-online-store-service")]
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 pub mod feature_view_direct_write_request {
     #[allow(unused_imports)]
     use super::*;
 
     /// A data key and associated feature values to write to the feature view.
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     #[derive(Clone, Default, PartialEq)]
     #[non_exhaustive]
     pub struct DataKeyAndFeatureValues {
@@ -55506,7 +55683,42 @@ pub mod feature_view_direct_write_request {
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
 
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     impl DataKeyAndFeatureValues {
         /// Creates a new default instance.
         pub fn new() -> Self {
@@ -55569,7 +55781,42 @@ pub mod feature_view_direct_write_request {
         }
     }
 
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     impl wkt::message::Message for DataKeyAndFeatureValues {
         fn typename() -> &'static str {
             "type.googleapis.com/google.cloud.aiplatform.v1.FeatureViewDirectWriteRequest.DataKeyAndFeatureValues"
@@ -55577,13 +55824,83 @@ pub mod feature_view_direct_write_request {
     }
 
     /// Defines additional types related to [DataKeyAndFeatureValues].
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     pub mod data_key_and_feature_values {
         #[allow(unused_imports)]
         use super::*;
 
         /// Feature name & value pair.
-        #[cfg(feature = "feature-online-store-service")]
+        #[cfg(all(
+            feature = "data-foundry-service",
+            feature = "dataset-service",
+            feature = "deployment-resource-pool-service",
+            feature = "endpoint-service",
+            feature = "evaluation-service",
+            feature = "feature-online-store-admin-service",
+            feature = "feature-online-store-service",
+            feature = "feature-registry-service",
+            feature = "featurestore-online-serving-service",
+            feature = "featurestore-service",
+            feature = "gen-ai-cache-service",
+            feature = "gen-ai-tuning-service",
+            feature = "index-endpoint-service",
+            feature = "index-service",
+            feature = "job-service",
+            feature = "llm-utility-service",
+            feature = "match-service",
+            feature = "metadata-service",
+            feature = "migration-service",
+            feature = "model-garden-service",
+            feature = "model-service",
+            feature = "notebook-service",
+            feature = "persistent-resource-service",
+            feature = "pipeline-service",
+            feature = "prediction-service",
+            feature = "reasoning-engine-execution-service",
+            feature = "reasoning-engine-service",
+            feature = "schedule-service",
+            feature = "session-service",
+            feature = "specialist-pool-service",
+            feature = "tensorboard-service",
+            feature = "vertex-rag-data-service",
+            feature = "vertex-rag-service",
+            feature = "vizier-service",
+        ))]
         #[derive(Clone, Default, PartialEq)]
         #[non_exhaustive]
         pub struct Feature {
@@ -55597,7 +55914,42 @@ pub mod feature_view_direct_write_request {
             pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
         }
 
-        #[cfg(feature = "feature-online-store-service")]
+        #[cfg(all(
+            feature = "data-foundry-service",
+            feature = "dataset-service",
+            feature = "deployment-resource-pool-service",
+            feature = "endpoint-service",
+            feature = "evaluation-service",
+            feature = "feature-online-store-admin-service",
+            feature = "feature-online-store-service",
+            feature = "feature-registry-service",
+            feature = "featurestore-online-serving-service",
+            feature = "featurestore-service",
+            feature = "gen-ai-cache-service",
+            feature = "gen-ai-tuning-service",
+            feature = "index-endpoint-service",
+            feature = "index-service",
+            feature = "job-service",
+            feature = "llm-utility-service",
+            feature = "match-service",
+            feature = "metadata-service",
+            feature = "migration-service",
+            feature = "model-garden-service",
+            feature = "model-service",
+            feature = "notebook-service",
+            feature = "persistent-resource-service",
+            feature = "pipeline-service",
+            feature = "prediction-service",
+            feature = "reasoning-engine-execution-service",
+            feature = "reasoning-engine-service",
+            feature = "schedule-service",
+            feature = "session-service",
+            feature = "specialist-pool-service",
+            feature = "tensorboard-service",
+            feature = "vertex-rag-data-service",
+            feature = "vertex-rag-service",
+            feature = "vizier-service",
+        ))]
         impl Feature {
             /// Creates a new default instance.
             pub fn new() -> Self {
@@ -55673,7 +56025,42 @@ pub mod feature_view_direct_write_request {
             }
         }
 
-        #[cfg(feature = "feature-online-store-service")]
+        #[cfg(all(
+            feature = "data-foundry-service",
+            feature = "dataset-service",
+            feature = "deployment-resource-pool-service",
+            feature = "endpoint-service",
+            feature = "evaluation-service",
+            feature = "feature-online-store-admin-service",
+            feature = "feature-online-store-service",
+            feature = "feature-registry-service",
+            feature = "featurestore-online-serving-service",
+            feature = "featurestore-service",
+            feature = "gen-ai-cache-service",
+            feature = "gen-ai-tuning-service",
+            feature = "index-endpoint-service",
+            feature = "index-service",
+            feature = "job-service",
+            feature = "llm-utility-service",
+            feature = "match-service",
+            feature = "metadata-service",
+            feature = "migration-service",
+            feature = "model-garden-service",
+            feature = "model-service",
+            feature = "notebook-service",
+            feature = "persistent-resource-service",
+            feature = "pipeline-service",
+            feature = "prediction-service",
+            feature = "reasoning-engine-execution-service",
+            feature = "reasoning-engine-service",
+            feature = "schedule-service",
+            feature = "session-service",
+            feature = "specialist-pool-service",
+            feature = "tensorboard-service",
+            feature = "vertex-rag-data-service",
+            feature = "vertex-rag-service",
+            feature = "vizier-service",
+        ))]
         impl wkt::message::Message for Feature {
             fn typename() -> &'static str {
                 "type.googleapis.com/google.cloud.aiplatform.v1.FeatureViewDirectWriteRequest.DataKeyAndFeatureValues.Feature"
@@ -55681,13 +56068,47 @@ pub mod feature_view_direct_write_request {
         }
 
         /// Defines additional types related to [Feature].
-        #[cfg(feature = "feature-online-store-service")]
+        #[cfg(all(
+            feature = "data-foundry-service",
+            feature = "dataset-service",
+            feature = "deployment-resource-pool-service",
+            feature = "endpoint-service",
+            feature = "evaluation-service",
+            feature = "feature-online-store-admin-service",
+            feature = "feature-online-store-service",
+            feature = "feature-registry-service",
+            feature = "featurestore-online-serving-service",
+            feature = "featurestore-service",
+            feature = "gen-ai-cache-service",
+            feature = "gen-ai-tuning-service",
+            feature = "index-endpoint-service",
+            feature = "index-service",
+            feature = "job-service",
+            feature = "llm-utility-service",
+            feature = "match-service",
+            feature = "metadata-service",
+            feature = "migration-service",
+            feature = "model-garden-service",
+            feature = "model-service",
+            feature = "notebook-service",
+            feature = "persistent-resource-service",
+            feature = "pipeline-service",
+            feature = "prediction-service",
+            feature = "reasoning-engine-execution-service",
+            feature = "reasoning-engine-service",
+            feature = "schedule-service",
+            feature = "session-service",
+            feature = "specialist-pool-service",
+            feature = "tensorboard-service",
+            feature = "vertex-rag-data-service",
+            feature = "vertex-rag-service",
+            feature = "vizier-service",
+        ))]
         pub mod feature {
             #[allow(unused_imports)]
             use super::*;
 
             /// Feature value data to write.
-            #[cfg(feature = "feature-online-store-service")]
             #[derive(Clone, Debug, PartialEq)]
             #[non_exhaustive]
             pub enum DataOneof {
@@ -55701,7 +56122,44 @@ pub mod feature_view_direct_write_request {
 
 /// Response message for
 /// [FeatureOnlineStoreService.FeatureViewDirectWrite][google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite].
-#[cfg(feature = "feature-online-store-service")]
+///
+/// [google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite]: crate::client::FeatureOnlineStoreService::feature_view_direct_write
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
 pub struct FeatureViewDirectWriteResponse {
@@ -55734,7 +56192,42 @@ pub struct FeatureViewDirectWriteResponse {
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
 
-#[cfg(feature = "feature-online-store-service")]
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 impl FeatureViewDirectWriteResponse {
     /// Creates a new default instance.
     pub fn new() -> Self {
@@ -55797,7 +56290,42 @@ impl FeatureViewDirectWriteResponse {
     }
 }
 
-#[cfg(feature = "feature-online-store-service")]
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 impl wkt::message::Message for FeatureViewDirectWriteResponse {
     fn typename() -> &'static str {
         "type.googleapis.com/google.cloud.aiplatform.v1.FeatureViewDirectWriteResponse"
@@ -55805,13 +56333,83 @@ impl wkt::message::Message for FeatureViewDirectWriteResponse {
 }
 
 /// Defines additional types related to [FeatureViewDirectWriteResponse].
-#[cfg(feature = "feature-online-store-service")]
+#[cfg(all(
+    feature = "data-foundry-service",
+    feature = "dataset-service",
+    feature = "deployment-resource-pool-service",
+    feature = "endpoint-service",
+    feature = "evaluation-service",
+    feature = "feature-online-store-admin-service",
+    feature = "feature-online-store-service",
+    feature = "feature-registry-service",
+    feature = "featurestore-online-serving-service",
+    feature = "featurestore-service",
+    feature = "gen-ai-cache-service",
+    feature = "gen-ai-tuning-service",
+    feature = "index-endpoint-service",
+    feature = "index-service",
+    feature = "job-service",
+    feature = "llm-utility-service",
+    feature = "match-service",
+    feature = "metadata-service",
+    feature = "migration-service",
+    feature = "model-garden-service",
+    feature = "model-service",
+    feature = "notebook-service",
+    feature = "persistent-resource-service",
+    feature = "pipeline-service",
+    feature = "prediction-service",
+    feature = "reasoning-engine-execution-service",
+    feature = "reasoning-engine-service",
+    feature = "schedule-service",
+    feature = "session-service",
+    feature = "specialist-pool-service",
+    feature = "tensorboard-service",
+    feature = "vertex-rag-data-service",
+    feature = "vertex-rag-service",
+    feature = "vizier-service",
+))]
 pub mod feature_view_direct_write_response {
     #[allow(unused_imports)]
     use super::*;
 
     /// Details about the write for each key.
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     #[derive(Clone, Default, PartialEq)]
     #[non_exhaustive]
     pub struct WriteResponse {
@@ -55829,7 +56427,42 @@ pub mod feature_view_direct_write_response {
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
 
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     impl WriteResponse {
         /// Creates a new default instance.
         pub fn new() -> Self {
@@ -55903,7 +56536,42 @@ pub mod feature_view_direct_write_response {
         }
     }
 
-    #[cfg(feature = "feature-online-store-service")]
+    #[cfg(all(
+        feature = "data-foundry-service",
+        feature = "dataset-service",
+        feature = "deployment-resource-pool-service",
+        feature = "endpoint-service",
+        feature = "evaluation-service",
+        feature = "feature-online-store-admin-service",
+        feature = "feature-online-store-service",
+        feature = "feature-registry-service",
+        feature = "featurestore-online-serving-service",
+        feature = "featurestore-service",
+        feature = "gen-ai-cache-service",
+        feature = "gen-ai-tuning-service",
+        feature = "index-endpoint-service",
+        feature = "index-service",
+        feature = "job-service",
+        feature = "llm-utility-service",
+        feature = "match-service",
+        feature = "metadata-service",
+        feature = "migration-service",
+        feature = "model-garden-service",
+        feature = "model-service",
+        feature = "notebook-service",
+        feature = "persistent-resource-service",
+        feature = "pipeline-service",
+        feature = "prediction-service",
+        feature = "reasoning-engine-execution-service",
+        feature = "reasoning-engine-service",
+        feature = "schedule-service",
+        feature = "session-service",
+        feature = "specialist-pool-service",
+        feature = "tensorboard-service",
+        feature = "vertex-rag-data-service",
+        feature = "vertex-rag-service",
+        feature = "vizier-service",
+    ))]
     impl wkt::message::Message for WriteResponse {
         fn typename() -> &'static str {
             "type.googleapis.com/google.cloud.aiplatform.v1.FeatureViewDirectWriteResponse.WriteResponse"
@@ -116818,6 +117486,7 @@ impl wkt::message::Message for DirectRawPredictResponse {
 /// field and optionally [input][]. The subsequent messages must contain
 /// [input][].
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict]: crate::client::PredictionService::stream_direct_predict
 /// [google.cloud.aiplatform.v1.StreamDirectPredictRequest.endpoint]: crate::model::StreamDirectPredictRequest::endpoint
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
@@ -116924,6 +117593,8 @@ impl wkt::message::Message for StreamDirectPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamDirectPredict][google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict]: crate::client::PredictionService::stream_direct_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -117021,6 +117692,7 @@ impl wkt::message::Message for StreamDirectPredictResponse {
 /// [method_name][google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.method_name]
 /// in the subsequent messages have no effect.
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict]: crate::client::PredictionService::stream_direct_raw_predict
 /// [google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.endpoint]: crate::model::StreamDirectRawPredictRequest::endpoint
 /// [google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.input]: crate::model::StreamDirectRawPredictRequest::input
 /// [google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.method_name]: crate::model::StreamDirectRawPredictRequest::method_name
@@ -117104,6 +117776,8 @@ impl wkt::message::Message for StreamDirectRawPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamDirectRawPredict][google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict]: crate::client::PredictionService::stream_direct_raw_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -117148,6 +117822,7 @@ impl wkt::message::Message for StreamDirectRawPredictResponse {
 /// [endpoint][google.cloud.aiplatform.v1.StreamingPredictRequest.endpoint] field
 /// and optionally [input][]. The subsequent messages must contain [input][].
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingPredict]: crate::client::PredictionService::streaming_predict
 /// [google.cloud.aiplatform.v1.StreamingPredictRequest.endpoint]: crate::model::StreamingPredictRequest::endpoint
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
@@ -117254,6 +117929,8 @@ impl wkt::message::Message for StreamingPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamingPredict][google.cloud.aiplatform.v1.PredictionService.StreamingPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingPredict]: crate::client::PredictionService::streaming_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -117351,6 +118028,7 @@ impl wkt::message::Message for StreamingPredictResponse {
 /// [method_name][google.cloud.aiplatform.v1.StreamingRawPredictRequest.method_name]
 /// in the subsequent messages have no effect.
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict]: crate::client::PredictionService::streaming_raw_predict
 /// [google.cloud.aiplatform.v1.StreamingRawPredictRequest.endpoint]: crate::model::StreamingRawPredictRequest::endpoint
 /// [google.cloud.aiplatform.v1.StreamingRawPredictRequest.input]: crate::model::StreamingRawPredictRequest::input
 /// [google.cloud.aiplatform.v1.StreamingRawPredictRequest.method_name]: crate::model::StreamingRawPredictRequest::method_name
@@ -117434,6 +118112,8 @@ impl wkt::message::Message for StreamingRawPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamingRawPredict][google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict]: crate::client::PredictionService::streaming_raw_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]

@@ -6296,6 +6296,80 @@ pub trait PredictionService: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::PredictionService::stream_direct_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_direct_predict(
+        &self,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = (
+            google_cloud_gax::streaming::RequestSender<crate::model::StreamDirectPredictRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<
+                crate::model::StreamDirectPredictResponse,
+            >,
+        ),
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!() // satisfies the type checker; the stub above always panics.
+        }
+    }
+
+    /// Implements [super::client::PredictionService::stream_direct_raw_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_direct_raw_predict(
+        &self,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = (
+            google_cloud_gax::streaming::RequestSender<crate::model::StreamDirectRawPredictRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<
+                crate::model::StreamDirectRawPredictResponse,
+            >,
+        ),
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!() // satisfies the type checker; the stub above always panics.
+        }
+    }
+
+    /// Implements [super::client::PredictionService::streaming_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn streaming_predict(
+        &self,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = (
+            google_cloud_gax::streaming::RequestSender<crate::model::StreamingPredictRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingPredictResponse>,
+        ),
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!() // satisfies the type checker; the stub above always panics.
+        }
+    }
+
+    /// Implements [super::client::PredictionService::streaming_raw_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn streaming_raw_predict(
+        &self,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = (
+            google_cloud_gax::streaming::RequestSender<crate::model::StreamingRawPredictRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<
+                crate::model::StreamingRawPredictResponse,
+            >,
+        ),
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!() // satisfies the type checker; the stub above always panics.
+        }
+    }
+
     /// Implements [super::client::PredictionService::explain].
     fn explain(
         &self,

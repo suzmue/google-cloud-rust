@@ -8948,6 +8948,50 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamDirectPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamDirectPredictResponse>,
+    ) {
+        self.inner.stream_direct_predict(options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_raw_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamDirectRawPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamDirectRawPredictResponse>,
+    ) {
+        self.inner.stream_direct_raw_predict(options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamingPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingPredictResponse>,
+    ) {
+        self.inner.streaming_predict(options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_raw_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamingRawPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingRawPredictResponse>,
+    ) {
+        self.inner.streaming_raw_predict(options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn explain(
         &self,

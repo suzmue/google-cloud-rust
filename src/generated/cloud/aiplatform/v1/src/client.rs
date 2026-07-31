@@ -15045,6 +15045,57 @@ impl PredictionService {
         super::builder::prediction_service::DirectRawPredict::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request to a gRPC model server for
+    /// Vertex first-party products and frameworks.
+    pub async fn stream_direct_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamDirectPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamDirectPredictResponse>,
+    ) {
+        self.inner.stream_direct_predict(options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request to a gRPC model server for
+    /// custom containers.
+    pub async fn stream_direct_raw_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamDirectRawPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamDirectRawPredictResponse>,
+    ) {
+        self.inner.stream_direct_raw_predict(options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request for Vertex first-party
+    /// products and frameworks.
+    pub async fn streaming_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamingPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingPredictResponse>,
+    ) {
+        self.inner.streaming_predict(options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request through gRPC.
+    pub async fn streaming_raw_predict(
+        &self,
+        options: crate::RequestOptions,
+    ) -> (
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamingRawPredictRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingRawPredictResponse>,
+    ) {
+        self.inner.streaming_raw_predict(options).await
+    }
+
     /// Perform an online explanation.
     ///
     /// If

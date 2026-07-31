@@ -204,6 +204,9 @@ libraries:
     version: 1.15.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
+      skipped_ids:
+      - .google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite
       per_service_features: true
       default_features:
         - data-foundry-service

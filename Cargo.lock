@@ -1300,6 +1300,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "bytes",
+ "futures",
  "google-cloud-api",
  "google-cloud-gax",
  "google-cloud-gax-internal",
@@ -1310,9 +1311,14 @@ dependencies = [
  "google-cloud-rpc",
  "google-cloud-type",
  "google-cloud-wkt",
+ "http",
+ "prost",
+ "prost-types",
  "serde",
  "serde_json",
  "serde_with",
+ "tokio",
+ "tokio-stream",
  "tracing",
 ]
 
