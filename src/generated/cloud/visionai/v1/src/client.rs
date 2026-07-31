@@ -2165,6 +2165,70 @@ impl StreamingService {
             .map(super::tracing::StreamingService::new)
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Send packets to the series.
+    pub async fn send_packets<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::SendPacketsResponse>>
+                    + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::SendPacketsRequest> + Send + 'static,
+    {
+        self.inner.send_packets(Box::pin(req_stream), options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Receive packets from the series.
+    pub async fn receive_packets<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceivePacketsResponse>>
+                    + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::ReceivePacketsRequest> + Send + 'static,
+    {
+        self.inner
+            .receive_packets(Box::pin(req_stream), options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Receive events given the stream name.
+    pub async fn receive_events<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceiveEventsResponse>>
+                    + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::ReceiveEventsRequest> + Send + 'static,
+    {
+        self.inner
+            .receive_events(Box::pin(req_stream), options)
+            .await
+    }
+
     /// AcquireLease acquires a lease.
     ///
     /// # Example
@@ -4215,6 +4279,29 @@ impl Warehouse {
     /// ```
     pub fn delete_annotation(&self) -> super::builder::warehouse::DeleteAnnotation {
         super::builder::warehouse::DeleteAnnotation::new(self.inner.clone())
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Ingests data for the asset. It is not allowed to ingest a data chunk which
+    /// is already expired according to TTL.
+    /// This method is only available via the gRPC API (not HTTP since
+    /// bi-directional streaming is not supported via HTTP).
+    pub async fn ingest_asset<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::IngestAssetResponse>>
+                    + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::IngestAssetRequest> + Send + 'static,
+    {
+        self.inner.ingest_asset(Box::pin(req_stream), options).await
     }
 
     /// Supported by STREAM_VIDEO corpus type.

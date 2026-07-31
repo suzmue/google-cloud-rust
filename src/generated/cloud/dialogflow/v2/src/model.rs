@@ -4642,6 +4642,7 @@ pub struct InputAudioConfig {
     /// `NO_SPEECH_RECOGNIZED` event to Dialogflow agent.
     ///
     /// [google.cloud.dialogflow.v2.Participants.AnalyzeContent]: crate::client::Participants::analyze_content
+    /// [google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]: crate::client::Participants::streaming_analyze_content
     pub disable_no_speech_recognized_event: bool,
 
     /// Enable automatic punctuation option at the speech backend.
@@ -20427,6 +20428,7 @@ pub mod human_agent_assistant_config {
         /// [google.cloud.dialogflow.v2.Conversations.ListMessages]: crate::client::Conversations::list_messages
         /// [google.cloud.dialogflow.v2.ListMessagesResponse.messages]: crate::model::ListMessagesResponse::messages
         /// [google.cloud.dialogflow.v2.Participants.AnalyzeContent]: crate::client::Participants::analyze_content
+        /// [google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]: crate::client::Participants::streaming_analyze_content
         /// [google.cloud.dialogflow.v2.StreamingAnalyzeContentResponse.message]: crate::model::StreamingAnalyzeContentResponse::message
         pub enable_sentiment_analysis: bool,
 
@@ -20458,6 +20460,7 @@ pub mod human_agent_assistant_config {
         /// [google.cloud.dialogflow.v2.Conversations.ListMessages]: crate::client::Conversations::list_messages
         /// [google.cloud.dialogflow.v2.ListMessagesResponse.messages]: crate::model::ListMessagesResponse::messages
         /// [google.cloud.dialogflow.v2.Participants.AnalyzeContent]: crate::client::Participants::analyze_content
+        /// [google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]: crate::client::Participants::streaming_analyze_content
         /// [google.cloud.dialogflow.v2.StreamingAnalyzeContentResponse.message]: crate::model::StreamingAnalyzeContentResponse::message
         pub enable_sentiment_analysis_v3: bool,
 
@@ -45796,6 +45799,7 @@ impl wkt::message::Message for AnalyzeContentResponse {
 ///
 /// After you sent all input, you must half-close or abort the request stream.
 ///
+/// [google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]: crate::client::Participants::streaming_analyze_content
 /// [google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.audio_config]: crate::model::StreamingAnalyzeContentRequest::config
 /// [google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config]: crate::model::StreamingAnalyzeContentRequest::config
 /// [google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.input]: crate::model::StreamingAnalyzeContentRequest::input
@@ -55421,6 +55425,7 @@ impl wkt::message::Message for SentimentAnalysisRequestConfig {
 ///
 /// [google.cloud.dialogflow.v2.ConversationProfile.human_agent_assistant_config]: crate::model::ConversationProfile::human_agent_assistant_config
 /// [google.cloud.dialogflow.v2.Participants.AnalyzeContent]: crate::client::Participants::analyze_content
+/// [google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]: crate::client::Participants::streaming_analyze_content
 #[cfg(any(
     feature = "answer-records",
     feature = "conversations",

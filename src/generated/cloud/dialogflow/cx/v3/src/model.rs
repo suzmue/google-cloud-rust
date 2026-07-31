@@ -31618,6 +31618,7 @@ pub struct SecuritySettings {
     ///
     /// [google.cloud.dialogflow.cx.v3.SecuritySettings.retention_strategy]: crate::model::SecuritySettings::data_retention
     /// [google.cloud.dialogflow.cx.v3.Sessions.DetectIntent]: crate::client::Sessions::detect_intent
+    /// [google.cloud.dialogflow.cx.v3.Sessions.StreamingDetectIntent]: crate::client::Sessions::streaming_detect_intent
     pub audio_export_settings:
         std::option::Option<crate::model::security_settings::AudioExportSettings>,
 
@@ -33805,6 +33806,7 @@ pub mod detect_intent_response {
 /// [google.cloud.dialogflow.cx.v3.AudioInput.audio]: crate::model::AudioInput::audio
 /// [google.cloud.dialogflow.cx.v3.AudioInput.config]: crate::model::AudioInput::config
 /// [google.cloud.dialogflow.cx.v3.QueryInput.text]: crate::model::QueryInput::input
+/// [google.cloud.dialogflow.cx.v3.Sessions.StreamingDetectIntent]: crate::client::Sessions::streaming_detect_intent
 /// [google.cloud.dialogflow.cx.v3.StreamingDetectIntentRequest.output_audio_config]: crate::model::StreamingDetectIntentRequest::output_audio_config
 /// [google.cloud.dialogflow.cx.v3.StreamingDetectIntentRequest.query_input]: crate::model::StreamingDetectIntentRequest::query_input
 /// [google.cloud.dialogflow.cx.v3.StreamingDetectIntentRequest.query_params]: crate::model::StreamingDetectIntentRequest::query_params
@@ -34558,6 +34560,7 @@ impl wkt::message::Message for CloudConversationDebuggingInfo {
 /// is set to `FINAL`.
 ///
 /// [google.cloud.dialogflow.cx.v3.DetectIntentResponse.response_type]: crate::model::DetectIntentResponse::response_type
+/// [google.cloud.dialogflow.cx.v3.Sessions.StreamingDetectIntent]: crate::client::Sessions::streaming_detect_intent
 #[cfg(feature = "sessions")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]

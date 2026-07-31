@@ -7119,6 +7119,45 @@ impl Participants {
         super::builder::participants::AnalyzeContent::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Adds a text (chat, for example), or audio (phone recording, for example)
+    /// message from a participant into the conversation.
+    /// Note: This method is only available through the gRPC API (not REST).
+    ///
+    /// The top-level message sent to the client by the server is
+    /// `StreamingAnalyzeContentResponse`. Multiple response messages can be
+    /// returned in order. The first one or more messages contain the
+    /// `recognition_result` field. Each result represents a more complete
+    /// transcript of what the user said. The next message contains the
+    /// `reply_text` field and potentially the `reply_audio` field. The message can
+    /// also contain the `automated_agent_reply` field.
+    ///
+    /// Note: Always use agent versions for production traffic
+    /// sent to virtual agents. See [Versions and
+    /// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
+    pub async fn streaming_analyze_content<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingAnalyzeContentResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingAnalyzeContentRequest>
+            + Send
+            + 'static,
+    {
+        self.inner
+            .streaming_analyze_content(Box::pin(req_stream), options)
+            .await
+    }
+
     /// Gets suggested articles for a participant based on specific historical
     /// messages.
     ///
@@ -7476,6 +7515,44 @@ impl Sessions {
     /// ```
     pub fn detect_intent(&self) -> super::builder::sessions::DetectIntent {
         super::builder::sessions::DetectIntent::new(self.inner.clone())
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Processes a natural language query in audio format in a streaming fashion
+    /// and returns structured, actionable data as a result. This method is only
+    /// available via the gRPC API (not REST).
+    ///
+    /// If you might use
+    /// [Agent Assist](https://cloud.google.com/dialogflow/docs/#aa)
+    /// or other CCAI products now or in the future, consider using
+    /// [StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]
+    /// instead of `StreamingDetectIntent`. `StreamingAnalyzeContent` has
+    /// additional functionality for Agent Assist and other CCAI products.
+    ///
+    /// Note: Always use agent versions for production traffic.
+    /// See [Versions and
+    /// environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
+    ///
+    /// [google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]: crate::client::Participants::streaming_analyze_content
+    pub async fn streaming_detect_intent<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send + 'static,
+    {
+        self.inner
+            .streaming_detect_intent(Box::pin(req_stream), options)
+            .await
     }
 
     /// Lists information about the supported locations for this service.

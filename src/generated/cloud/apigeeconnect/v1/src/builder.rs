@@ -177,3 +177,59 @@ pub mod connection_service {
         }
     }
 }
+
+/// Request and client builders for [Tether][crate::client::Tether].
+pub mod tether {
+    use crate::Result;
+
+    /// A builder for [Tether][crate::client::Tether].
+    ///
+    /// ```
+    /// # async fn sample() -> google_cloud_gax::client_builder::Result<()> {
+    /// # use google_cloud_apigeeconnect_v1::*;
+    /// # use builder::tether::ClientBuilder;
+    /// # use client::Tether;
+    /// let builder : ClientBuilder = Tether::builder();
+    /// let client = builder
+    ///     .with_endpoint("https://apigeeconnect.googleapis.com")
+    ///     .build().await?;
+    /// # Ok(()) }
+    /// ```
+    pub type ClientBuilder = crate::ClientBuilder<client::Factory, gaxi::options::Credentials>;
+
+    pub(crate) mod client {
+        use super::super::super::client::Tether;
+        pub struct Factory;
+        impl crate::ClientFactory for Factory {
+            type Client = Tether;
+            type Credentials = gaxi::options::Credentials;
+            async fn build(
+                self,
+                config: gaxi::options::ClientConfig,
+            ) -> crate::ClientBuilderResult<Self::Client> {
+                Self::Client::new(config).await
+            }
+        }
+    }
+
+    /// Common implementation for [crate::client::Tether] request builders.
+    #[derive(Clone, Debug)]
+    pub(crate) struct RequestBuilder<R: std::default::Default> {
+        stub: std::sync::Arc<dyn super::super::stub::dynamic::Tether>,
+        request: R,
+        options: crate::RequestOptions,
+    }
+
+    impl<R> RequestBuilder<R>
+    where
+        R: std::default::Default,
+    {
+        pub(crate) fn new(stub: std::sync::Arc<dyn super::super::stub::dynamic::Tether>) -> Self {
+            Self {
+                stub,
+                request: R::default(),
+                options: crate::RequestOptions::default(),
+            }
+        }
+    }
+}

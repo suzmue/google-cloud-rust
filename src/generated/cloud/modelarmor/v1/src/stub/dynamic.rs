@@ -71,6 +71,40 @@ pub trait ModelArmor: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SanitizeModelResponseResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_sanitize_user_prompt(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeUserPromptRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeUserPromptResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_sanitize_model_response(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeModelResponseRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeModelResponseResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn list_locations(
         &self,
         req: google_cloud_location::model::ListLocationsRequest,
@@ -166,6 +200,46 @@ impl<T: super::ModelArmor> ModelArmor for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SanitizeModelResponseResponse>> {
         T::sanitize_model_response(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_sanitize_user_prompt(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeUserPromptRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeUserPromptResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::stream_sanitize_user_prompt(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_sanitize_model_response(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeModelResponseRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeModelResponseResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::stream_sanitize_model_response(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

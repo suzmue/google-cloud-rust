@@ -5676,6 +5676,35 @@ impl Sessions {
         super::builder::sessions::DetectIntent::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Processes a natural language query in audio format in a streaming fashion
+    /// and returns structured, actionable data as a result. This method is only
+    /// available via the gRPC API (not REST).
+    ///
+    /// Note: Always use agent versions for production traffic.
+    /// See [Versions and
+    /// environments](https://cloud.google.com/dialogflow/cx/docs/concept/version).
+    pub async fn streaming_detect_intent<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send + 'static,
+    {
+        self.inner
+            .streaming_detect_intent(Box::pin(req_stream), options)
+            .await
+    }
+
     /// Returns preliminary intent match results, doesn't change the session
     /// status.
     ///

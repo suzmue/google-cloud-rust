@@ -3975,6 +3975,30 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_analyze_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamingAnalyzeContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingAnalyzeContentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .streaming_analyze_content(req_stream, options)
+            .await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn suggest_articles(
         &self,
@@ -4183,6 +4207,27 @@ where
             method: "client::Sessions::detect_intent",
             self.inner.detect_intent(req, options));
         pending.await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_detect_intent(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .streaming_detect_intent(req_stream, options)
+            .await
     }
 
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]

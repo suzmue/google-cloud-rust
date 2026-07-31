@@ -139,6 +139,25 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_recognize(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingRecognizeRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingRecognizeResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner.streaming_recognize(req_stream, options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn batch_recognize(
         &self,

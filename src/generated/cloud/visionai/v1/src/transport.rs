@@ -5681,30 +5681,217 @@ impl super::stub::AppPlatform for AppPlatform {
 #[derive(Clone)]
 pub struct StreamingService {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for StreamingService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("StreamingService")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("StreamingService");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
 impl StreamingService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
 impl super::stub::StreamingService for StreamingService {
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn send_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SendPacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::SendPacketsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.visionai.v1.StreamingService",
+                "SendPackets",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.visionai.v1.StreamingService/SendPackets",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::visionai::v1::SendPacketsRequest,
+                crate::prost::google::cloud::visionai::v1::SendPacketsResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceivePacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceivePacketsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.visionai.v1.StreamingService",
+                "ReceivePackets",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.visionai.v1.StreamingService/ReceivePackets",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::visionai::v1::ReceivePacketsRequest,
+                crate::prost::google::cloud::visionai::v1::ReceivePacketsResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_events(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceiveEventsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceiveEventsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.visionai.v1.StreamingService",
+                "ReceiveEvents",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.visionai.v1.StreamingService/ReceiveEvents",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::visionai::v1::ReceiveEventsRequest,
+                crate::prost::google::cloud::visionai::v1::ReceiveEventsResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
+    }
+
     async fn acquire_lease(
         &self,
         req: crate::model::AcquireLeaseRequest,
@@ -9183,26 +9370,45 @@ impl super::stub::StreamsService for StreamsService {
 #[derive(Clone)]
 pub struct Warehouse {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Warehouse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("Warehouse")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("Warehouse");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
 impl Warehouse {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
@@ -11712,6 +11918,61 @@ impl super::stub::Warehouse for Warehouse {
                 let (parts, _) = r.into_parts();
                 crate::Response::from_parts(parts, ())
             })
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn ingest_asset(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::IngestAssetRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::IngestAssetResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.visionai.v1.Warehouse",
+                "IngestAsset",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.visionai.v1.Warehouse/IngestAsset");
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::visionai::v1::IngestAssetRequest,
+                crate::prost::google::cloud::visionai::v1::IngestAssetResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
     }
 
     async fn clip_asset(

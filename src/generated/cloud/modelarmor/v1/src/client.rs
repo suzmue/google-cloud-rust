@@ -327,6 +327,52 @@ impl ModelArmor {
         super::builder::model_armor::SanitizeModelResponse::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Streaming version of Sanitize User Prompt.
+    pub async fn stream_sanitize_user_prompt<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeUserPromptResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::SanitizeUserPromptRequest> + Send + 'static,
+    {
+        self.inner
+            .stream_sanitize_user_prompt(Box::pin(req_stream), options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Streaming version of Sanitizes Model Response.
+    pub async fn stream_sanitize_model_response<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeModelResponseResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::SanitizeModelResponseRequest> + Send + 'static,
+    {
+        self.inner
+            .stream_sanitize_model_response(Box::pin(req_stream), options)
+            .await
+    }
+
     /// Lists information about the supported locations for this service.
     ///
     /// # Example

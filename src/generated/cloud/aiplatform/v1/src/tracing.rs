@@ -2154,6 +2154,29 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn feature_view_direct_write(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::FeatureViewDirectWriteRequest> + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::FeatureViewDirectWriteResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .feature_view_direct_write(req_stream, options)
+            .await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn generate_fetch_access_token(
         &self,
@@ -8946,6 +8969,86 @@ where
             method: "client::PredictionService::direct_raw_predict",
             self.inner.direct_raw_predict(req, options));
         pending.await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamDirectPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner.stream_direct_predict(req_stream, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_raw_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamDirectRawPredictRequest> + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .stream_direct_raw_predict(req_stream, options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner.streaming_predict(req_stream, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_raw_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingRawPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner.streaming_raw_predict(req_stream, options).await
     }
 
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]

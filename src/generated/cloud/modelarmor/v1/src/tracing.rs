@@ -167,6 +167,48 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_sanitize_user_prompt(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeUserPromptRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeUserPromptResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .stream_sanitize_user_prompt(req_stream, options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_sanitize_model_response(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeModelResponseRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::SanitizeModelResponseResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .stream_sanitize_model_response(req_stream, options)
+            .await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn list_locations(
         &self,

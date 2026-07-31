@@ -18908,14 +18908,18 @@ impl super::stub::KnowledgeBases for KnowledgeBases {
 #[derive(Clone)]
 pub struct Participants {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 #[cfg(feature = "participants")]
 impl std::fmt::Debug for Participants {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("Participants")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("Participants");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
@@ -18923,13 +18927,28 @@ impl std::fmt::Debug for Participants {
 impl Participants {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
@@ -19519,6 +19538,66 @@ impl super::stub::Participants for Participants {
         );
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_analyze_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamingAnalyzeContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingAnalyzeContentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.dialogflow.v2.Participants",
+                "StreamingAnalyzeContent",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.dialogflow.v2.Participants/StreamingAnalyzeContent",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::dialogflow::v2::StreamingAnalyzeContentRequest,
+                crate::prost::google::cloud::dialogflow::v2::StreamingAnalyzeContentResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
     }
 
     async fn suggest_articles(
@@ -20414,14 +20493,18 @@ impl super::stub::Participants for Participants {
 #[derive(Clone)]
 pub struct Sessions {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 #[cfg(feature = "sessions")]
 impl std::fmt::Debug for Sessions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("Sessions")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("Sessions");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
@@ -20429,13 +20512,28 @@ impl std::fmt::Debug for Sessions {
 impl Sessions {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
@@ -20630,6 +20728,63 @@ impl super::stub::Sessions for Sessions {
         );
         let body = gaxi::http::handle_empty(Some(req), &method);
         self.inner.execute(builder, body, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_detect_intent(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.dialogflow.v2.Sessions",
+                "StreamingDetectIntent",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.dialogflow.v2.Sessions/StreamingDetectIntent",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::dialogflow::v2::StreamingDetectIntentRequest,
+                crate::prost::google::cloud::dialogflow::v2::StreamingDetectIntentResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
     }
 
     async fn list_locations(

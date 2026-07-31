@@ -29,6 +29,23 @@ pub trait TextToSpeech: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SynthesizeSpeechResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_synthesize(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingSynthesizeRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingSynthesizeResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn list_operations(
         &self,
         req: google_cloud_longrunning::model::ListOperationsRequest,
@@ -61,6 +78,26 @@ impl<T: super::TextToSpeech> TextToSpeech for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SynthesizeSpeechResponse>> {
         T::synthesize_speech(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_synthesize(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingSynthesizeRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingSynthesizeResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::streaming_synthesize(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

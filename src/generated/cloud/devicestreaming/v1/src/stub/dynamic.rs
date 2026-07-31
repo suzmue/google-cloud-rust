@@ -46,6 +46,19 @@ pub trait DirectAccessService: std::fmt::Debug + Send + Sync {
         req: crate::model::UpdateDeviceSessionRequest,
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::DeviceSession>>;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn adb_connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::AdbMessage> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::DeviceMessage>> + Send>,
+        >,
+    >;
 }
 
 /// All implementations of [super::DirectAccessService] also implement [DirectAccessService].
@@ -94,5 +107,21 @@ impl<T: super::DirectAccessService> DirectAccessService for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::DeviceSession>> {
         T::update_device_session(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn adb_connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::AdbMessage> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::DeviceMessage>> + Send>,
+        >,
+    > {
+        T::adb_connect(self, req_stream, options).await
     }
 }

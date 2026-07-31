@@ -2881,6 +2881,31 @@ impl GroundedGenerationService {
             .map(super::tracing::GroundedGenerationService::new)
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Generates grounded content in a streaming fashion.
+    pub async fn stream_generate_grounded_content<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::GenerateGroundedContentResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::GenerateGroundedContentRequest>
+            + Send
+            + 'static,
+    {
+        self.inner
+            .stream_generate_grounded_content(Box::pin(req_stream), options)
+            .await
+    }
+
     /// Generates grounded content.
     ///
     /// # Example

@@ -1718,6 +1718,30 @@ impl<T> super::stub::GroundedGenerationService for GroundedGenerationService<T>
 where
     T: super::stub::GroundedGenerationService + std::fmt::Debug + Send + Sync,
 {
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_generate_grounded_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::GenerateGroundedContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::GenerateGroundedContentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .stream_generate_grounded_content(req_stream, options)
+            .await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn generate_grounded_content(
         &self,

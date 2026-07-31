@@ -3219,6 +3219,26 @@ pub trait Participants: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::AnalyzeContentResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_analyze_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamingAnalyzeContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingAnalyzeContentResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn suggest_articles(
         &self,
         req: crate::model::SuggestArticlesRequest,
@@ -3324,6 +3344,29 @@ impl<T: super::Participants> Participants for T {
     }
 
     /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_analyze_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamingAnalyzeContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingAnalyzeContentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::streaming_analyze_content(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
     async fn suggest_articles(
         &self,
         req: crate::model::SuggestArticlesRequest,
@@ -3416,6 +3459,23 @@ pub trait Sessions: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::DetectIntentResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_detect_intent(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn list_locations(
         &self,
         req: google_cloud_location::model::ListLocationsRequest,
@@ -3458,6 +3518,26 @@ impl<T: super::Sessions> Sessions for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::DetectIntentResponse>> {
         T::detect_intent(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_detect_intent(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::streaming_detect_intent(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

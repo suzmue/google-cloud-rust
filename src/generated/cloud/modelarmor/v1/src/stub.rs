@@ -132,6 +132,56 @@ pub trait ModelArmor: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::ModelArmor::stream_sanitize_user_prompt].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_sanitize_user_prompt(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeUserPromptRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::SanitizeUserPromptResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
+    /// Implements [super::client::ModelArmor::stream_sanitize_model_response].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_sanitize_model_response(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SanitizeModelResponseRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::SanitizeModelResponseResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
     /// Implements [super::client::ModelArmor::list_locations].
     fn list_locations(
         &self,

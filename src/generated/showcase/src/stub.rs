@@ -295,6 +295,30 @@ pub trait Echo: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::Echo::chat].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn chat(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::EchoRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<Item = crate::Result<crate::model::EchoResponse>>
+                        + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
     /// Implements [super::client::Echo::paged_expand].
     fn paged_expand(
         &self,
@@ -771,6 +795,31 @@ pub trait Messaging: std::fmt::Debug + Send + Sync {
         Output = crate::Result<crate::Response<google_cloud_longrunning::model::Operation>>,
     > + Send {
         gaxi::unimplemented::unimplemented_stub()
+    }
+
+    /// Implements [super::client::Messaging::connect].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn connect(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ConnectRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamBlurbsResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
     }
 
     /// Implements [super::client::Messaging::list_locations].

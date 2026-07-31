@@ -110,6 +110,21 @@ where
             self.inner.update_device_session(req, options));
         pending.await
     }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn adb_connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::AdbMessage> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::DeviceMessage>> + Send>,
+        >,
+    > {
+        self.inner.adb_connect(req_stream, options).await
+    }
 }
 
 pub(crate) mod info {

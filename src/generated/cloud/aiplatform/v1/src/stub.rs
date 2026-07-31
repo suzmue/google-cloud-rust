@@ -1494,6 +1494,33 @@ pub trait FeatureOnlineStoreService: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::FeatureOnlineStoreService::feature_view_direct_write].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn feature_view_direct_write(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::FeatureViewDirectWriteRequest> + Send,
+            >,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::FeatureViewDirectWriteResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
     /// Implements [super::client::FeatureOnlineStoreService::generate_fetch_access_token].
     fn generate_fetch_access_token(
         &self,
@@ -6294,6 +6321,108 @@ pub trait PredictionService: std::fmt::Debug + Send + Sync {
         Output = crate::Result<crate::Response<crate::model::DirectRawPredictResponse>>,
     > + Send {
         gaxi::unimplemented::unimplemented_stub()
+    }
+
+    /// Implements [super::client::PredictionService::stream_direct_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_direct_predict(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamDirectPredictRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamDirectPredictResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
+    /// Implements [super::client::PredictionService::stream_direct_raw_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_direct_raw_predict(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamDirectRawPredictRequest> + Send,
+            >,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamDirectRawPredictResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
+    /// Implements [super::client::PredictionService::streaming_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn streaming_predict(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingPredictRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamingPredictResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
+    /// Implements [super::client::PredictionService::streaming_raw_predict].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn streaming_raw_predict(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingRawPredictRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamingRawPredictResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
     }
 
     /// Implements [super::client::PredictionService::explain].

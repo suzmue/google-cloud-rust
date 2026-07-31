@@ -1321,6 +1321,26 @@ impl<T: super::EngineService> EngineService for T {
 #[cfg(feature = "grounded-generation-service")]
 #[async_trait::async_trait]
 pub trait GroundedGenerationService: std::fmt::Debug + Send + Sync {
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_generate_grounded_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::GenerateGroundedContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::GenerateGroundedContentResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn generate_grounded_content(
         &self,
         req: crate::model::GenerateGroundedContentRequest,
@@ -1356,6 +1376,29 @@ pub trait GroundedGenerationService: std::fmt::Debug + Send + Sync {
 #[cfg(feature = "grounded-generation-service")]
 #[async_trait::async_trait]
 impl<T: super::GroundedGenerationService> GroundedGenerationService for T {
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_generate_grounded_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::GenerateGroundedContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::GenerateGroundedContentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::stream_generate_grounded_content(self, req_stream, options).await
+    }
+
     /// Forwards the call to the implementation provided by `T`.
     async fn generate_grounded_content(
         &self,

@@ -1061,6 +1061,54 @@ impl<T: super::AppPlatform> AppPlatform for T {
 /// A dyn-compatible, crate-private version of [super::StreamingService].
 #[async_trait::async_trait]
 pub trait StreamingService: std::fmt::Debug + Send + Sync {
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn send_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SendPacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::SendPacketsResponse>>
+                    + Send,
+            >,
+        >,
+    >;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceivePacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceivePacketsResponse>>
+                    + Send,
+            >,
+        >,
+    >;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_events(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceiveEventsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceiveEventsResponse>>
+                    + Send,
+            >,
+        >,
+    >;
+
     async fn acquire_lease(
         &self,
         req: crate::model::AcquireLeaseRequest,
@@ -1119,6 +1167,63 @@ pub trait StreamingService: std::fmt::Debug + Send + Sync {
 /// All implementations of [super::StreamingService] also implement [StreamingService].
 #[async_trait::async_trait]
 impl<T: super::StreamingService> StreamingService for T {
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn send_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SendPacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::SendPacketsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        T::send_packets(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceivePacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceivePacketsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        T::receive_packets(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_events(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceiveEventsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceiveEventsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        T::receive_events(self, req_stream, options).await
+    }
+
     /// Forwards the call to the implementation provided by `T`.
     async fn acquire_lease(
         &self,
@@ -1877,6 +1982,22 @@ pub trait Warehouse: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<()>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn ingest_asset(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::IngestAssetRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::IngestAssetResponse>>
+                    + Send,
+            >,
+        >,
+    >;
+
     async fn clip_asset(
         &self,
         req: crate::model::ClipAssetRequest,
@@ -2398,6 +2519,25 @@ impl<T: super::Warehouse> Warehouse for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<()>> {
         T::delete_annotation(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn ingest_asset(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::IngestAssetRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::IngestAssetResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        T::ingest_asset(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

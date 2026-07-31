@@ -3268,6 +3268,27 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_detect_intent(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        self.inner
+            .streaming_detect_intent(req_stream, options)
+            .await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn match_intent(
         &self,

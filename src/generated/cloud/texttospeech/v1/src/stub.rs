@@ -60,6 +60,31 @@ pub trait TextToSpeech: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::TextToSpeech::streaming_synthesize].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn streaming_synthesize(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingSynthesizeRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamingSynthesizeResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
     /// Implements [super::client::TextToSpeech::list_operations].
     fn list_operations(
         &self,

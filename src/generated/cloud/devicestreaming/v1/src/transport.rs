@@ -22,26 +22,45 @@ use crate::Result;
 #[derive(Clone)]
 pub struct DirectAccessService {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for DirectAccessService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("DirectAccessService")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("DirectAccessService");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
 impl DirectAccessService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
@@ -400,5 +419,58 @@ impl super::stub::DirectAccessService for DirectAccessService {
         );
         let body = gaxi::http::handle_empty(req.device_session, &method);
         self.inner.execute(builder, body, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn adb_connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::AdbMessage> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::DeviceMessage>> + Send>,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.devicestreaming.v1.DirectAccessService",
+                "AdbConnect",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.devicestreaming.v1.DirectAccessService/AdbConnect",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::devicestreaming::v1::AdbMessage,
+                crate::prost::google::cloud::devicestreaming::v1::DeviceMessage,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
     }
 }

@@ -339,6 +339,30 @@ impl Speech {
         super::builder::speech::Recognize::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Performs bidirectional streaming speech recognition: receive results while
+    /// sending audio. This method is only available via the gRPC API (not REST).
+    pub async fn streaming_recognize<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingRecognizeResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingRecognizeRequest> + Send + 'static,
+    {
+        self.inner
+            .streaming_recognize(Box::pin(req_stream), options)
+            .await
+    }
+
     /// Performs batch asynchronous speech recognition: send a request with N
     /// audio files and receive a long running operation that can be polled to see
     /// when the transcriptions are finished.

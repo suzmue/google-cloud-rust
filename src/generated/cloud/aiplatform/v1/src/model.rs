@@ -55414,6 +55414,8 @@ impl wkt::message::Message for SearchNearestEntitiesResponse {
 
 /// Request message for
 /// [FeatureOnlineStoreService.FeatureViewDirectWrite][google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite].
+///
+/// [google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite]: crate::client::FeatureOnlineStoreService::feature_view_direct_write
 #[cfg(feature = "feature-online-store-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -55701,6 +55703,8 @@ pub mod feature_view_direct_write_request {
 
 /// Response message for
 /// [FeatureOnlineStoreService.FeatureViewDirectWrite][google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite].
+///
+/// [google.cloud.aiplatform.v1.FeatureOnlineStoreService.FeatureViewDirectWrite]: crate::client::FeatureOnlineStoreService::feature_view_direct_write
 #[cfg(feature = "feature-online-store-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -116818,6 +116822,7 @@ impl wkt::message::Message for DirectRawPredictResponse {
 /// field and optionally [input][]. The subsequent messages must contain
 /// [input][].
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict]: crate::client::PredictionService::stream_direct_predict
 /// [google.cloud.aiplatform.v1.StreamDirectPredictRequest.endpoint]: crate::model::StreamDirectPredictRequest::endpoint
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
@@ -116924,6 +116929,8 @@ impl wkt::message::Message for StreamDirectPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamDirectPredict][google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectPredict]: crate::client::PredictionService::stream_direct_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -117021,6 +117028,7 @@ impl wkt::message::Message for StreamDirectPredictResponse {
 /// [method_name][google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.method_name]
 /// in the subsequent messages have no effect.
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict]: crate::client::PredictionService::stream_direct_raw_predict
 /// [google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.endpoint]: crate::model::StreamDirectRawPredictRequest::endpoint
 /// [google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.input]: crate::model::StreamDirectRawPredictRequest::input
 /// [google.cloud.aiplatform.v1.StreamDirectRawPredictRequest.method_name]: crate::model::StreamDirectRawPredictRequest::method_name
@@ -117104,6 +117112,8 @@ impl wkt::message::Message for StreamDirectRawPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamDirectRawPredict][google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamDirectRawPredict]: crate::client::PredictionService::stream_direct_raw_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -117148,6 +117158,7 @@ impl wkt::message::Message for StreamDirectRawPredictResponse {
 /// [endpoint][google.cloud.aiplatform.v1.StreamingPredictRequest.endpoint] field
 /// and optionally [input][]. The subsequent messages must contain [input][].
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingPredict]: crate::client::PredictionService::streaming_predict
 /// [google.cloud.aiplatform.v1.StreamingPredictRequest.endpoint]: crate::model::StreamingPredictRequest::endpoint
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
@@ -117254,6 +117265,8 @@ impl wkt::message::Message for StreamingPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamingPredict][google.cloud.aiplatform.v1.PredictionService.StreamingPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingPredict]: crate::client::PredictionService::streaming_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]
@@ -117351,6 +117364,7 @@ impl wkt::message::Message for StreamingPredictResponse {
 /// [method_name][google.cloud.aiplatform.v1.StreamingRawPredictRequest.method_name]
 /// in the subsequent messages have no effect.
 ///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict]: crate::client::PredictionService::streaming_raw_predict
 /// [google.cloud.aiplatform.v1.StreamingRawPredictRequest.endpoint]: crate::model::StreamingRawPredictRequest::endpoint
 /// [google.cloud.aiplatform.v1.StreamingRawPredictRequest.input]: crate::model::StreamingRawPredictRequest::input
 /// [google.cloud.aiplatform.v1.StreamingRawPredictRequest.method_name]: crate::model::StreamingRawPredictRequest::method_name
@@ -117434,6 +117448,8 @@ impl wkt::message::Message for StreamingRawPredictRequest {
 
 /// Response message for
 /// [PredictionService.StreamingRawPredict][google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict].
+///
+/// [google.cloud.aiplatform.v1.PredictionService.StreamingRawPredict]: crate::client::PredictionService::streaming_raw_predict
 #[cfg(feature = "prediction-service")]
 #[derive(Clone, Default, PartialEq)]
 #[non_exhaustive]

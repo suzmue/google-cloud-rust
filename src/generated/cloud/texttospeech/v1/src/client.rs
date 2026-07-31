@@ -164,6 +164,30 @@ impl TextToSpeech {
         super::builder::text_to_speech::SynthesizeSpeech::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Performs bidirectional streaming speech synthesis: receives audio while
+    /// sending text.
+    pub async fn streaming_synthesize<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingSynthesizeResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingSynthesizeRequest> + Send + 'static,
+    {
+        self.inner
+            .streaming_synthesize(Box::pin(req_stream), options)
+            .await
+    }
+
     /// Provides the [Operations][google.longrunning.Operations] service functionality in this service.
     ///
     /// [google.longrunning.Operations]: google-cloud-longrunning::client::Operations

@@ -3640,6 +3640,33 @@ impl FeatureOnlineStoreService {
         super::builder::feature_online_store_service::SearchNearestEntities::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Bidirectional streaming RPC to directly write to feature values in a
+    /// feature view. Requests may not have a one-to-one mapping to responses and
+    /// responses may be returned out-of-order to reduce latency.
+    pub async fn feature_view_direct_write<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::FeatureViewDirectWriteResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::FeatureViewDirectWriteRequest>
+            + Send
+            + 'static,
+    {
+        self.inner
+            .feature_view_direct_write(Box::pin(req_stream), options)
+            .await
+    }
+
     /// RPC to generate an access token for the given feature view. FeatureViews
     /// under the same FeatureOnlineStore share the same access token.
     ///
@@ -15043,6 +15070,103 @@ impl PredictionService {
     /// ```
     pub fn direct_raw_predict(&self) -> super::builder::prediction_service::DirectRawPredict {
         super::builder::prediction_service::DirectRawPredict::new(self.inner.clone())
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request to a gRPC model server for
+    /// Vertex first-party products and frameworks.
+    pub async fn stream_direct_predict<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamDirectPredictRequest> + Send + 'static,
+    {
+        self.inner
+            .stream_direct_predict(Box::pin(req_stream), options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request to a gRPC model server for
+    /// custom containers.
+    pub async fn stream_direct_raw_predict<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamDirectRawPredictRequest>
+            + Send
+            + 'static,
+    {
+        self.inner
+            .stream_direct_raw_predict(Box::pin(req_stream), options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request for Vertex first-party
+    /// products and frameworks.
+    pub async fn streaming_predict<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingPredictRequest> + Send + 'static,
+    {
+        self.inner
+            .streaming_predict(Box::pin(req_stream), options)
+            .await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Perform a streaming online prediction request through gRPC.
+    pub async fn streaming_raw_predict<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::StreamingRawPredictRequest> + Send + 'static,
+    {
+        self.inner
+            .streaming_raw_predict(Box::pin(req_stream), options)
+            .await
     }
 
     /// Perform an online explanation.

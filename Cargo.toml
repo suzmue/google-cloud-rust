@@ -59,6 +59,7 @@ default-members = [
   "tests/protobuf",
   "tests/pubsub",
   "tests/showcase",
+  "tests/bidi_probe_runner",
   "tests/spanner",
   "tests/storage",
 ]
@@ -378,6 +379,7 @@ members = [
   "tests/protojson-conformance",
   "tests/pubsub",
   "tests/showcase",
+  "tests/bidi_probe_runner",
   "tests/spanner",
   "tests/storage",
   "tools/check-copyright",

@@ -14672,14 +14672,18 @@ impl super::stub::EngineService for EngineService {
 #[derive(Clone)]
 pub struct GroundedGenerationService {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 #[cfg(feature = "grounded-generation-service")]
 impl std::fmt::Debug for GroundedGenerationService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("GroundedGenerationService")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("GroundedGenerationService");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
@@ -14687,18 +14691,93 @@ impl std::fmt::Debug for GroundedGenerationService {
 impl GroundedGenerationService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
 #[cfg(feature = "grounded-generation-service")]
 impl super::stub::GroundedGenerationService for GroundedGenerationService {
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_generate_grounded_content(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::GenerateGroundedContentRequest>
+                    + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::GenerateGroundedContentResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req_stream = req_stream.map(|v| v.to_proto().expect("request serialization failed"));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.cloud.discoveryengine.v1.GroundedGenerationService",
+                "StreamGenerateGroundedContent",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.discoveryengine.v1.GroundedGenerationService/StreamGenerateGroundedContent",
+        );
+        let x_goog_request_params = "";
+
+        let response = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::cloud::discoveryengine::v1::GenerateGroundedContentRequest,
+                crate::prost::google::cloud::discoveryengine::v1::GenerateGroundedContentResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let response_stream = response.into_inner().map(|res| {
+            res.map_err(gaxi::grpc::from_status::to_gax_error)
+                .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+                .map_err(Into::into)
+        });
+
+        Ok(Box::pin(response_stream))
+    }
+
     async fn generate_grounded_content(
         &self,
         req: crate::model::GenerateGroundedContentRequest,

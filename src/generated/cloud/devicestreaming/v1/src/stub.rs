@@ -90,4 +90,28 @@ pub trait DirectAccessService: std::fmt::Debug + Send + Sync {
     > + Send {
         gaxi::unimplemented::unimplemented_stub()
     }
+
+    /// Implements [super::client::DirectAccessService::adb_connect].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn adb_connect(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::AdbMessage> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<Item = crate::Result<crate::model::DeviceMessage>>
+                        + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
 }

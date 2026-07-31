@@ -263,4 +263,24 @@ impl DirectAccessService {
     ) -> super::builder::direct_access_service::UpdateDeviceSession {
         super::builder::direct_access_service::UpdateDeviceSession::new(self.inner.clone())
     }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Exposes an ADB connection if the device supports ADB.
+    /// gRPC headers are used to authenticate the Connect RPC, as well as
+    /// associate to a particular DeviceSession.
+    /// In particular, the user must specify the "X-Omnilab-Session-Name" header.
+    pub async fn adb_connect<S>(
+        &self,
+        req_stream: S,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::DeviceMessage>> + Send>,
+        >,
+    >
+    where
+        S: tokio_stream::Stream<Item = crate::model::AdbMessage> + Send + 'static,
+    {
+        self.inner.adb_connect(Box::pin(req_stream), options).await
+    }
 }

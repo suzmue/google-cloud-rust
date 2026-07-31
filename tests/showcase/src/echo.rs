@@ -62,6 +62,7 @@ pub async fn run() -> Result<()> {
     // Block() tests timeouts, which we already have tests for.
     request_id_unset(&client).await?;
     request_id_custom(&client).await?;
+    bidi_chat_probe(&client).await?;
 
     Ok(())
 }
@@ -191,5 +192,69 @@ async fn request_id_custom(client: &Echo) -> Result<()> {
         .await?;
     assert_eq!(uuid1, response.request_id);
     assert_eq!(uuid2, response.other_request_id);
+    Ok(())
+}
+
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use std::time::{Duration, Instant};
+use tokio_stream::StreamExt as _;
+
+struct DelayedStream<T> {
+    delay: Pin<Box<tokio::time::Sleep>>,
+    item: Option<T>,
+}
+
+impl<T> DelayedStream<T> {
+    fn new(dur: Duration, item: T) -> Self {
+        Self {
+            delay: Box::pin(tokio::time::sleep(dur)),
+            item: Some(item),
+        }
+    }
+}
+
+impl<T: Unpin> tokio_stream::Stream for DelayedStream<T> {
+    type Item = T;
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        if self.item.is_none() {
+            return Poll::Ready(None);
+        }
+        match self.delay.as_mut().poll(cx) {
+            Poll::Ready(()) => Poll::Ready(self.item.take()),
+            Poll::Pending => Poll::Pending,
+        }
+    }
+}
+
+async fn bidi_chat_probe(client: &Echo) -> Result<()> {
+    use google_cloud_showcase_v1beta1::model::EchoRequest;
+
+    let req = EchoRequest::default().set_content("Hello Bidi Showcase!");
+    let delay_dur = Duration::from_secs(5);
+    let delayed_stream = DelayedStream::new(delay_dur, req);
+
+    let t0 = Instant::now();
+    println!("\n[Bidi Probe] Calling chat() with 5s delayed stream at t0={:?}", t0);
+
+    let mut response_stream = client
+        .chat(delayed_stream, google_cloud_gax::options::RequestOptions::default())
+        .await?;
+
+    let t_headers = Instant::now();
+    let elapsed_headers = t_headers.duration_since(t0);
+    println!("[Bidi Probe] chat() call returned response_stream in {:?} (t_headers)", elapsed_headers);
+
+    let first_item = response_stream.next().await;
+    let t_first_item = Instant::now();
+    let elapsed_item = t_first_item.duration_since(t0);
+    println!("[Bidi Probe] First stream item received in {:?} (t_first_item): {:?}", elapsed_item, first_item);
+
+    if elapsed_headers < delay_dur {
+        println!("\n>>> PROBE RESULT for Showcase Echo.Chat: STREAM CREATED PRE-MESSAGE (t_headers = {:.2?}) <<<\n", elapsed_headers);
+    } else {
+        println!("\n>>> PROBE RESULT for Showcase Echo.Chat: STREAM CREATED POST-MESSAGE (t_headers = {:.2?}) <<<\n", elapsed_headers);
+    }
+
     Ok(())
 }

@@ -330,6 +330,19 @@ pub trait Echo: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::FailEchoWithDetailsResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn chat(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::EchoRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::EchoResponse>> + Send>,
+        >,
+    >;
+
     async fn paged_expand(
         &self,
         req: crate::model::PagedExpandRequest,
@@ -458,6 +471,22 @@ impl<T: super::Echo> Echo for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::FailEchoWithDetailsResponse>> {
         T::fail_echo_with_details(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn chat(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::EchoRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::EchoResponse>> + Send>,
+        >,
+    > {
+        T::chat(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.
@@ -899,6 +928,22 @@ pub trait Messaging: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<google_cloud_longrunning::model::Operation>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ConnectRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::StreamBlurbsResponse>>
+                    + Send,
+            >,
+        >,
+    >;
+
     async fn list_locations(
         &self,
         req: google_cloud_location::model::ListLocationsRequest,
@@ -1069,6 +1114,25 @@ impl<T: super::Messaging> Messaging for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<google_cloud_longrunning::model::Operation>> {
         T::search_blurbs(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ConnectRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::StreamBlurbsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        T::connect(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

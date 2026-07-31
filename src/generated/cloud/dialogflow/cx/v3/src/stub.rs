@@ -2092,6 +2092,31 @@ pub trait Sessions: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::Sessions::streaming_detect_intent].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn streaming_detect_intent(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingDetectIntentRequest> + Send>,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::StreamingDetectIntentResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
     /// Implements [super::client::Sessions::match_intent].
     fn match_intent(
         &self,

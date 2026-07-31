@@ -169,41 +169,61 @@ libraries:
   - name: google-ads-datamanager-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-apps-card-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-apps-events-subscriptions-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-apps-meet-v2
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-backstory
     version: 1.1.0
     apis:
       - path: backstory
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-chat-v1
     version: 1.1.0
     copyright_year: "2026"
     rust:
+      include_bidi_streaming_methods: true
       name_overrides: .google.chat.v1.PositionSectionRequest.position=PositionOneof
   - name: google-cloud-accessapproval-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-advisorynotifications-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-agentidentity-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-agentregistry-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-aiplatform-v1
     version: 1.15.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       per_service_features: true
       default_features:
         - data-foundry-service
@@ -244,24 +264,36 @@ libraries:
     version: 1.4.0
     copyright_year: "2025"
     output: src/generated/cloud/aiplatform/schema/predict/instance
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-aiplatform-v1-schema-predict-params
     version: 1.4.0
     copyright_year: "2025"
     output: src/generated/cloud/aiplatform/schema/predict/params
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-aiplatform-v1-schema-predict-prediction
     version: 1.4.0
     copyright_year: "2025"
     output: src/generated/cloud/aiplatform/schema/predict/prediction
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-aiplatform-v1-schema-trainingjob-definition
     version: 1.4.0
     copyright_year: "2025"
     output: src/generated/cloud/aiplatform/schema/trainingjob/definition
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-alloydb-connectors-v1
     version: 1.7.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-alloydb-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-api
     version: 1.7.0
     apis:
@@ -269,6 +301,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/api/types
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-api
       documentation_overrides:
         - id: .google.api.ProjectProperties
@@ -293,17 +326,22 @@ libraries:
     apis:
       - path: google/api/cloudquotas/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-api-servicecontrol-v1
     version: 1.12.0
     apis:
       - path: google/api/servicecontrol/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-api-servicecontrol-v2
     version: 1.11.0
     apis:
       - path: google/api/servicecontrol/v2
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       documentation_overrides:
         - id: .google.api.servicecontrol.v2.ResourceInfo.container
           match: |2
@@ -318,44 +356,63 @@ libraries:
     apis:
       - path: google/api/servicemanagement/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-api-serviceusage-v1
     version: 1.13.0
     apis:
       - path: google/api/serviceusage/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apigateway-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apigeeconnect-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apihub-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apikeys-v2
     version: 1.12.0
     apis:
       - path: google/api/apikeys/v2
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-apikeys-v2
   - name: google-cloud-apiregistry-v1
     version: 1.3.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-appengine-v1
     version: 1.13.0
     apis:
       - path: google/appengine/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apphub-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apps-script-type
     version: 1.6.0
     apis:
       - path: google/apps/script/type
     copyright_year: "2025"
     output: src/generated/apps/script/gtype
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-apps-script-type-calendar
     version: 1.8.0
     apis:
@@ -363,6 +420,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/apps/script/calendar
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -374,6 +432,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/apps/script/docs
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -385,6 +444,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/apps/script/drive
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -396,6 +456,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/apps/script/gmail
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -407,6 +468,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/apps/script/sheets
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -418,6 +480,7 @@ libraries:
     copyright_year: "2025"
     output: src/generated/apps/script/slides
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -428,11 +491,13 @@ libraries:
       - path: google/devtools/artifactregistry/v1
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-artifactregistry-v1
   - name: google-cloud-asset-v1
     version: 1.12.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-identity-accesscontextmanager-type
           package: google-cloud-identity-accesscontextmanager-type
@@ -449,9 +514,13 @@ libraries:
   - name: google-cloud-assuredworkloads-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-auditmanager-v1
     version: 1.4.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-auth
     version: 1.15.0
     copyright_year: "2025"
@@ -459,27 +528,43 @@ libraries:
   - name: google-cloud-backupdr-v1
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-baremetalsolution-v2
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-beyondcorp-appconnections-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-beyondcorp-appconnectors-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-beyondcorp-appgateways-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-beyondcorp-clientconnectorservices-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-beyondcorp-clientgateways-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-biglake-v1
     version: 2.1.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery
     version: 0.16.0-preview
     copyright_year: "2026"
@@ -493,18 +578,28 @@ libraries:
   - name: google-cloud-bigquery-analyticshub-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-connection-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-datapolicies-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-datapolicies-v2
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-datatransfer-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-derive
     version: 0.1.0-preview
     copyright_year: "2026"
@@ -513,9 +608,13 @@ libraries:
   - name: google-cloud-bigquery-migration-v2
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-reservation-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-bigquery-v2
     version: 0.1.0
     copyright_year: "2025"
@@ -523,6 +622,7 @@ libraries:
       - src/operation.rs
     skip_release: true
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: thiserror
           package: thiserror
@@ -569,21 +669,30 @@ libraries:
     apis:
       - path: google/bigtable/admin/v2
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-billing-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-binaryauthorization-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-blockchainnodeengine-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-build-v1
     version: 1.12.0
     apis:
       - path: google/devtools/cloudbuild/v1
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-build-v1
   - name: google-cloud-build-v2
     version: 1.12.0
@@ -591,31 +700,46 @@ libraries:
       - path: google/devtools/cloudbuild/v2
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-build-v2
   - name: google-cloud-certificatemanager-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-ces-v1
     version: 1.4.0
     copyright_year: "2026"
   - name: google-cloud-chronicle-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-cloudcontrolspartner-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-clouddms-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-cloudsecuritycompliance-v1
     version: 2.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-commerce-consumer-procurement-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-common
     version: 1.7.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-compute-v1
     version: 3.4.0
     copyright_year: "2025"
@@ -627,6 +751,7 @@ libraries:
       - googleapis
     specification_format: discovery
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-lro
           package: google-cloud-lro
@@ -658,48 +783,73 @@ libraries:
   - name: google-cloud-confidentialcomputing-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-config-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-configdelivery-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-connectors-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-contactcenterinsights-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-container-v1
     version: 1.12.0
     apis:
       - path: google/container/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-containeranalysis-v1
     version: 1.11.0
     apis:
       - path: google/devtools/containeranalysis/v1
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-containeranalysis-v1
   - name: google-cloud-datacatalog-lineage-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-datacatalog-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-dataform-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-datafusion-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-dataplex-v1
     version: 2.5.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-dataproc-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-datastore
     copyright_year: "2025"
     output: src/datastore
@@ -709,22 +859,33 @@ libraries:
     apis:
       - path: google/datastore/admin/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-datastream-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-deploy-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-developerconnect-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-devicestreaming-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-dialogflow-cx-v3
     version: 2.8.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       per_service_features: true
       default_features:
         - agents
@@ -751,6 +912,7 @@ libraries:
     version: 1.14.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       per_service_features: true
       default_features:
         - agents
@@ -779,6 +941,7 @@ libraries:
     version: 2.14.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       per_service_features: true
       default_features:
         - assistant-service
@@ -812,6 +975,7 @@ libraries:
       - googleapis
     specification_format: discovery
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-lro
           package: google-cloud-lro
@@ -824,30 +988,48 @@ libraries:
   - name: google-cloud-documentai-v1
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-domains-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-edgecontainer-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-edgenetwork-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-essentialcontacts-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-eventarc-publishing-v1
     version: 1.8.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-eventarc-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-filestore-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-financialservices-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-firestore
     copyright_year: "2025"
     output: src/firestore
@@ -885,9 +1067,13 @@ libraries:
     apis:
       - path: google/firestore/admin/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-functions-v2
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gax
     version: 1.13.0
     copyright_year: "2025"
@@ -910,34 +1096,47 @@ libraries:
   - name: google-cloud-geminidataanalytics-v1
     version: 1.2.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkebackup-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkeconnect-gateway-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkehub-configmanagement-v1
     version: 1.7.0
     apis:
       - path: google/cloud/gkehub/v1/configmanagement
     copyright_year: "2025"
     output: src/generated/cloud/gkehub/configmanagement/v1
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkehub-multiclusteringress-v1
     version: 1.7.0
     apis:
       - path: google/cloud/gkehub/v1/multiclusteringress
     copyright_year: "2025"
     output: src/generated/cloud/gkehub/multiclusteringress/v1
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkehub-rbacrolebindingactuation-v1
     version: 1.5.0
     apis:
       - path: google/cloud/gkehub/v1/rbacrolebindingactuation
     copyright_year: "2026"
     output: src/generated/cloud/gkehub/rbacrolebindingactuation/v1
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkehub-v1
     version: 1.13.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-gkehub-configmanagement-v1
           package: google-cloud-gkehub-configmanagement-v1
@@ -951,18 +1150,25 @@ libraries:
   - name: google-cloud-gkemulticloud-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gkerecommender-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-grafeas-v1
     version: 1.12.0
     apis:
       - path: grafeas/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-gsuiteaddons-v1
     version: 1.11.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-apps-script-type
           package: google-cloud-apps-script-type
@@ -988,40 +1194,55 @@ libraries:
   - name: google-cloud-hypercomputecluster-v1
     version: 1.4.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-iam-admin-v1
     version: 1.11.0
     apis:
       - path: google/iam/admin/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-iam-credentials-v1
     version: 1.11.0
     apis:
       - path: google/iam/credentials/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-iam-v1
     version: 1.11.0
     apis:
       - path: google/iam/v1
     copyright_year: "2024"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-iam-v2
     version: 1.12.0
     apis:
       - path: google/iam/v2
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-iam-v3
     version: 1.12.0
     apis:
       - path: google/iam/v3
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-iap-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-identity-accesscontextmanager-type
     version: 1.6.0
     apis:
       - path: google/identity/accesscontextmanager/type
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-identity-accesscontextmanager-type
   - name: google-cloud-identity-accesscontextmanager-v1
     version: 1.12.0
@@ -1029,6 +1250,7 @@ libraries:
       - path: google/identity/accesscontextmanager/v1
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-identity-accesscontextmanager-type
           package: google-cloud-identity-accesscontextmanager-type
@@ -1036,10 +1258,13 @@ libraries:
   - name: google-cloud-ids-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-kms-inventory-v1
     version: 1.11.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-kms-v1
           package: google-cloud-kms-v1
@@ -1047,16 +1272,23 @@ libraries:
   - name: google-cloud-kms-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-language-v2
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-licensemanager-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-location
     version: 1.11.0
     copyright_year: "2024"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-location
           ignore: true
@@ -1064,12 +1296,15 @@ libraries:
   - name: google-cloud-locationfinder-v1
     version: 1.10.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-logging-type
     version: 1.6.0
     apis:
       - path: google/logging/type
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-logging-type
   - name: google-cloud-logging-v2
     version: 1.13.0
@@ -1077,6 +1312,7 @@ libraries:
       - path: google/logging/v2
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       generate_rpc_samples: "false"
   - name: google-cloud-longrunning
     version: 1.12.0
@@ -1084,6 +1320,7 @@ libraries:
       - path: google/longrunning
     copyright_year: "2024"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: longrunning
           ignore: true
@@ -1095,79 +1332,124 @@ libraries:
   - name: google-cloud-lustre-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-maintenance-api-v1
     version: 1.9.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-managedidentities-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-managedkafka-schemaregistry-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-managedkafka-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-memcache-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-memorystore-v1
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-metastore-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-migrationcenter-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-modelarmor-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-monitoring-dashboard-v1
     version: 1.11.0
     apis:
       - path: google/monitoring/dashboard/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-monitoring-metricsscope-v1
     version: 1.12.0
     apis:
       - path: google/monitoring/metricsscope/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-monitoring-v3
     version: 1.11.0
     apis:
       - path: google/monitoring/v3
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-netapp-v1
     version: 2.4.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-networkconnectivity-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-networkmanagement-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-networksecurity-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-networkservices-v1
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-notebooks-v2
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-optimization-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-oracledatabase-v1
     version: 2.0.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-orchestration-airflow-service-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-orgpolicy-v1
     version: 1.6.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       documentation_overrides:
         - id: .google.cloud.orgpolicy.v1.Policy.ListPolicy
           match: 'Ancestry subtrees must be in one of the following formats:'
@@ -1178,17 +1460,24 @@ libraries:
   - name: google-cloud-orgpolicy-v2
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-osconfig-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-oslogin-common
     version: 1.7.0
     copyright_year: "2025"
     output: src/generated/oslogin/common
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-oslogin-v1
     version: 1.11.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-oslogin-common
           package: google-cloud-oslogin-common
@@ -1197,13 +1486,18 @@ libraries:
   - name: google-cloud-parallelstore-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-parametermanager-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-policysimulator-v1
     version: 1.13.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-orgpolicy-v2
           package: google-cloud-orgpolicy-v2
@@ -1212,6 +1506,7 @@ libraries:
     version: 1.11.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-iam-v2
           package: google-cloud-iam-v2
@@ -1219,23 +1514,32 @@ libraries:
   - name: google-cloud-policytroubleshooter-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-privacy-dlp-v2
     version: 1.13.0
     apis:
       - path: google/privacy/dlp/v2
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-privilegedaccessmanager-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-productregistry-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-profiler-v2
     version: 1.11.0
     apis:
       - path: google/devtools/cloudprofiler/v2
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-profiler-v2
   - name: google-cloud-pubsub
     version: 1.3.0
@@ -1316,13 +1620,18 @@ libraries:
   - name: google-cloud-rapidmigrationassessment-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-recaptchaenterprise-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-recommender-logging-v1
     version: 1.9.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_dependencies:
         - name: google-cloud-recommender-v1
           package: google-cloud-recommender-v1
@@ -1330,19 +1639,28 @@ libraries:
   - name: google-cloud-recommender-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-redis-cluster-v1
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-redis-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-resourcemanager-v3
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-retail-v2
     version: 2.12.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       documentation_overrides:
         - id: .google.cloud.retail.v2.SearchRequest.user_attributes
           match: Duplcate
@@ -1354,6 +1672,7 @@ libraries:
     copyright_year: "2024"
     output: src/generated/rpc/types
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-rpc
   - name: google-cloud-rpc-context
     version: 1.6.0
@@ -1361,43 +1680,68 @@ libraries:
       - path: google/rpc/context
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-rpc-context
   - name: google-cloud-run-v2
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-scheduler-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-secretmanager-v1
     version: 1.12.0
     copyright_year: "2024"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-securesourcemanager-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-security-privateca-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-security-publicca-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-securitycenter-v2
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-securitycentermanagement-v1
     version: 1.3.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-securityposture-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-servicedirectory-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-servicehealth-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-shell-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-showcase-v1beta1
     version: 1.0.0
     apis:
@@ -1408,6 +1752,8 @@ libraries:
       - showcase
       - googleapis
     skip_release: true
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-spanner
     version: 0.34.4-preview
     copyright_year: "2026"
@@ -1436,6 +1782,7 @@ libraries:
       - path: google/spanner/admin/database/v1
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       skipped_ids:
         - .google.spanner.admin.database.v1.DatabaseAdmin.InternalUpdateGraphOperation
         - .google.spanner.admin.database.v1.InternalUpdateGraphOperationRequest
@@ -1472,13 +1819,18 @@ libraries:
     apis:
       - path: google/spanner/admin/instance/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-speech-v2
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-sql-v1
     version: 2.9.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       resource_name_heuristic: true
       pagination_overrides:
         - id: .google.cloud.sql.v1.SqlInstancesService.List
@@ -1612,28 +1964,41 @@ libraries:
   - name: google-cloud-storagebatchoperations-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-storageinsights-v1
     version: 1.13.0
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       name_overrides: .google.cloud.storageinsights.v1.DatasetConfig.cloud_storage_buckets=CloudStorageBucketsOneOf,.google.cloud.storageinsights.v1.DatasetConfig.cloud_storage_locations=CloudStorageLocationsOneOf
   - name: google-cloud-storagetransfer-v1
     version: 1.13.0
     apis:
       - path: google/storagetransfer/v1
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-support-v2
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-talent-v4
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-tasks-v2
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-telcoautomation-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-test-utils
     copyright_year: "2025"
     output: src/test-utils
@@ -1641,18 +2006,25 @@ libraries:
   - name: google-cloud-texttospeech-v1
     version: 1.14.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-timeseriesinsights-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-tpu-v2
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-trace-v1
     version: 1.9.0
     apis:
       - path: google/devtools/cloudtrace/v1
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-trace-v1
   - name: google-cloud-trace-v2
     version: 1.11.0
@@ -1660,55 +2032,83 @@ libraries:
       - path: google/devtools/cloudtrace/v2
     copyright_year: "2025"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-trace-v2
   - name: google-cloud-translation-v3
     version: 1.13.0
     apis:
       - path: google/cloud/translate/v3
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-type
     version: 1.6.0
     apis:
       - path: google/type
     copyright_year: "2024"
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: google-cloud-type
   - name: google-cloud-vectorsearch-v1
     version: 1.4.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-video-livestream-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-video-stitcher-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-video-transcoder-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-videointelligence-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-vision-v1
     version: 1.12.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-visionai-v1
     version: 1.4.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-vmmigration-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-vmwareengine-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-vpcaccess-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-webrisk-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-websecurityscanner-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-wkt
     version: 1.7.0
     copyright_year: "2025"
@@ -1729,74 +2129,120 @@ libraries:
   - name: google-cloud-workflows-executions-v1
     version: 1.11.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-workflows-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-cloud-workstations-v1
     version: 1.13.0
     copyright_year: "2025"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-developers-knowledge-v1
     version: 1.1.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-devicesandservices-health-v4
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-geo-type
     version: 1.0.0
     copyright_year: "2026"
     output: src/generated/geo/gtype
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-addressvalidation-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-aerialview-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-areainsights-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-fleetengine-delivery-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-fleetengine-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-geocode-v4
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-isochrones-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-mapsplatformdatasets-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-navconnect-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-places-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-roads-v1op
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-routes-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-routing-v2
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-solar-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-maps-weather-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-shopping-type
     version: 1.0.0
     copyright_year: "2026"
     output: src/generated/shopping/gtype
+    rust:
+      include_bidi_streaming_methods: true
   - name: google-streetview-publish-v1
     version: 1.0.0
     copyright_year: "2026"
+    rust:
+      include_bidi_streaming_methods: true
   - name: grpc-server
     copyright_year: "2025"
     output: src/gax-internal/grpc-server
@@ -1865,6 +2311,7 @@ libraries:
     skip_release: true
     specification_format: openapi
     rust:
+      include_bidi_streaming_methods: true
       package_name_override: secretmanager-openapi-v1
   - name: spanner-grpc-mock
     copyright_year: "2026"

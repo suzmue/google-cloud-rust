@@ -416,6 +416,21 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn chat(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::EchoRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::Result<crate::model::EchoResponse>> + Send>,
+        >,
+    > {
+        self.inner.chat(req_stream, options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn paged_expand(
         &self,
@@ -1119,6 +1134,24 @@ where
             method: "client::Messaging::search_blurbs",
             self.inner.search_blurbs(req, options));
         pending.await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn connect(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ConnectRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::StreamBlurbsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        self.inner.connect(req_stream, options).await
     }
 
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]

@@ -1174,6 +1174,60 @@ impl<T> super::stub::StreamingService for StreamingService<T>
 where
     T: super::stub::StreamingService + std::fmt::Debug + Send + Sync,
 {
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn send_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::SendPacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::SendPacketsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        self.inner.send_packets(req_stream, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_packets(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceivePacketsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceivePacketsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        self.inner.receive_packets(req_stream, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn receive_events(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::ReceiveEventsRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::ReceiveEventsResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        self.inner.receive_events(req_stream, options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn acquire_lease(
         &self,
@@ -2311,6 +2365,24 @@ where
             method: "client::Warehouse::delete_annotation",
             self.inner.delete_annotation(req, options));
         pending.await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn ingest_asset(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::IngestAssetRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::Result<crate::model::IngestAssetResponse>>
+                    + Send,
+            >,
+        >,
+    > {
+        self.inner.ingest_asset(req_stream, options).await
     }
 
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]

@@ -1881,6 +1881,25 @@ pub trait FeatureOnlineStoreService: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SearchNearestEntitiesResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn feature_view_direct_write(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::FeatureViewDirectWriteRequest> + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::FeatureViewDirectWriteResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn generate_fetch_access_token(
         &self,
         req: crate::model::GenerateFetchAccessTokenRequest,
@@ -1968,6 +1987,28 @@ impl<T: super::FeatureOnlineStoreService> FeatureOnlineStoreService for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::SearchNearestEntitiesResponse>> {
         T::search_nearest_entities(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn feature_view_direct_write(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::FeatureViewDirectWriteRequest> + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::FeatureViewDirectWriteResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::feature_view_direct_write(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.
@@ -8134,6 +8175,76 @@ pub trait PredictionService: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::DirectRawPredictResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamDirectPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_raw_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamDirectRawPredictRequest> + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_raw_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingRawPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    >;
+
     async fn explain(
         &self,
         req: crate::model::ExplainRequest,
@@ -8251,6 +8362,88 @@ impl<T: super::PredictionService> PredictionService for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::DirectRawPredictResponse>> {
         T::direct_raw_predict(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamDirectPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::stream_direct_predict(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn stream_direct_raw_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::StreamDirectRawPredictRequest> + Send,
+            >,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamDirectRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::stream_direct_raw_predict(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::streaming_predict(self, req_stream, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_raw_predict(
+        &self,
+        req_stream: std::pin::Pin<
+            Box<dyn tokio_stream::Stream<Item = crate::model::StreamingRawPredictRequest> + Send>,
+        >,
+        options: crate::RequestOptions,
+    ) -> crate::Result<
+        std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<
+                        Item = crate::Result<crate::model::StreamingRawPredictResponse>,
+                    > + Send,
+            >,
+        >,
+    > {
+        T::streaming_raw_predict(self, req_stream, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.

@@ -1066,6 +1066,34 @@ pub trait EngineService: std::fmt::Debug + Send + Sync {
 #[cfg(feature = "grounded-generation-service")]
 #[cfg_attr(docsrs, doc(cfg(feature = "grounded-generation-service")))]
 pub trait GroundedGenerationService: std::fmt::Debug + Send + Sync {
+    /// Implements [super::client::GroundedGenerationService::stream_generate_grounded_content].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn stream_generate_grounded_content(
+        &self,
+        _req_stream: std::pin::Pin<
+            Box<
+                dyn tokio_stream::Stream<Item = crate::model::GenerateGroundedContentRequest>
+                    + Send,
+            >,
+        >,
+        _options: crate::RequestOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<
+            std::pin::Pin<
+                Box<
+                    dyn tokio_stream::Stream<
+                            Item = crate::Result<crate::model::GenerateGroundedContentResponse>,
+                        > + Send,
+                >,
+            >,
+        >,
+    > + Send {
+        async {
+            let _ = gaxi::unimplemented::unimplemented_stub::<()>().await;
+            unreachable!()
+        }
+    }
+
     /// Implements [super::client::GroundedGenerationService::generate_grounded_content].
     fn generate_grounded_content(
         &self,
