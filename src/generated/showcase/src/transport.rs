@@ -1798,6 +1798,8 @@ impl super::stub::Echo for Echo {
         let req =
             req.ok_or_else(|| google_cloud_gax::error::Error::binding("a request is required"))?;
 
+        let x_goog_request_params = "";
+
         let first_req = req
             .to_proto()
             .map_err(google_cloud_gax::error::Error::ser)?;
@@ -1816,7 +1818,6 @@ impl super::stub::Echo for Echo {
             e
         };
         let path = http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/Chat");
-        let x_goog_request_params = "";
 
         let result = self.grpc_inner
             .bidi_stream::<
@@ -1828,7 +1829,7 @@ impl super::stub::Echo for Echo {
                 req_stream,
                 options.into(),
                 &crate::info::X_GOOG_API_CLIENT_HEADER,
-                x_goog_request_params,
+                &x_goog_request_params,
             )
             .await?;
 
@@ -5048,6 +5049,8 @@ impl super::stub::Messaging for Messaging {
         let req =
             req.ok_or_else(|| google_cloud_gax::error::Error::binding("a request is required"))?;
 
+        let x_goog_request_params = "";
+
         let first_req = req
             .to_proto()
             .map_err(google_cloud_gax::error::Error::ser)?;
@@ -5067,7 +5070,6 @@ impl super::stub::Messaging for Messaging {
         };
         let path =
             http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/Connect");
-        let x_goog_request_params = "";
 
         let result = self.grpc_inner
             .bidi_stream::<
@@ -5079,7 +5081,7 @@ impl super::stub::Messaging for Messaging {
                 req_stream,
                 options.into(),
                 &crate::info::X_GOOG_API_CLIENT_HEADER,
-                x_goog_request_params,
+                &x_goog_request_params,
             )
             .await?;
 
