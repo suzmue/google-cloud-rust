@@ -639,6 +639,11 @@ libraries:
       - googleapis
     specification_format: discovery
     rust:
+      extra_modules:
+        - name: errors
+          gated_by_message: .google.cloud.compute.v1.Operation
+        - name: operation
+          gated_by_message: .google.cloud.compute.v1.Operation
       package_dependencies:
         - name: google-cloud-lro
           package: google-cloud-lro
