@@ -5285,6 +5285,7 @@ impl wkt::message::Message for StreamingRecognitionConfig {
 /// [audio][google.cloud.speech.v2.StreamingRecognizeRequest.audio] set.
 ///
 /// [google.cloud.speech.v2.Recognizer]: crate::model::Recognizer
+/// [google.cloud.speech.v2.Speech.StreamingRecognize]: crate::client::Speech::streaming_recognize
 /// [google.cloud.speech.v2.StreamingRecognizeRequest]: crate::model::StreamingRecognizeRequest
 /// [google.cloud.speech.v2.StreamingRecognizeRequest.audio]: crate::model::StreamingRecognizeRequest::streaming_request
 /// [google.cloud.speech.v2.StreamingRecognizeRequest.recognizer]: crate::model::StreamingRecognizeRequest::recognizer

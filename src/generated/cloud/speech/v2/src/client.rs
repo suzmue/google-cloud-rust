@@ -46,7 +46,12 @@
 ///
 /// To configure `Speech` use the `with_*` methods in the type returned
 /// by [builder()][Speech::builder]. The default configuration should
-/// work for most applications. Common configuration changes include
+/// work for most applications.
+///
+/// Note: `Speech` uses a hybrid transport model (unary RPCs execute over
+/// REST/JSON, while streaming RPCs execute over gRPC/Protobuf). Options configured
+/// on this builder apply across both transports.
+/// Common configuration changes include
 ///
 /// * [with_endpoint()]: by default this client uses the global default endpoint
 ///   (`https://speech.googleapis.com`). Applications using regional
@@ -337,6 +342,13 @@ impl Speech {
     /// ```
     pub fn recognize(&self) -> super::builder::speech::Recognize {
         super::builder::speech::Recognize::new(self.inner.clone())
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Performs bidirectional streaming speech recognition: receive results while
+    /// sending audio. This method is only available via the gRPC API (not REST).
+    pub fn streaming_recognize(&self) -> super::builder::speech::StreamingRecognize {
+        super::builder::speech::StreamingRecognize::new(self.inner.clone())
     }
 
     /// Performs batch asynchronous speech recognition: send a request with N

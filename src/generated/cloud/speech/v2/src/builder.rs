@@ -69,6 +69,29 @@ pub mod speech {
         }
     }
 
+    /// Common implementation for [crate::client::Speech] bidi stream builders.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    #[derive(Clone, Debug)]
+    pub(crate) struct BidiStreamBuilder<R: std::default::Default> {
+        stub: std::sync::Arc<dyn super::super::stub::dynamic::Speech>,
+        request: Option<R>,
+        options: crate::BidiStreamOptions,
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    impl<R> BidiStreamBuilder<R>
+    where
+        R: std::default::Default,
+    {
+        pub(crate) fn new(stub: std::sync::Arc<dyn super::super::stub::dynamic::Speech>) -> Self {
+            Self {
+                stub,
+                request: None,
+                options: crate::BidiStreamOptions::default(),
+            }
+        }
+    }
+
     /// The request builder for [Speech::create_recognizer][crate::client::Speech::create_recognizer] calls.
     ///
     /// # Example
@@ -942,6 +965,136 @@ pub mod speech {
     impl crate::RequestBuilder for Recognize {
         fn request_options(&mut self) -> &mut crate::RequestOptions {
             &mut self.0.options
+        }
+    }
+
+    /// The request builder for [Speech::streaming_recognize][crate::client::Speech::streaming_recognize] calls.
+    ///
+    /// # Example
+    /// ```
+    /// # use google_cloud_speech_v2::builder::speech::StreamingRecognize;
+    /// # async fn sample() -> google_cloud_speech_v2::Result<()> {
+    /// let builder = prepare_request_builder();
+    /// let (sender, mut receiver) = builder.send().await?;
+    /// # Ok(()) }
+    ///
+    /// fn prepare_request_builder() -> StreamingRecognize {
+    ///   # panic!();
+    ///   // ... details omitted ...
+    /// }
+    /// ```
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    #[derive(Clone, Debug)]
+    pub struct StreamingRecognize(BidiStreamBuilder<crate::model::StreamingRecognizeRequest>);
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    impl StreamingRecognize {
+        pub(crate) fn new(stub: std::sync::Arc<dyn super::super::stub::dynamic::Speech>) -> Self {
+            Self(BidiStreamBuilder::new(stub))
+        }
+
+        /// Sets the buffer capacity of internal request channel.
+        ///
+        /// Valid values must be between `1` and `google_cloud_gax::options::MAX_REQUEST_CHANNEL_CAPACITY`.
+        /// The default capacity is `16`.
+        pub fn with_request_channel_capacity(mut self, capacity: usize) -> Self {
+            self.0.options.set_request_channel_capacity(capacity);
+            self
+        }
+
+        /// Sets the full request, replacing any prior values.
+        pub fn with_request<V: Into<crate::model::StreamingRecognizeRequest>>(
+            mut self,
+            v: V,
+        ) -> Self {
+            self.0.request = std::option::Option::Some(v.into());
+            self
+        }
+
+        /// Sets all the options, replacing any prior values.
+        pub fn with_options<V: Into<crate::BidiStreamOptions>>(mut self, v: V) -> Self {
+            self.0.options = v.into();
+            self
+        }
+
+        /// Initiates the bidirectional stream.
+        pub async fn send(
+            self,
+        ) -> Result<(
+            google_cloud_gax::streaming::RequestSender<crate::model::StreamingRecognizeRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingRecognizeResponse>,
+        )> {
+            (*self.0.stub)
+                .streaming_recognize(self.0.request, self.0.options)
+                .await
+        }
+
+        /// Sets the value of [recognizer][crate::model::StreamingRecognizeRequest::recognizer].
+        ///
+        /// This is a **required** field for requests.
+        pub fn set_recognizer<T: Into<std::string::String>>(mut self, v: T) -> Self {
+            self.0
+                .request
+                .get_or_insert_with(std::default::Default::default)
+                .recognizer = v.into();
+            self
+        }
+
+        /// Sets the value of [streaming_request][crate::model::StreamingRecognizeRequest::streaming_request].
+        ///
+        /// Note that all the setters affecting `streaming_request` are
+        /// mutually exclusive.
+        pub fn set_streaming_request<
+            T: Into<Option<crate::model::streaming_recognize_request::StreamingRequest>>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
+            self.0
+                .request
+                .get_or_insert_with(std::default::Default::default)
+                .streaming_request = v.into();
+            self
+        }
+
+        /// Sets the value of [streaming_request][crate::model::StreamingRecognizeRequest::streaming_request]
+        /// to hold a `StreamingConfig`.
+        ///
+        /// Note that all the setters affecting `streaming_request` are
+        /// mutually exclusive.
+        pub fn set_streaming_config<
+            T: std::convert::Into<std::boxed::Box<crate::model::StreamingRecognitionConfig>>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
+            let req = self
+                .0
+                .request
+                .take()
+                .unwrap_or_default()
+                .set_streaming_config(v);
+            self.0.request = std::option::Option::Some(req);
+            self
+        }
+
+        /// Sets the value of [streaming_request][crate::model::StreamingRecognizeRequest::streaming_request]
+        /// to hold a `Audio`.
+        ///
+        /// Note that all the setters affecting `streaming_request` are
+        /// mutually exclusive.
+        pub fn set_audio<T: std::convert::Into<::bytes::Bytes>>(mut self, v: T) -> Self {
+            let req = self.0.request.take().unwrap_or_default().set_audio(v);
+            self.0.request = std::option::Option::Some(req);
+            self
+        }
+    }
+
+    #[doc(hidden)]
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    impl crate::RequestBuilder for StreamingRecognize {
+        fn request_options(&mut self) -> &mut crate::RequestOptions {
+            self.0.options.request_options_mut()
         }
     }
 

@@ -139,6 +139,18 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn streaming_recognize(
+        &self,
+        req: std::option::Option<crate::model::StreamingRecognizeRequest>,
+        options: crate::BidiStreamOptions,
+    ) -> Result<(
+        google_cloud_gax::streaming::RequestSender<crate::model::StreamingRecognizeRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::StreamingRecognizeResponse>,
+    )> {
+        self.inner.streaming_recognize(req, options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn batch_recognize(
         &self,
