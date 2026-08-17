@@ -2721,9 +2721,21 @@ pub mod echo {
     /// # Example
     /// ```
     /// # use google_cloud_showcase_v1beta1::builder::echo::Chat;
+    /// # use google_cloud_showcase_v1beta1::model::EchoRequest;
     /// # async fn sample() -> google_cloud_showcase_v1beta1::Result<()> {
     /// let builder = prepare_request_builder();
-    /// let (sender, mut receiver) = builder.send().await?;
+    /// let (sender, mut receiver) = builder
+    ///     .with_request(EchoRequest::default())
+    ///     .send()
+    ///     .await?;
+    ///
+    /// sender.send(EchoRequest::default()).await?;
+    /// drop(sender); // Half-close the stream
+    ///
+    /// while let Some(response) = receiver.recv().await {
+    ///     let response = response?;
+    ///     println!("response {:?}", response);
+    /// }
     /// # Ok(()) }
     ///
     /// fn prepare_request_builder() -> Chat {
@@ -6397,9 +6409,21 @@ pub mod messaging {
     /// # Example
     /// ```
     /// # use google_cloud_showcase_v1beta1::builder::messaging::Connect;
+    /// # use google_cloud_showcase_v1beta1::model::ConnectRequest;
     /// # async fn sample() -> google_cloud_showcase_v1beta1::Result<()> {
     /// let builder = prepare_request_builder();
-    /// let (sender, mut receiver) = builder.send().await?;
+    /// let (sender, mut receiver) = builder
+    ///     .with_request(ConnectRequest::default())
+    ///     .send()
+    ///     .await?;
+    ///
+    /// sender.send(ConnectRequest::default()).await?;
+    /// drop(sender); // Half-close the stream
+    ///
+    /// while let Some(response) = receiver.recv().await {
+    ///     let response = response?;
+    ///     println!("response {:?}", response);
+    /// }
     /// # Ok(()) }
     ///
     /// fn prepare_request_builder() -> Connect {
