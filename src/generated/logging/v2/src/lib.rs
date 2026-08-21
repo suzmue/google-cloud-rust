@@ -16,13 +16,6 @@
 
 //! Google Cloud Client Libraries for Rust - Cloud Logging API
 //!
-//! **WARNING:** some RPCs have no corresponding Rust function to call them.
-//! Typically these are streaming RPCs. We expect adding these RPCs in a
-//! way that does not break the existing APIs or changes their behavior in a
-//! significant way. We do anticipate a number of new crate dependencies
-//! will be required. If you need these RPCs please open an issue in our
-//! GitHub repository.
-//!
 //! This crate contains traits, types, and functions to interact with Cloud Logging API
 //! Most applications will use the structs defined in the [client] module.
 //!
@@ -55,6 +48,9 @@
 #[allow(clippy::module_inception)]
 pub mod model;
 
+#[allow(dead_code, unused_imports, clippy::enum_variant_names)]
+pub(crate) mod internal_model;
+
 pub use google_cloud_gax::Result;
 pub use google_cloud_gax::error::Error;
 
@@ -85,6 +81,16 @@ pub(crate) mod tracing;
 #[doc(hidden)]
 pub(crate) mod transport;
 
+#[cfg(google_cloud_unstable_gapic_streaming)]
+#[doc(hidden)]
+#[allow(clippy::all)]
+#[allow(unused_imports)]
+#[allow(dead_code)]
+#[allow(missing_docs)]
+pub(crate) mod prost {
+    include!("prost/includes.rs");
+}
+
 /// The default host used by the service.
 const DEFAULT_HOST: &str = "https://logging.googleapis.com/";
 
@@ -107,6 +113,8 @@ pub(crate) use google_cloud_gax::client_builder::ClientBuilder;
 pub(crate) use google_cloud_gax::client_builder::Result as ClientBuilderResult;
 pub(crate) use google_cloud_gax::client_builder::internal::ClientFactory;
 pub(crate) use google_cloud_gax::client_builder::internal::new_builder as new_client_builder;
+#[cfg(google_cloud_unstable_gapic_streaming)]
+pub(crate) use google_cloud_gax::options::BidiStreamOptions;
 pub(crate) use google_cloud_gax::options::RequestOptions;
 pub(crate) use google_cloud_gax::options::internal::RequestBuilder;
 pub(crate) use google_cloud_gax::response::Response;

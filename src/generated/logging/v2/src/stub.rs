@@ -93,6 +93,21 @@ pub trait LoggingServiceV2: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
+    /// Implements [super::client::LoggingServiceV2::tail_log_entries].
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    fn tail_log_entries(
+        &self,
+        _req: std::option::Option<crate::model::TailLogEntriesRequest>,
+        _options: crate::BidiStreamOptions,
+    ) -> impl std::future::Future<
+        Output = crate::Result<(
+            google_cloud_gax::streaming::RequestSender<crate::model::TailLogEntriesRequest>,
+            google_cloud_gax::streaming::ResponseReceiver<crate::model::TailLogEntriesResponse>,
+        )>,
+    > + Send {
+        gaxi::unimplemented::unimplemented_bidi_stub()
+    }
+
     /// Implements [super::client::LoggingServiceV2::list_operations].
     fn list_operations(
         &self,

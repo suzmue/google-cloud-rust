@@ -22,26 +22,45 @@ use crate::Result;
 #[derive(Clone)]
 pub struct LoggingServiceV2 {
     inner: gaxi::http::ReqwestClient,
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for LoggingServiceV2 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("LoggingServiceV2")
-            .field("inner", &self.inner)
-            .finish()
+        let mut builder = f.debug_struct("LoggingServiceV2");
+        builder.field("inner", &self.inner);
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        builder.field("grpc_inner", &self.grpc_inner);
+        builder.finish()
     }
 }
 
 impl LoggingServiceV2 {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
+        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
         let inner = if tracing_is_enabled {
             inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
         } else {
             inner
         };
-        Ok(Self { inner })
+        #[cfg(google_cloud_unstable_gapic_streaming)]
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self {
+            inner,
+            #[cfg(google_cloud_unstable_gapic_streaming)]
+            grpc_inner,
+        })
     }
 }
 
@@ -770,6 +789,84 @@ impl super::stub::LoggingServiceV2 for LoggingServiceV2 {
         );
         let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
         self.inner.execute(builder, body, options).await
+    }
+
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn tail_log_entries(
+        &self,
+        req: std::option::Option<crate::model::TailLogEntriesRequest>,
+        options: crate::BidiStreamOptions,
+    ) -> Result<(
+        google_cloud_gax::streaming::RequestSender<crate::model::TailLogEntriesRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::TailLogEntriesResponse>,
+    )> {
+        use futures::stream::StreamExt as _;
+        use gaxi::prost::{FromProto, ToProto};
+
+        let req =
+            req.ok_or_else(|| google_cloud_gax::error::Error::binding("a request is required"))?;
+
+        let x_goog_request_params = "";
+
+        let first_req = req
+            .to_proto()
+            .map_err(google_cloud_gax::error::Error::ser)?;
+
+        let (req_tx, req_rx) = tokio::sync::mpsc::channel(options.request_channel_capacity());
+
+        let req_stream = futures::stream::once(async move { first_req })
+            .chain(tokio_stream::wrappers::ReceiverStream::new(req_rx));
+
+        let extensions = {
+            let mut e = gaxi::grpc::tonic::Extensions::new();
+            e.insert(gaxi::grpc::tonic::GrpcMethod::new(
+                "google.logging.v2.LoggingServiceV2",
+                "TailLogEntries",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.logging.v2.LoggingServiceV2/TailLogEntries",
+        );
+
+        let result = self.grpc_inner
+            .bidi_stream::<
+                crate::prost::google::logging::v2::TailLogEntriesRequest,
+                crate::prost::google::logging::v2::TailLogEntriesResponse,
+            >(
+                extensions,
+                path,
+                req_stream,
+                options.into(),
+                &crate::info::X_GOOG_API_CLIENT_HEADER,
+                x_goog_request_params,
+            )
+            .await?;
+
+        let request_sender = google_cloud_gax::streaming::RequestSender::from_fn(
+            move |item: crate::model::TailLogEntriesRequest| {
+                let req_tx = req_tx.clone();
+                async move {
+                    let prost_item = item
+                        .to_proto()
+                        .map_err(google_cloud_gax::error::Error::ser)?;
+                    req_tx.send(prost_item).await.map_err(|_| {
+                        google_cloud_gax::error::Error::io(std::io::Error::new(
+                            std::io::ErrorKind::BrokenPipe,
+                            "cannot send request: stream is closed",
+                        ))
+                    })
+                }
+            },
+        );
+        let response_receiver = google_cloud_gax::streaming::ResponseReceiver::from_stream(
+            result.into_inner().map(|res| {
+                res.map_err(gaxi::grpc::from_status::to_gax_error)
+                    .and_then(|m| m.cnv().map_err(google_cloud_gax::error::Error::deser))
+            }),
+        );
+
+        Ok((request_sender, response_receiver))
     }
 
     async fn list_operations(

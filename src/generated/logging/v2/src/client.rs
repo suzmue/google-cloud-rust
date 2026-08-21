@@ -163,6 +163,13 @@ impl LoggingServiceV2 {
         super::builder::logging_service_v_2::ListLogs::new(self.inner.clone())
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    /// Streaming read of log entries as they are ingested. Until the stream is
+    /// terminated, it will continue reading logs.
+    pub fn tail_log_entries(&self) -> super::builder::logging_service_v_2::TailLogEntries {
+        super::builder::logging_service_v_2::TailLogEntries::new(self.inner.clone())
+    }
+
     /// Provides the [Operations][google.longrunning.Operations] service functionality in this service.
     ///
     /// [google.longrunning.Operations]: google-cloud-longrunning::client::Operations

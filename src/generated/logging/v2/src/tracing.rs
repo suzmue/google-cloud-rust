@@ -111,6 +111,18 @@ where
         pending.await
     }
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn tail_log_entries(
+        &self,
+        req: std::option::Option<crate::model::TailLogEntriesRequest>,
+        options: crate::BidiStreamOptions,
+    ) -> Result<(
+        google_cloud_gax::streaming::RequestSender<crate::model::TailLogEntriesRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::TailLogEntriesResponse>,
+    )> {
+        self.inner.tail_log_entries(req, options).await
+    }
+
     #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
     async fn list_operations(
         &self,

@@ -47,6 +47,16 @@ pub trait LoggingServiceV2: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::ListLogsResponse>>;
 
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn tail_log_entries(
+        &self,
+        req: std::option::Option<crate::model::TailLogEntriesRequest>,
+        options: crate::BidiStreamOptions,
+    ) -> crate::Result<(
+        google_cloud_gax::streaming::RequestSender<crate::model::TailLogEntriesRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::TailLogEntriesResponse>,
+    )>;
+
     async fn list_operations(
         &self,
         req: google_cloud_longrunning::model::ListOperationsRequest,
@@ -113,6 +123,19 @@ impl<T: super::LoggingServiceV2> LoggingServiceV2 for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::ListLogsResponse>> {
         T::list_logs(self, req, options).await
+    }
+
+    /// Forwards the call to the implementation provided by `T`.
+    #[cfg(google_cloud_unstable_gapic_streaming)]
+    async fn tail_log_entries(
+        &self,
+        req: std::option::Option<crate::model::TailLogEntriesRequest>,
+        options: crate::BidiStreamOptions,
+    ) -> crate::Result<(
+        google_cloud_gax::streaming::RequestSender<crate::model::TailLogEntriesRequest>,
+        google_cloud_gax::streaming::ResponseReceiver<crate::model::TailLogEntriesResponse>,
+    )> {
+        T::tail_log_entries(self, req, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.
