@@ -18,6 +18,14 @@
 #![allow(rustdoc::broken_intra_doc_links)]
 #![allow(rustdoc::invalid_html_tags)]
 #![allow(rustdoc::redundant_explicit_links)]
+#![no_implicit_prelude]
+extern crate bytes;
+extern crate google_cloud_logging_type;
+extern crate serde;
+extern crate serde_json;
+extern crate serde_with;
+extern crate std;
+extern crate wkt;
 
 mod debug;
 mod deserialize;
@@ -37,7 +45,7 @@ pub struct LogLine {
     pub log_message: std::string::String,
 
     /// Where in the source code this log message was written.
-    pub source_location: std::option::Option<crate::internal_model::appengine::SourceLocation>,
+    pub source_location: std::option::Option<crate::model::SourceLocation>,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -48,11 +56,11 @@ impl LogLine {
         std::default::Default::default()
     }
 
-    /// Sets the value of [time][crate::internal_model::appengine::LogLine::time].
+    /// Sets the value of [time][crate::model::LogLine::time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::LogLine;
+    /// # use google_cloud_appengine_logging_v1::model::LogLine;
     /// use wkt::Timestamp;
     /// let x = LogLine::new().set_time(Timestamp::default()/* use setters */);
     /// ```
@@ -64,11 +72,11 @@ impl LogLine {
         self
     }
 
-    /// Sets or clears the value of [time][crate::internal_model::appengine::LogLine::time].
+    /// Sets or clears the value of [time][crate::model::LogLine::time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::LogLine;
+    /// # use google_cloud_appengine_logging_v1::model::LogLine;
     /// use wkt::Timestamp;
     /// let x = LogLine::new().set_or_clear_time(Some(Timestamp::default()/* use setters */));
     /// let x = LogLine::new().set_or_clear_time(None::<Timestamp>);
@@ -81,11 +89,11 @@ impl LogLine {
         self
     }
 
-    /// Sets the value of [severity][crate::internal_model::appengine::LogLine::severity].
+    /// Sets the value of [severity][crate::model::LogLine::severity].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::LogLine;
+    /// # use google_cloud_appengine_logging_v1::model::LogLine;
     /// use google_cloud_logging_type::model::LogSeverity;
     /// let x0 = LogLine::new().set_severity(LogSeverity::Debug);
     /// let x1 = LogLine::new().set_severity(LogSeverity::Info);
@@ -99,11 +107,11 @@ impl LogLine {
         self
     }
 
-    /// Sets the value of [log_message][crate::internal_model::appengine::LogLine::log_message].
+    /// Sets the value of [log_message][crate::model::LogLine::log_message].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::LogLine;
+    /// # use google_cloud_appengine_logging_v1::model::LogLine;
     /// let x = LogLine::new().set_log_message("example");
     /// ```
     pub fn set_log_message<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -111,34 +119,34 @@ impl LogLine {
         self
     }
 
-    /// Sets the value of [source_location][crate::internal_model::appengine::LogLine::source_location].
+    /// Sets the value of [source_location][crate::model::LogLine::source_location].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::LogLine;
-    /// use google_cloud_logging_v2::model::SourceLocation;
+    /// # use google_cloud_appengine_logging_v1::model::LogLine;
+    /// use google_cloud_appengine_logging_v1::model::SourceLocation;
     /// let x = LogLine::new().set_source_location(SourceLocation::default()/* use setters */);
     /// ```
     pub fn set_source_location<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<crate::internal_model::appengine::SourceLocation>,
+        T: std::convert::Into<crate::model::SourceLocation>,
     {
         self.source_location = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [source_location][crate::internal_model::appengine::LogLine::source_location].
+    /// Sets or clears the value of [source_location][crate::model::LogLine::source_location].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::LogLine;
-    /// use google_cloud_logging_v2::model::SourceLocation;
+    /// # use google_cloud_appengine_logging_v1::model::LogLine;
+    /// use google_cloud_appengine_logging_v1::model::SourceLocation;
     /// let x = LogLine::new().set_or_clear_source_location(Some(SourceLocation::default()/* use setters */));
     /// let x = LogLine::new().set_or_clear_source_location(None::<SourceLocation>);
     /// ```
     pub fn set_or_clear_source_location<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<crate::internal_model::appengine::SourceLocation>,
+        T: std::convert::Into<crate::model::SourceLocation>,
     {
         self.source_location = v.map(|x| x.into());
         self
@@ -179,11 +187,11 @@ impl SourceLocation {
         std::default::Default::default()
     }
 
-    /// Sets the value of [file][crate::internal_model::appengine::SourceLocation::file].
+    /// Sets the value of [file][crate::model::SourceLocation::file].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::SourceLocation;
+    /// # use google_cloud_appengine_logging_v1::model::SourceLocation;
     /// let x = SourceLocation::new().set_file("example");
     /// ```
     pub fn set_file<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -191,11 +199,11 @@ impl SourceLocation {
         self
     }
 
-    /// Sets the value of [line][crate::internal_model::appengine::SourceLocation::line].
+    /// Sets the value of [line][crate::model::SourceLocation::line].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::SourceLocation;
+    /// # use google_cloud_appengine_logging_v1::model::SourceLocation;
     /// let x = SourceLocation::new().set_line(42);
     /// ```
     pub fn set_line<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -203,11 +211,11 @@ impl SourceLocation {
         self
     }
 
-    /// Sets the value of [function_name][crate::internal_model::appengine::SourceLocation::function_name].
+    /// Sets the value of [function_name][crate::model::SourceLocation::function_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::SourceLocation;
+    /// # use google_cloud_appengine_logging_v1::model::SourceLocation;
     /// let x = SourceLocation::new().set_function_name("example");
     /// ```
     pub fn set_function_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -244,11 +252,11 @@ impl SourceReference {
         std::default::Default::default()
     }
 
-    /// Sets the value of [repository][crate::internal_model::appengine::SourceReference::repository].
+    /// Sets the value of [repository][crate::model::SourceReference::repository].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::SourceReference;
+    /// # use google_cloud_appengine_logging_v1::model::SourceReference;
     /// let x = SourceReference::new().set_repository("example");
     /// ```
     pub fn set_repository<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -256,11 +264,11 @@ impl SourceReference {
         self
     }
 
-    /// Sets the value of [revision_id][crate::internal_model::appengine::SourceReference::revision_id].
+    /// Sets the value of [revision_id][crate::model::SourceReference::revision_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::SourceReference;
+    /// # use google_cloud_appengine_logging_v1::model::SourceReference;
     /// let x = SourceReference::new().set_revision_id("example");
     /// ```
     pub fn set_revision_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -381,7 +389,7 @@ pub struct RequestLog {
     pub instance_id: std::string::String,
 
     /// A list of log lines emitted by the application while serving this request.
-    pub line: std::vec::Vec<crate::internal_model::appengine::LogLine>,
+    pub line: std::vec::Vec<crate::model::LogLine>,
 
     /// App Engine release version.
     pub app_engine_release: std::string::String,
@@ -396,7 +404,7 @@ pub struct RequestLog {
     /// Source code for the application that handled this request. There can be
     /// more than one source reference per deployed application if source code is
     /// distributed among multiple repositories.
-    pub source_reference: std::vec::Vec<crate::internal_model::appengine::SourceReference>,
+    pub source_reference: std::vec::Vec<crate::model::SourceReference>,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -407,11 +415,11 @@ impl RequestLog {
         std::default::Default::default()
     }
 
-    /// Sets the value of [app_id][crate::internal_model::appengine::RequestLog::app_id].
+    /// Sets the value of [app_id][crate::model::RequestLog::app_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_app_id("example");
     /// ```
     pub fn set_app_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -419,11 +427,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [module_id][crate::internal_model::appengine::RequestLog::module_id].
+    /// Sets the value of [module_id][crate::model::RequestLog::module_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_module_id("example");
     /// ```
     pub fn set_module_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -431,11 +439,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [version_id][crate::internal_model::appengine::RequestLog::version_id].
+    /// Sets the value of [version_id][crate::model::RequestLog::version_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_version_id("example");
     /// ```
     pub fn set_version_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -443,11 +451,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [request_id][crate::internal_model::appengine::RequestLog::request_id].
+    /// Sets the value of [request_id][crate::model::RequestLog::request_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_request_id("example");
     /// ```
     pub fn set_request_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -455,11 +463,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [ip][crate::internal_model::appengine::RequestLog::ip].
+    /// Sets the value of [ip][crate::model::RequestLog::ip].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_ip("example");
     /// ```
     pub fn set_ip<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -467,11 +475,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [start_time][crate::internal_model::appengine::RequestLog::start_time].
+    /// Sets the value of [start_time][crate::model::RequestLog::start_time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Timestamp;
     /// let x = RequestLog::new().set_start_time(Timestamp::default()/* use setters */);
     /// ```
@@ -483,11 +491,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets or clears the value of [start_time][crate::internal_model::appengine::RequestLog::start_time].
+    /// Sets or clears the value of [start_time][crate::model::RequestLog::start_time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Timestamp;
     /// let x = RequestLog::new().set_or_clear_start_time(Some(Timestamp::default()/* use setters */));
     /// let x = RequestLog::new().set_or_clear_start_time(None::<Timestamp>);
@@ -500,11 +508,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [end_time][crate::internal_model::appengine::RequestLog::end_time].
+    /// Sets the value of [end_time][crate::model::RequestLog::end_time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Timestamp;
     /// let x = RequestLog::new().set_end_time(Timestamp::default()/* use setters */);
     /// ```
@@ -516,11 +524,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets or clears the value of [end_time][crate::internal_model::appengine::RequestLog::end_time].
+    /// Sets or clears the value of [end_time][crate::model::RequestLog::end_time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Timestamp;
     /// let x = RequestLog::new().set_or_clear_end_time(Some(Timestamp::default()/* use setters */));
     /// let x = RequestLog::new().set_or_clear_end_time(None::<Timestamp>);
@@ -533,11 +541,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [latency][crate::internal_model::appengine::RequestLog::latency].
+    /// Sets the value of [latency][crate::model::RequestLog::latency].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Duration;
     /// let x = RequestLog::new().set_latency(Duration::default()/* use setters */);
     /// ```
@@ -549,11 +557,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets or clears the value of [latency][crate::internal_model::appengine::RequestLog::latency].
+    /// Sets or clears the value of [latency][crate::model::RequestLog::latency].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Duration;
     /// let x = RequestLog::new().set_or_clear_latency(Some(Duration::default()/* use setters */));
     /// let x = RequestLog::new().set_or_clear_latency(None::<Duration>);
@@ -566,11 +574,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [mega_cycles][crate::internal_model::appengine::RequestLog::mega_cycles].
+    /// Sets the value of [mega_cycles][crate::model::RequestLog::mega_cycles].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_mega_cycles(42);
     /// ```
     pub fn set_mega_cycles<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -578,11 +586,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [method][crate::internal_model::appengine::RequestLog::method].
+    /// Sets the value of [method][crate::model::RequestLog::method].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_method("example");
     /// ```
     pub fn set_method<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -590,11 +598,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [resource][crate::internal_model::appengine::RequestLog::resource].
+    /// Sets the value of [resource][crate::model::RequestLog::resource].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_resource("example");
     /// ```
     pub fn set_resource<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -602,11 +610,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [http_version][crate::internal_model::appengine::RequestLog::http_version].
+    /// Sets the value of [http_version][crate::model::RequestLog::http_version].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_http_version("example");
     /// ```
     pub fn set_http_version<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -614,11 +622,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [status][crate::internal_model::appengine::RequestLog::status].
+    /// Sets the value of [status][crate::model::RequestLog::status].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_status(42);
     /// ```
     pub fn set_status<T: std::convert::Into<i32>>(mut self, v: T) -> Self {
@@ -626,11 +634,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [response_size][crate::internal_model::appengine::RequestLog::response_size].
+    /// Sets the value of [response_size][crate::model::RequestLog::response_size].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_response_size(42);
     /// ```
     pub fn set_response_size<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -638,11 +646,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [referrer][crate::internal_model::appengine::RequestLog::referrer].
+    /// Sets the value of [referrer][crate::model::RequestLog::referrer].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_referrer("example");
     /// ```
     pub fn set_referrer<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -650,11 +658,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [user_agent][crate::internal_model::appengine::RequestLog::user_agent].
+    /// Sets the value of [user_agent][crate::model::RequestLog::user_agent].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_user_agent("example");
     /// ```
     pub fn set_user_agent<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -662,11 +670,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [nickname][crate::internal_model::appengine::RequestLog::nickname].
+    /// Sets the value of [nickname][crate::model::RequestLog::nickname].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_nickname("example");
     /// ```
     pub fn set_nickname<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -674,11 +682,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [url_map_entry][crate::internal_model::appengine::RequestLog::url_map_entry].
+    /// Sets the value of [url_map_entry][crate::model::RequestLog::url_map_entry].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_url_map_entry("example");
     /// ```
     pub fn set_url_map_entry<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -686,11 +694,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [host][crate::internal_model::appengine::RequestLog::host].
+    /// Sets the value of [host][crate::model::RequestLog::host].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_host("example");
     /// ```
     pub fn set_host<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -698,11 +706,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [cost][crate::internal_model::appengine::RequestLog::cost].
+    /// Sets the value of [cost][crate::model::RequestLog::cost].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_cost(42.0);
     /// ```
     pub fn set_cost<T: std::convert::Into<f64>>(mut self, v: T) -> Self {
@@ -710,11 +718,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [task_queue_name][crate::internal_model::appengine::RequestLog::task_queue_name].
+    /// Sets the value of [task_queue_name][crate::model::RequestLog::task_queue_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_task_queue_name("example");
     /// ```
     pub fn set_task_queue_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -722,11 +730,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [task_name][crate::internal_model::appengine::RequestLog::task_name].
+    /// Sets the value of [task_name][crate::model::RequestLog::task_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_task_name("example");
     /// ```
     pub fn set_task_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -734,11 +742,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [was_loading_request][crate::internal_model::appengine::RequestLog::was_loading_request].
+    /// Sets the value of [was_loading_request][crate::model::RequestLog::was_loading_request].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_was_loading_request(true);
     /// ```
     pub fn set_was_loading_request<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -746,11 +754,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [pending_time][crate::internal_model::appengine::RequestLog::pending_time].
+    /// Sets the value of [pending_time][crate::model::RequestLog::pending_time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Duration;
     /// let x = RequestLog::new().set_pending_time(Duration::default()/* use setters */);
     /// ```
@@ -762,11 +770,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets or clears the value of [pending_time][crate::internal_model::appengine::RequestLog::pending_time].
+    /// Sets or clears the value of [pending_time][crate::model::RequestLog::pending_time].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// use wkt::Duration;
     /// let x = RequestLog::new().set_or_clear_pending_time(Some(Duration::default()/* use setters */));
     /// let x = RequestLog::new().set_or_clear_pending_time(None::<Duration>);
@@ -779,11 +787,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [instance_index][crate::internal_model::appengine::RequestLog::instance_index].
+    /// Sets the value of [instance_index][crate::model::RequestLog::instance_index].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_instance_index(42);
     /// ```
     pub fn set_instance_index<T: std::convert::Into<i32>>(mut self, v: T) -> Self {
@@ -791,11 +799,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [finished][crate::internal_model::appengine::RequestLog::finished].
+    /// Sets the value of [finished][crate::model::RequestLog::finished].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_finished(true);
     /// ```
     pub fn set_finished<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -803,11 +811,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [first][crate::internal_model::appengine::RequestLog::first].
+    /// Sets the value of [first][crate::model::RequestLog::first].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_first(true);
     /// ```
     pub fn set_first<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -815,11 +823,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [instance_id][crate::internal_model::appengine::RequestLog::instance_id].
+    /// Sets the value of [instance_id][crate::model::RequestLog::instance_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_instance_id("example");
     /// ```
     pub fn set_instance_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -827,12 +835,12 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [line][crate::internal_model::appengine::RequestLog::line].
+    /// Sets the value of [line][crate::model::RequestLog::line].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
-    /// use google_cloud_logging_v2::model::LogLine;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
+    /// use google_cloud_appengine_logging_v1::model::LogLine;
     /// let x = RequestLog::new()
     ///     .set_line([
     ///         LogLine::default()/* use setters */,
@@ -842,18 +850,18 @@ impl RequestLog {
     pub fn set_line<T, V>(mut self, v: T) -> Self
     where
         T: std::iter::IntoIterator<Item = V>,
-        V: std::convert::Into<crate::internal_model::appengine::LogLine>,
+        V: std::convert::Into<crate::model::LogLine>,
     {
         use std::iter::Iterator;
         self.line = v.into_iter().map(|i| i.into()).collect();
         self
     }
 
-    /// Sets the value of [app_engine_release][crate::internal_model::appengine::RequestLog::app_engine_release].
+    /// Sets the value of [app_engine_release][crate::model::RequestLog::app_engine_release].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_app_engine_release("example");
     /// ```
     pub fn set_app_engine_release<T: std::convert::Into<std::string::String>>(
@@ -864,11 +872,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [trace_id][crate::internal_model::appengine::RequestLog::trace_id].
+    /// Sets the value of [trace_id][crate::model::RequestLog::trace_id].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_trace_id("example");
     /// ```
     pub fn set_trace_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -876,11 +884,11 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [trace_sampled][crate::internal_model::appengine::RequestLog::trace_sampled].
+    /// Sets the value of [trace_sampled][crate::model::RequestLog::trace_sampled].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
     /// let x = RequestLog::new().set_trace_sampled(true);
     /// ```
     pub fn set_trace_sampled<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -888,12 +896,12 @@ impl RequestLog {
         self
     }
 
-    /// Sets the value of [source_reference][crate::internal_model::appengine::RequestLog::source_reference].
+    /// Sets the value of [source_reference][crate::model::RequestLog::source_reference].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestLog;
-    /// use google_cloud_logging_v2::model::SourceReference;
+    /// # use google_cloud_appengine_logging_v1::model::RequestLog;
+    /// use google_cloud_appengine_logging_v1::model::SourceReference;
     /// let x = RequestLog::new()
     ///     .set_source_reference([
     ///         SourceReference::default()/* use setters */,
@@ -903,7 +911,7 @@ impl RequestLog {
     pub fn set_source_reference<T, V>(mut self, v: T) -> Self
     where
         T: std::iter::IntoIterator<Item = V>,
-        V: std::convert::Into<crate::internal_model::appengine::SourceReference>,
+        V: std::convert::Into<crate::model::SourceReference>,
     {
         use std::iter::Iterator;
         self.source_reference = v.into_iter().map(|i| i.into()).collect();

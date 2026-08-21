@@ -15,6 +15,11 @@ pub mod google {
             include!("google.cloud.audit.rs");
         }
     }
+    pub mod iam {
+        pub mod v1 {
+            include!("google.iam.v1.rs");
+        }
+    }
     pub mod logging {
         pub mod r#type {
             include!("google.logging.r#type.rs");
@@ -23,6 +28,9 @@ pub mod google {
             include!("google.logging.v2.rs");
             include!("../convert.rs");
         }
+    }
+    pub mod r#type {
+        include!("google.r#type.rs");
     }
     pub mod rpc {
         include!("google.rpc.rs");

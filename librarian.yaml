@@ -69,6 +69,12 @@ default:
       - name: google-cloud-api
         package: google-cloud-api
         source: google.api
+      - name: google-cloud-appengine-logging-v1
+        package: google-cloud-appengine-logging-v1
+        source: google.appengine.logging.v1
+      - name: google-cloud-audit
+        package: google-cloud-audit
+        source: google.cloud.audit
       - name: google-cloud-common
         package: google-cloud-common
         source: google.cloud.common
@@ -348,6 +354,11 @@ libraries:
   - name: google-cloud-apiregistry-v1
     version: 1.3.0
     copyright_year: "2026"
+  - name: google-cloud-appengine-logging-v1
+    version: 0.1.0
+    apis:
+      - path: google/appengine/logging/v1
+    copyright_year: "2025"
   - name: google-cloud-appengine-v1
     version: 1.13.0
     apis:
@@ -454,6 +465,11 @@ libraries:
           source: google.cloud.osconfig.v1
   - name: google-cloud-assuredworkloads-v1
     version: 1.13.0
+    copyright_year: "2025"
+  - name: google-cloud-audit
+    version: 0.1.0
+    apis:
+      - path: google/cloud/audit
     copyright_year: "2025"
   - name: google-cloud-auditmanager-v1
     version: 1.4.0

@@ -353,3 +353,2345 @@ impl ::prost::Name for ViolationInfo {
         "type.googleapis.com/google.cloud.audit.ViolationInfo".into()
     }
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BigQueryAuditMetadata {
+    #[prost(message, optional, tag = "24")]
+    pub first_party_app_metadata: ::core::option::Option<
+        big_query_audit_metadata::FirstPartyAppMetadata,
+    >,
+    #[prost(
+        oneof = "big_query_audit_metadata::Event",
+        tags = "1, 2, 23, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 19, 16, 17, 18, 20, 21, 22, 25"
+    )]
+    pub event: ::core::option::Option<big_query_audit_metadata::Event>,
+}
+/// Nested message and enum types in `BigQueryAuditMetadata`.
+pub mod big_query_audit_metadata {
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct JobInsertion {
+        #[prost(message, optional, tag = "1")]
+        pub job: ::core::option::Option<Job>,
+        #[prost(enumeration = "job_insertion::Reason", tag = "2")]
+        pub reason: i32,
+    }
+    /// Nested message and enum types in `JobInsertion`.
+    pub mod job_insertion {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            JobInsertRequest = 1,
+            QueryRequest = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::JobInsertRequest => "JOB_INSERT_REQUEST",
+                    Self::QueryRequest => "QUERY_REQUEST",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "JOB_INSERT_REQUEST" => Some(Self::JobInsertRequest),
+                    "QUERY_REQUEST" => Some(Self::QueryRequest),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for JobInsertion {
+        const NAME: &'static str = "JobInsertion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.JobInsertion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobInsertion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct JobChange {
+        #[prost(enumeration = "JobState", tag = "1")]
+        pub before: i32,
+        #[prost(enumeration = "JobState", tag = "2")]
+        pub after: i32,
+        #[prost(message, optional, tag = "3")]
+        pub job: ::core::option::Option<Job>,
+    }
+    impl ::prost::Name for JobChange {
+        const NAME: &'static str = "JobChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.JobChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct JobDeletion {
+        #[prost(string, tag = "1")]
+        pub job_name: ::prost::alloc::string::String,
+        #[prost(enumeration = "job_deletion::Reason", tag = "2")]
+        pub reason: i32,
+    }
+    /// Nested message and enum types in `JobDeletion`.
+    pub mod job_deletion {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            JobDeleteRequest = 1,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::JobDeleteRequest => "JOB_DELETE_REQUEST",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "JOB_DELETE_REQUEST" => Some(Self::JobDeleteRequest),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for JobDeletion {
+        const NAME: &'static str = "JobDeletion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.JobDeletion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobDeletion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct DatasetCreation {
+        #[prost(message, optional, tag = "1")]
+        pub dataset: ::core::option::Option<Dataset>,
+        #[prost(enumeration = "dataset_creation::Reason", tag = "2")]
+        pub reason: i32,
+        #[prost(string, tag = "3")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `DatasetCreation`.
+    pub mod dataset_creation {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Create = 1,
+            Query = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Create => "CREATE",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "CREATE" => Some(Self::Create),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for DatasetCreation {
+        const NAME: &'static str = "DatasetCreation";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.DatasetCreation".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.DatasetCreation"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct DatasetChange {
+        #[prost(message, optional, tag = "1")]
+        pub dataset: ::core::option::Option<Dataset>,
+        #[prost(enumeration = "dataset_change::Reason", tag = "2")]
+        pub reason: i32,
+        #[prost(string, tag = "3")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `DatasetChange`.
+    pub mod dataset_change {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Update = 1,
+            SetIamPolicy = 2,
+            Query = 3,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Update => "UPDATE",
+                    Self::SetIamPolicy => "SET_IAM_POLICY",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "UPDATE" => Some(Self::Update),
+                    "SET_IAM_POLICY" => Some(Self::SetIamPolicy),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for DatasetChange {
+        const NAME: &'static str = "DatasetChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.DatasetChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.DatasetChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct DatasetDeletion {
+        #[prost(enumeration = "dataset_deletion::Reason", tag = "1")]
+        pub reason: i32,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `DatasetDeletion`.
+    pub mod dataset_deletion {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Delete = 1,
+            Query = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Delete => "DELETE",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "DELETE" => Some(Self::Delete),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for DatasetDeletion {
+        const NAME: &'static str = "DatasetDeletion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.DatasetDeletion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.DatasetDeletion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct TableCreation {
+        #[prost(message, optional, tag = "1")]
+        pub table: ::core::option::Option<Table>,
+        #[prost(enumeration = "table_creation::Reason", tag = "3")]
+        pub reason: i32,
+        #[prost(string, tag = "4")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `TableCreation`.
+    pub mod table_creation {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Job = 1,
+            Query = 2,
+            TableInsertRequest = 3,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Job => "JOB",
+                    Self::Query => "QUERY",
+                    Self::TableInsertRequest => "TABLE_INSERT_REQUEST",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "JOB" => Some(Self::Job),
+                    "QUERY" => Some(Self::Query),
+                    "TABLE_INSERT_REQUEST" => Some(Self::TableInsertRequest),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for TableCreation {
+        const NAME: &'static str = "TableCreation";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableCreation".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableCreation"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct ModelCreation {
+        #[prost(message, optional, tag = "1")]
+        pub model: ::core::option::Option<Model>,
+        #[prost(enumeration = "model_creation::Reason", tag = "3")]
+        pub reason: i32,
+        #[prost(string, tag = "4")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `ModelCreation`.
+    pub mod model_creation {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Query = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for ModelCreation {
+        const NAME: &'static str = "ModelCreation";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.ModelCreation".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.ModelCreation"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct RoutineCreation {
+        #[prost(message, optional, tag = "1")]
+        pub routine: ::core::option::Option<Routine>,
+        #[prost(enumeration = "routine_creation::Reason", tag = "3")]
+        pub reason: i32,
+        #[prost(string, tag = "4")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `RoutineCreation`.
+    pub mod routine_creation {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Query = 1,
+            RoutineInsertRequest = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Query => "QUERY",
+                    Self::RoutineInsertRequest => "ROUTINE_INSERT_REQUEST",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "QUERY" => Some(Self::Query),
+                    "ROUTINE_INSERT_REQUEST" => Some(Self::RoutineInsertRequest),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for RoutineCreation {
+        const NAME: &'static str = "RoutineCreation";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RoutineCreation".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RoutineCreation"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct TableDataRead {
+        #[prost(string, repeated, tag = "2")]
+        pub fields: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+        #[prost(bool, tag = "8")]
+        pub fields_truncated: bool,
+        #[prost(string, repeated, tag = "9")]
+        pub policy_tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+        #[prost(bool, tag = "10")]
+        pub policy_tags_truncated: bool,
+        #[prost(enumeration = "table_data_read::Reason", tag = "3")]
+        pub reason: i32,
+        #[prost(string, tag = "4")]
+        pub job_name: ::prost::alloc::string::String,
+        #[prost(string, tag = "5")]
+        pub session_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `TableDataRead`.
+    pub mod table_data_read {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Job = 1,
+            TabledataListRequest = 2,
+            GetQueryResultsRequest = 3,
+            QueryRequest = 4,
+            CreateReadSession = 5,
+            MaterializedViewRefresh = 6,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Job => "JOB",
+                    Self::TabledataListRequest => "TABLEDATA_LIST_REQUEST",
+                    Self::GetQueryResultsRequest => "GET_QUERY_RESULTS_REQUEST",
+                    Self::QueryRequest => "QUERY_REQUEST",
+                    Self::CreateReadSession => "CREATE_READ_SESSION",
+                    Self::MaterializedViewRefresh => "MATERIALIZED_VIEW_REFRESH",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "JOB" => Some(Self::Job),
+                    "TABLEDATA_LIST_REQUEST" => Some(Self::TabledataListRequest),
+                    "GET_QUERY_RESULTS_REQUEST" => Some(Self::GetQueryResultsRequest),
+                    "QUERY_REQUEST" => Some(Self::QueryRequest),
+                    "CREATE_READ_SESSION" => Some(Self::CreateReadSession),
+                    "MATERIALIZED_VIEW_REFRESH" => Some(Self::MaterializedViewRefresh),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for TableDataRead {
+        const NAME: &'static str = "TableDataRead";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableDataRead".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableDataRead"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct TableChange {
+        #[prost(message, optional, tag = "1")]
+        pub table: ::core::option::Option<Table>,
+        #[prost(bool, tag = "4")]
+        pub truncated: bool,
+        #[prost(enumeration = "table_change::Reason", tag = "5")]
+        pub reason: i32,
+        #[prost(string, tag = "6")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `TableChange`.
+    pub mod table_change {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            TableUpdateRequest = 1,
+            Job = 2,
+            Query = 3,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::TableUpdateRequest => "TABLE_UPDATE_REQUEST",
+                    Self::Job => "JOB",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "TABLE_UPDATE_REQUEST" => Some(Self::TableUpdateRequest),
+                    "JOB" => Some(Self::Job),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for TableChange {
+        const NAME: &'static str = "TableChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct ModelMetadataChange {
+        #[prost(message, optional, tag = "1")]
+        pub model: ::core::option::Option<Model>,
+        #[prost(enumeration = "model_metadata_change::Reason", tag = "2")]
+        pub reason: i32,
+        #[prost(string, tag = "3")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `ModelMetadataChange`.
+    pub mod model_metadata_change {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            ModelPatchRequest = 1,
+            Query = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::ModelPatchRequest => "MODEL_PATCH_REQUEST",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "MODEL_PATCH_REQUEST" => Some(Self::ModelPatchRequest),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for ModelMetadataChange {
+        const NAME: &'static str = "ModelMetadataChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.ModelMetadataChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.ModelMetadataChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct RoutineChange {
+        #[prost(message, optional, tag = "1")]
+        pub routine: ::core::option::Option<Routine>,
+        #[prost(enumeration = "routine_change::Reason", tag = "3")]
+        pub reason: i32,
+        #[prost(string, tag = "4")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `RoutineChange`.
+    pub mod routine_change {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Query = 1,
+            RoutineUpdateRequest = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Query => "QUERY",
+                    Self::RoutineUpdateRequest => "ROUTINE_UPDATE_REQUEST",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "QUERY" => Some(Self::Query),
+                    "ROUTINE_UPDATE_REQUEST" => Some(Self::RoutineUpdateRequest),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for RoutineChange {
+        const NAME: &'static str = "RoutineChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RoutineChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RoutineChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct TableDataChange {
+        #[prost(int64, tag = "1")]
+        pub deleted_rows_count: i64,
+        #[prost(int64, tag = "2")]
+        pub inserted_rows_count: i64,
+        #[prost(bool, tag = "3")]
+        pub truncated: bool,
+        #[prost(enumeration = "table_data_change::Reason", tag = "4")]
+        pub reason: i32,
+        #[prost(string, tag = "5")]
+        pub job_name: ::prost::alloc::string::String,
+        #[prost(string, tag = "6")]
+        pub stream_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `TableDataChange`.
+    pub mod table_data_change {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Job = 1,
+            Query = 2,
+            MaterializedViewRefresh = 3,
+            WriteApi = 4,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Job => "JOB",
+                    Self::Query => "QUERY",
+                    Self::MaterializedViewRefresh => "MATERIALIZED_VIEW_REFRESH",
+                    Self::WriteApi => "WRITE_API",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "JOB" => Some(Self::Job),
+                    "QUERY" => Some(Self::Query),
+                    "MATERIALIZED_VIEW_REFRESH" => Some(Self::MaterializedViewRefresh),
+                    "WRITE_API" => Some(Self::WriteApi),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for TableDataChange {
+        const NAME: &'static str = "TableDataChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableDataChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableDataChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct ModelDataChange {
+        #[prost(enumeration = "model_data_change::Reason", tag = "1")]
+        pub reason: i32,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `ModelDataChange`.
+    pub mod model_data_change {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Query = 1,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for ModelDataChange {
+        const NAME: &'static str = "ModelDataChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.ModelDataChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.ModelDataChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct ModelDataRead {
+        #[prost(enumeration = "model_data_read::Reason", tag = "1")]
+        pub reason: i32,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `ModelDataRead`.
+    pub mod model_data_read {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Job = 1,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Job => "JOB",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "JOB" => Some(Self::Job),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for ModelDataRead {
+        const NAME: &'static str = "ModelDataRead";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.ModelDataRead".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.ModelDataRead"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct TableDeletion {
+        #[prost(enumeration = "table_deletion::Reason", tag = "1")]
+        pub reason: i32,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `TableDeletion`.
+    pub mod table_deletion {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            TableDeleteRequest = 2,
+            Expired = 3,
+            Query = 4,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::TableDeleteRequest => "TABLE_DELETE_REQUEST",
+                    Self::Expired => "EXPIRED",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "TABLE_DELETE_REQUEST" => Some(Self::TableDeleteRequest),
+                    "EXPIRED" => Some(Self::Expired),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for TableDeletion {
+        const NAME: &'static str = "TableDeletion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableDeletion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableDeletion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct ModelDeletion {
+        #[prost(enumeration = "model_deletion::Reason", tag = "1")]
+        pub reason: i32,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `ModelDeletion`.
+    pub mod model_deletion {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            ModelDeleteRequest = 1,
+            Expired = 2,
+            Query = 3,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::ModelDeleteRequest => "MODEL_DELETE_REQUEST",
+                    Self::Expired => "EXPIRED",
+                    Self::Query => "QUERY",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "MODEL_DELETE_REQUEST" => Some(Self::ModelDeleteRequest),
+                    "EXPIRED" => Some(Self::Expired),
+                    "QUERY" => Some(Self::Query),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for ModelDeletion {
+        const NAME: &'static str = "ModelDeletion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.ModelDeletion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.ModelDeletion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct RoutineDeletion {
+        #[prost(message, optional, tag = "1")]
+        pub routine: ::core::option::Option<Routine>,
+        #[prost(enumeration = "routine_deletion::Reason", tag = "3")]
+        pub reason: i32,
+        #[prost(string, tag = "4")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    /// Nested message and enum types in `RoutineDeletion`.
+    pub mod routine_deletion {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            Query = 1,
+            RoutineDeleteRequest = 2,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::Query => "QUERY",
+                    Self::RoutineDeleteRequest => "ROUTINE_DELETE_REQUEST",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "QUERY" => Some(Self::Query),
+                    "ROUTINE_DELETE_REQUEST" => Some(Self::RoutineDeleteRequest),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for RoutineDeletion {
+        const NAME: &'static str = "RoutineDeletion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RoutineDeletion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RoutineDeletion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct RowAccessPolicyCreation {
+        #[prost(message, optional, tag = "1")]
+        pub row_access_policy: ::core::option::Option<RowAccessPolicy>,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    impl ::prost::Name for RowAccessPolicyCreation {
+        const NAME: &'static str = "RowAccessPolicyCreation";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicyCreation".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicyCreation"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct RowAccessPolicyChange {
+        #[prost(message, optional, tag = "1")]
+        pub row_access_policy: ::core::option::Option<RowAccessPolicy>,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+    }
+    impl ::prost::Name for RowAccessPolicyChange {
+        const NAME: &'static str = "RowAccessPolicyChange";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicyChange".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicyChange"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct RowAccessPolicyDeletion {
+        #[prost(message, repeated, tag = "1")]
+        pub row_access_policies: ::prost::alloc::vec::Vec<RowAccessPolicy>,
+        #[prost(string, tag = "2")]
+        pub job_name: ::prost::alloc::string::String,
+        #[prost(bool, tag = "3")]
+        pub all_row_access_policies_dropped: bool,
+    }
+    impl ::prost::Name for RowAccessPolicyDeletion {
+        const NAME: &'static str = "RowAccessPolicyDeletion";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicyDeletion".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicyDeletion"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct UnlinkDataset {
+        #[prost(string, tag = "1")]
+        pub linked_dataset: ::prost::alloc::string::String,
+        #[prost(string, tag = "2")]
+        pub source_dataset: ::prost::alloc::string::String,
+        #[prost(enumeration = "unlink_dataset::Reason", tag = "3")]
+        pub reason: i32,
+    }
+    /// Nested message and enum types in `UnlinkDataset`.
+    pub mod unlink_dataset {
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Reason {
+            Unspecified = 0,
+            UnlinkApi = 1,
+        }
+        impl Reason {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "REASON_UNSPECIFIED",
+                    Self::UnlinkApi => "UNLINK_API",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "REASON_UNSPECIFIED" => Some(Self::Unspecified),
+                    "UNLINK_API" => Some(Self::UnlinkApi),
+                    _ => None,
+                }
+            }
+        }
+    }
+    impl ::prost::Name for UnlinkDataset {
+        const NAME: &'static str = "UnlinkDataset";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.UnlinkDataset".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.UnlinkDataset"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Job {
+        #[prost(string, tag = "1")]
+        pub job_name: ::prost::alloc::string::String,
+        #[prost(message, optional, tag = "2")]
+        pub job_config: ::core::option::Option<JobConfig>,
+        #[prost(message, optional, tag = "3")]
+        pub job_status: ::core::option::Option<JobStatus>,
+        #[prost(message, optional, tag = "4")]
+        pub job_stats: ::core::option::Option<JobStats>,
+    }
+    impl ::prost::Name for Job {
+        const NAME: &'static str = "Job";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.Job".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.Job".into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct JobConfig {
+        #[prost(enumeration = "job_config::Type", tag = "1")]
+        pub r#type: i32,
+        #[prost(map = "string, string", tag = "6")]
+        pub labels: ::std::collections::HashMap<
+            ::prost::alloc::string::String,
+            ::prost::alloc::string::String,
+        >,
+        #[prost(oneof = "job_config::Config", tags = "2, 3, 4, 5")]
+        pub config: ::core::option::Option<job_config::Config>,
+    }
+    /// Nested message and enum types in `JobConfig`.
+    pub mod job_config {
+        #[derive(Clone, PartialEq, ::prost::Message)]
+        pub struct Query {
+            #[prost(string, tag = "1")]
+            pub query: ::prost::alloc::string::String,
+            #[prost(bool, tag = "10")]
+            pub query_truncated: bool,
+            #[prost(string, tag = "2")]
+            pub destination_table: ::prost::alloc::string::String,
+            #[prost(enumeration = "super::CreateDisposition", tag = "3")]
+            pub create_disposition: i32,
+            #[prost(enumeration = "super::WriteDisposition", tag = "4")]
+            pub write_disposition: i32,
+            #[prost(string, tag = "5")]
+            pub default_dataset: ::prost::alloc::string::String,
+            #[prost(message, repeated, tag = "6")]
+            pub table_definitions: ::prost::alloc::vec::Vec<super::TableDefinition>,
+            #[prost(enumeration = "query::Priority", tag = "7")]
+            pub priority: i32,
+            #[prost(message, optional, tag = "8")]
+            pub destination_table_encryption: ::core::option::Option<
+                super::EncryptionInfo,
+            >,
+            #[prost(enumeration = "super::QueryStatementType", tag = "9")]
+            pub statement_type: i32,
+        }
+        /// Nested message and enum types in `Query`.
+        pub mod query {
+            #[derive(
+                Clone,
+                Copy,
+                Debug,
+                PartialEq,
+                Eq,
+                Hash,
+                PartialOrd,
+                Ord,
+                ::prost::Enumeration
+            )]
+            #[repr(i32)]
+            pub enum Priority {
+                Unspecified = 0,
+                QueryInteractive = 1,
+                QueryBatch = 2,
+            }
+            impl Priority {
+                /// String value of the enum field names used in the ProtoBuf definition.
+                ///
+                /// The values are not transformed in any way and thus are considered stable
+                /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+                pub fn as_str_name(&self) -> &'static str {
+                    match self {
+                        Self::Unspecified => "PRIORITY_UNSPECIFIED",
+                        Self::QueryInteractive => "QUERY_INTERACTIVE",
+                        Self::QueryBatch => "QUERY_BATCH",
+                    }
+                }
+                /// Creates an enum from field names used in the ProtoBuf definition.
+                pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                    match value {
+                        "PRIORITY_UNSPECIFIED" => Some(Self::Unspecified),
+                        "QUERY_INTERACTIVE" => Some(Self::QueryInteractive),
+                        "QUERY_BATCH" => Some(Self::QueryBatch),
+                        _ => None,
+                    }
+                }
+            }
+        }
+        impl ::prost::Name for Query {
+            const NAME: &'static str = "Query";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobConfig.Query".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobConfig.Query"
+                    .into()
+            }
+        }
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct Load {
+            #[prost(string, repeated, tag = "1")]
+            pub source_uris: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+            #[prost(bool, tag = "7")]
+            pub source_uris_truncated: bool,
+            #[prost(string, tag = "2")]
+            pub schema_json: ::prost::alloc::string::String,
+            #[prost(bool, tag = "8")]
+            pub schema_json_truncated: bool,
+            #[prost(string, tag = "3")]
+            pub destination_table: ::prost::alloc::string::String,
+            #[prost(enumeration = "super::CreateDisposition", tag = "4")]
+            pub create_disposition: i32,
+            #[prost(enumeration = "super::WriteDisposition", tag = "5")]
+            pub write_disposition: i32,
+            #[prost(message, optional, tag = "6")]
+            pub destination_table_encryption: ::core::option::Option<
+                super::EncryptionInfo,
+            >,
+        }
+        impl ::prost::Name for Load {
+            const NAME: &'static str = "Load";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobConfig.Load".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobConfig.Load"
+                    .into()
+            }
+        }
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct Extract {
+            #[prost(string, repeated, tag = "1")]
+            pub destination_uris: ::prost::alloc::vec::Vec<
+                ::prost::alloc::string::String,
+            >,
+            #[prost(bool, tag = "3")]
+            pub destination_uris_truncated: bool,
+            #[prost(oneof = "extract::Source", tags = "2, 4")]
+            pub source: ::core::option::Option<extract::Source>,
+        }
+        /// Nested message and enum types in `Extract`.
+        pub mod extract {
+            #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
+            pub enum Source {
+                #[prost(string, tag = "2")]
+                SourceTable(::prost::alloc::string::String),
+                #[prost(string, tag = "4")]
+                SourceModel(::prost::alloc::string::String),
+            }
+        }
+        impl ::prost::Name for Extract {
+            const NAME: &'static str = "Extract";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobConfig.Extract".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobConfig.Extract"
+                    .into()
+            }
+        }
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct TableCopy {
+            #[prost(string, repeated, tag = "1")]
+            pub source_tables: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+            #[prost(bool, tag = "6")]
+            pub source_tables_truncated: bool,
+            #[prost(string, tag = "2")]
+            pub destination_table: ::prost::alloc::string::String,
+            #[prost(enumeration = "super::CreateDisposition", tag = "3")]
+            pub create_disposition: i32,
+            #[prost(enumeration = "super::WriteDisposition", tag = "4")]
+            pub write_disposition: i32,
+            #[prost(message, optional, tag = "5")]
+            pub destination_table_encryption: ::core::option::Option<
+                super::EncryptionInfo,
+            >,
+            #[prost(enumeration = "super::OperationType", tag = "7")]
+            pub operation_type: i32,
+            #[prost(message, optional, tag = "8")]
+            pub destination_expiration_time: ::core::option::Option<
+                ::prost_types::Timestamp,
+            >,
+        }
+        impl ::prost::Name for TableCopy {
+            const NAME: &'static str = "TableCopy";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobConfig.TableCopy".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobConfig.TableCopy"
+                    .into()
+            }
+        }
+        #[derive(
+            Clone,
+            Copy,
+            Debug,
+            PartialEq,
+            Eq,
+            Hash,
+            PartialOrd,
+            Ord,
+            ::prost::Enumeration
+        )]
+        #[repr(i32)]
+        pub enum Type {
+            Unspecified = 0,
+            Query = 1,
+            Copy = 2,
+            Export = 3,
+            Import = 4,
+        }
+        impl Type {
+            /// String value of the enum field names used in the ProtoBuf definition.
+            ///
+            /// The values are not transformed in any way and thus are considered stable
+            /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+            pub fn as_str_name(&self) -> &'static str {
+                match self {
+                    Self::Unspecified => "TYPE_UNSPECIFIED",
+                    Self::Query => "QUERY",
+                    Self::Copy => "COPY",
+                    Self::Export => "EXPORT",
+                    Self::Import => "IMPORT",
+                }
+            }
+            /// Creates an enum from field names used in the ProtoBuf definition.
+            pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+                match value {
+                    "TYPE_UNSPECIFIED" => Some(Self::Unspecified),
+                    "QUERY" => Some(Self::Query),
+                    "COPY" => Some(Self::Copy),
+                    "EXPORT" => Some(Self::Export),
+                    "IMPORT" => Some(Self::Import),
+                    _ => None,
+                }
+            }
+        }
+        #[derive(Clone, PartialEq, ::prost::Oneof)]
+        pub enum Config {
+            #[prost(message, tag = "2")]
+            QueryConfig(Query),
+            #[prost(message, tag = "3")]
+            LoadConfig(Load),
+            #[prost(message, tag = "4")]
+            ExtractConfig(Extract),
+            #[prost(message, tag = "5")]
+            TableCopyConfig(TableCopy),
+        }
+    }
+    impl ::prost::Name for JobConfig {
+        const NAME: &'static str = "JobConfig";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.JobConfig".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobConfig"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct TableDefinition {
+        #[prost(string, tag = "1")]
+        pub name: ::prost::alloc::string::String,
+        #[prost(string, repeated, tag = "2")]
+        pub source_uris: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    }
+    impl ::prost::Name for TableDefinition {
+        const NAME: &'static str = "TableDefinition";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableDefinition".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableDefinition"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct JobStatus {
+        #[prost(enumeration = "JobState", tag = "1")]
+        pub job_state: i32,
+        #[prost(message, optional, tag = "2")]
+        pub error_result: ::core::option::Option<super::super::super::rpc::Status>,
+        #[prost(message, repeated, tag = "3")]
+        pub errors: ::prost::alloc::vec::Vec<super::super::super::rpc::Status>,
+    }
+    impl ::prost::Name for JobStatus {
+        const NAME: &'static str = "JobStatus";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.JobStatus".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobStatus"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct JobStats {
+        #[prost(message, optional, tag = "1")]
+        pub create_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "2")]
+        pub start_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "3")]
+        pub end_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(int64, tag = "10")]
+        pub total_slot_ms: i64,
+        #[deprecated]
+        #[prost(message, repeated, tag = "11")]
+        pub reservation_usage: ::prost::alloc::vec::Vec<
+            job_stats::ReservationResourceUsage,
+        >,
+        #[prost(string, tag = "14")]
+        pub reservation: ::prost::alloc::string::String,
+        #[prost(string, tag = "12")]
+        pub parent_job_name: ::prost::alloc::string::String,
+        #[prost(oneof = "job_stats::Extended", tags = "8, 9, 13")]
+        pub extended: ::core::option::Option<job_stats::Extended>,
+    }
+    /// Nested message and enum types in `JobStats`.
+    pub mod job_stats {
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct Query {
+            #[prost(int64, tag = "1")]
+            pub total_processed_bytes: i64,
+            #[prost(int64, tag = "2")]
+            pub total_billed_bytes: i64,
+            #[prost(int32, tag = "3")]
+            pub billing_tier: i32,
+            #[prost(string, repeated, tag = "6")]
+            pub referenced_tables: ::prost::alloc::vec::Vec<
+                ::prost::alloc::string::String,
+            >,
+            #[prost(string, repeated, tag = "7")]
+            pub referenced_views: ::prost::alloc::vec::Vec<
+                ::prost::alloc::string::String,
+            >,
+            #[prost(string, repeated, tag = "10")]
+            pub referenced_routines: ::prost::alloc::vec::Vec<
+                ::prost::alloc::string::String,
+            >,
+            #[prost(int64, tag = "8")]
+            pub output_row_count: i64,
+            #[prost(bool, tag = "9")]
+            pub cache_hit: bool,
+        }
+        impl ::prost::Name for Query {
+            const NAME: &'static str = "Query";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobStats.Query".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobStats.Query"
+                    .into()
+            }
+        }
+        #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct Load {
+            #[prost(int64, tag = "1")]
+            pub total_output_bytes: i64,
+        }
+        impl ::prost::Name for Load {
+            const NAME: &'static str = "Load";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobStats.Load".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobStats.Load"
+                    .into()
+            }
+        }
+        #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct Extract {
+            #[prost(int64, tag = "1")]
+            pub total_input_bytes: i64,
+        }
+        impl ::prost::Name for Extract {
+            const NAME: &'static str = "Extract";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobStats.Extract".into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobStats.Extract"
+                    .into()
+            }
+        }
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+        pub struct ReservationResourceUsage {
+            #[prost(string, tag = "1")]
+            pub name: ::prost::alloc::string::String,
+            #[prost(int64, tag = "2")]
+            pub slot_ms: i64,
+        }
+        impl ::prost::Name for ReservationResourceUsage {
+            const NAME: &'static str = "ReservationResourceUsage";
+            const PACKAGE: &'static str = "google.cloud.audit";
+            fn full_name() -> ::prost::alloc::string::String {
+                "google.cloud.audit.BigQueryAuditMetadata.JobStats.ReservationResourceUsage"
+                    .into()
+            }
+            fn type_url() -> ::prost::alloc::string::String {
+                "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobStats.ReservationResourceUsage"
+                    .into()
+            }
+        }
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
+        pub enum Extended {
+            #[prost(message, tag = "8")]
+            QueryStats(Query),
+            #[prost(message, tag = "9")]
+            LoadStats(Load),
+            #[prost(message, tag = "13")]
+            ExtractStats(Extract),
+        }
+    }
+    impl ::prost::Name for JobStats {
+        const NAME: &'static str = "JobStats";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.JobStats".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.JobStats"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Table {
+        #[prost(string, tag = "1")]
+        pub table_name: ::prost::alloc::string::String,
+        #[prost(message, optional, tag = "10")]
+        pub table_info: ::core::option::Option<EntityInfo>,
+        #[prost(string, tag = "3")]
+        pub schema_json: ::prost::alloc::string::String,
+        #[prost(bool, tag = "11")]
+        pub schema_json_truncated: bool,
+        #[prost(message, optional, tag = "4")]
+        pub view: ::core::option::Option<TableViewDefinition>,
+        #[prost(message, optional, tag = "5")]
+        pub expire_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "6")]
+        pub create_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "7")]
+        pub update_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "8")]
+        pub truncate_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "9")]
+        pub encryption: ::core::option::Option<EncryptionInfo>,
+    }
+    impl ::prost::Name for Table {
+        const NAME: &'static str = "Table";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.Table".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.Table".into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Model {
+        #[prost(string, tag = "1")]
+        pub model_name: ::prost::alloc::string::String,
+        #[prost(message, optional, tag = "2")]
+        pub model_info: ::core::option::Option<EntityInfo>,
+        #[prost(message, optional, tag = "5")]
+        pub expire_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "6")]
+        pub create_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "7")]
+        pub update_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "8")]
+        pub encryption: ::core::option::Option<EncryptionInfo>,
+    }
+    impl ::prost::Name for Model {
+        const NAME: &'static str = "Model";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.Model".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.Model".into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct Routine {
+        #[prost(string, tag = "1")]
+        pub routine_name: ::prost::alloc::string::String,
+        #[prost(message, optional, tag = "5")]
+        pub create_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "6")]
+        pub update_time: ::core::option::Option<::prost_types::Timestamp>,
+    }
+    impl ::prost::Name for Routine {
+        const NAME: &'static str = "Routine";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.Routine".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.Routine".into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct EntityInfo {
+        #[prost(string, tag = "1")]
+        pub friendly_name: ::prost::alloc::string::String,
+        #[prost(string, tag = "2")]
+        pub description: ::prost::alloc::string::String,
+        #[prost(map = "string, string", tag = "3")]
+        pub labels: ::std::collections::HashMap<
+            ::prost::alloc::string::String,
+            ::prost::alloc::string::String,
+        >,
+    }
+    impl ::prost::Name for EntityInfo {
+        const NAME: &'static str = "EntityInfo";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.EntityInfo".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.EntityInfo"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct TableViewDefinition {
+        #[prost(string, tag = "1")]
+        pub query: ::prost::alloc::string::String,
+        #[prost(bool, tag = "2")]
+        pub query_truncated: bool,
+    }
+    impl ::prost::Name for TableViewDefinition {
+        const NAME: &'static str = "TableViewDefinition";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.TableViewDefinition".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.TableViewDefinition"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct Dataset {
+        #[prost(string, tag = "1")]
+        pub dataset_name: ::prost::alloc::string::String,
+        #[prost(message, optional, tag = "7")]
+        pub dataset_info: ::core::option::Option<EntityInfo>,
+        #[prost(message, optional, tag = "3")]
+        pub create_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "4")]
+        pub update_time: ::core::option::Option<::prost_types::Timestamp>,
+        #[prost(message, optional, tag = "5")]
+        pub acl: ::core::option::Option<BigQueryAcl>,
+        #[prost(message, optional, tag = "6")]
+        pub default_table_expire_duration: ::core::option::Option<
+            ::prost_types::Duration,
+        >,
+        #[prost(message, optional, tag = "8")]
+        pub default_encryption: ::core::option::Option<EncryptionInfo>,
+        #[prost(string, tag = "9")]
+        pub default_collation: ::prost::alloc::string::String,
+    }
+    impl ::prost::Name for Dataset {
+        const NAME: &'static str = "Dataset";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.Dataset".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.Dataset".into()
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Message)]
+    pub struct BigQueryAcl {
+        #[prost(message, optional, tag = "1")]
+        pub policy: ::core::option::Option<super::super::super::iam::v1::Policy>,
+        #[prost(string, repeated, tag = "2")]
+        pub authorized_views: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    }
+    impl ::prost::Name for BigQueryAcl {
+        const NAME: &'static str = "BigQueryAcl";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.BigQueryAcl".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.BigQueryAcl"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct EncryptionInfo {
+        #[prost(string, tag = "1")]
+        pub kms_key_name: ::prost::alloc::string::String,
+    }
+    impl ::prost::Name for EncryptionInfo {
+        const NAME: &'static str = "EncryptionInfo";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.EncryptionInfo".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.EncryptionInfo"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct RowAccessPolicy {
+        #[prost(string, tag = "1")]
+        pub row_access_policy_name: ::prost::alloc::string::String,
+    }
+    impl ::prost::Name for RowAccessPolicy {
+        const NAME: &'static str = "RowAccessPolicy";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicy".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.RowAccessPolicy"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct FirstPartyAppMetadata {
+        #[prost(oneof = "first_party_app_metadata::Metadata", tags = "1")]
+        pub metadata: ::core::option::Option<first_party_app_metadata::Metadata>,
+    }
+    /// Nested message and enum types in `FirstPartyAppMetadata`.
+    pub mod first_party_app_metadata {
+        #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
+        pub enum Metadata {
+            #[prost(message, tag = "1")]
+            SheetsMetadata(super::SheetsMetadata),
+        }
+    }
+    impl ::prost::Name for FirstPartyAppMetadata {
+        const NAME: &'static str = "FirstPartyAppMetadata";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.FirstPartyAppMetadata".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.FirstPartyAppMetadata"
+                .into()
+        }
+    }
+    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+    pub struct SheetsMetadata {
+        #[prost(string, tag = "1")]
+        pub doc_id: ::prost::alloc::string::String,
+    }
+    impl ::prost::Name for SheetsMetadata {
+        const NAME: &'static str = "SheetsMetadata";
+        const PACKAGE: &'static str = "google.cloud.audit";
+        fn full_name() -> ::prost::alloc::string::String {
+            "google.cloud.audit.BigQueryAuditMetadata.SheetsMetadata".into()
+        }
+        fn type_url() -> ::prost::alloc::string::String {
+            "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata.SheetsMetadata"
+                .into()
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum CreateDisposition {
+        Unspecified = 0,
+        CreateNever = 1,
+        CreateIfNeeded = 2,
+    }
+    impl CreateDisposition {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Self::Unspecified => "CREATE_DISPOSITION_UNSPECIFIED",
+                Self::CreateNever => "CREATE_NEVER",
+                Self::CreateIfNeeded => "CREATE_IF_NEEDED",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "CREATE_DISPOSITION_UNSPECIFIED" => Some(Self::Unspecified),
+                "CREATE_NEVER" => Some(Self::CreateNever),
+                "CREATE_IF_NEEDED" => Some(Self::CreateIfNeeded),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum WriteDisposition {
+        Unspecified = 0,
+        WriteEmpty = 1,
+        WriteTruncate = 2,
+        WriteAppend = 3,
+    }
+    impl WriteDisposition {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Self::Unspecified => "WRITE_DISPOSITION_UNSPECIFIED",
+                Self::WriteEmpty => "WRITE_EMPTY",
+                Self::WriteTruncate => "WRITE_TRUNCATE",
+                Self::WriteAppend => "WRITE_APPEND",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "WRITE_DISPOSITION_UNSPECIFIED" => Some(Self::Unspecified),
+                "WRITE_EMPTY" => Some(Self::WriteEmpty),
+                "WRITE_TRUNCATE" => Some(Self::WriteTruncate),
+                "WRITE_APPEND" => Some(Self::WriteAppend),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum OperationType {
+        Unspecified = 0,
+        Copy = 1,
+        Snapshot = 2,
+        Restore = 3,
+    }
+    impl OperationType {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Self::Unspecified => "OPERATION_TYPE_UNSPECIFIED",
+                Self::Copy => "COPY",
+                Self::Snapshot => "SNAPSHOT",
+                Self::Restore => "RESTORE",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "OPERATION_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
+                "COPY" => Some(Self::Copy),
+                "SNAPSHOT" => Some(Self::Snapshot),
+                "RESTORE" => Some(Self::Restore),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum JobState {
+        Unspecified = 0,
+        Pending = 1,
+        Running = 2,
+        Done = 3,
+    }
+    impl JobState {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Self::Unspecified => "JOB_STATE_UNSPECIFIED",
+                Self::Pending => "PENDING",
+                Self::Running => "RUNNING",
+                Self::Done => "DONE",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "JOB_STATE_UNSPECIFIED" => Some(Self::Unspecified),
+                "PENDING" => Some(Self::Pending),
+                "RUNNING" => Some(Self::Running),
+                "DONE" => Some(Self::Done),
+                _ => None,
+            }
+        }
+    }
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        PartialEq,
+        Eq,
+        Hash,
+        PartialOrd,
+        Ord,
+        ::prost::Enumeration
+    )]
+    #[repr(i32)]
+    pub enum QueryStatementType {
+        Unspecified = 0,
+        Select = 1,
+        Assert = 23,
+        Insert = 2,
+        Update = 3,
+        Delete = 4,
+        Merge = 5,
+        CreateTable = 6,
+        CreateTableAsSelect = 7,
+        CreateView = 8,
+        CreateModel = 9,
+        CreateMaterializedView = 13,
+        CreateFunction = 14,
+        CreateTableFunction = 56,
+        CreateProcedure = 20,
+        CreateRowAccessPolicy = 24,
+        CreateSchema = 53,
+        CreateSnapshotTable = 59,
+        DropTable = 10,
+        DropExternalTable = 33,
+        DropView = 11,
+        DropModel = 12,
+        DropMaterializedView = 15,
+        DropFunction = 16,
+        DropProcedure = 21,
+        DropSchema = 54,
+        DropRowAccessPolicy = 25,
+        DropSnapshotTable = 62,
+        AlterTable = 17,
+        AlterView = 18,
+        AlterMaterializedView = 22,
+        AlterSchema = 55,
+        Script = 19,
+        TruncateTable = 26,
+        CreateExternalTable = 27,
+        ExportData = 28,
+        Call = 29,
+    }
+    impl QueryStatementType {
+        /// String value of the enum field names used in the ProtoBuf definition.
+        ///
+        /// The values are not transformed in any way and thus are considered stable
+        /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+        pub fn as_str_name(&self) -> &'static str {
+            match self {
+                Self::Unspecified => "QUERY_STATEMENT_TYPE_UNSPECIFIED",
+                Self::Select => "SELECT",
+                Self::Assert => "ASSERT",
+                Self::Insert => "INSERT",
+                Self::Update => "UPDATE",
+                Self::Delete => "DELETE",
+                Self::Merge => "MERGE",
+                Self::CreateTable => "CREATE_TABLE",
+                Self::CreateTableAsSelect => "CREATE_TABLE_AS_SELECT",
+                Self::CreateView => "CREATE_VIEW",
+                Self::CreateModel => "CREATE_MODEL",
+                Self::CreateMaterializedView => "CREATE_MATERIALIZED_VIEW",
+                Self::CreateFunction => "CREATE_FUNCTION",
+                Self::CreateTableFunction => "CREATE_TABLE_FUNCTION",
+                Self::CreateProcedure => "CREATE_PROCEDURE",
+                Self::CreateRowAccessPolicy => "CREATE_ROW_ACCESS_POLICY",
+                Self::CreateSchema => "CREATE_SCHEMA",
+                Self::CreateSnapshotTable => "CREATE_SNAPSHOT_TABLE",
+                Self::DropTable => "DROP_TABLE",
+                Self::DropExternalTable => "DROP_EXTERNAL_TABLE",
+                Self::DropView => "DROP_VIEW",
+                Self::DropModel => "DROP_MODEL",
+                Self::DropMaterializedView => "DROP_MATERIALIZED_VIEW",
+                Self::DropFunction => "DROP_FUNCTION",
+                Self::DropProcedure => "DROP_PROCEDURE",
+                Self::DropSchema => "DROP_SCHEMA",
+                Self::DropRowAccessPolicy => "DROP_ROW_ACCESS_POLICY",
+                Self::DropSnapshotTable => "DROP_SNAPSHOT_TABLE",
+                Self::AlterTable => "ALTER_TABLE",
+                Self::AlterView => "ALTER_VIEW",
+                Self::AlterMaterializedView => "ALTER_MATERIALIZED_VIEW",
+                Self::AlterSchema => "ALTER_SCHEMA",
+                Self::Script => "SCRIPT",
+                Self::TruncateTable => "TRUNCATE_TABLE",
+                Self::CreateExternalTable => "CREATE_EXTERNAL_TABLE",
+                Self::ExportData => "EXPORT_DATA",
+                Self::Call => "CALL",
+            }
+        }
+        /// Creates an enum from field names used in the ProtoBuf definition.
+        pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+            match value {
+                "QUERY_STATEMENT_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
+                "SELECT" => Some(Self::Select),
+                "ASSERT" => Some(Self::Assert),
+                "INSERT" => Some(Self::Insert),
+                "UPDATE" => Some(Self::Update),
+                "DELETE" => Some(Self::Delete),
+                "MERGE" => Some(Self::Merge),
+                "CREATE_TABLE" => Some(Self::CreateTable),
+                "CREATE_TABLE_AS_SELECT" => Some(Self::CreateTableAsSelect),
+                "CREATE_VIEW" => Some(Self::CreateView),
+                "CREATE_MODEL" => Some(Self::CreateModel),
+                "CREATE_MATERIALIZED_VIEW" => Some(Self::CreateMaterializedView),
+                "CREATE_FUNCTION" => Some(Self::CreateFunction),
+                "CREATE_TABLE_FUNCTION" => Some(Self::CreateTableFunction),
+                "CREATE_PROCEDURE" => Some(Self::CreateProcedure),
+                "CREATE_ROW_ACCESS_POLICY" => Some(Self::CreateRowAccessPolicy),
+                "CREATE_SCHEMA" => Some(Self::CreateSchema),
+                "CREATE_SNAPSHOT_TABLE" => Some(Self::CreateSnapshotTable),
+                "DROP_TABLE" => Some(Self::DropTable),
+                "DROP_EXTERNAL_TABLE" => Some(Self::DropExternalTable),
+                "DROP_VIEW" => Some(Self::DropView),
+                "DROP_MODEL" => Some(Self::DropModel),
+                "DROP_MATERIALIZED_VIEW" => Some(Self::DropMaterializedView),
+                "DROP_FUNCTION" => Some(Self::DropFunction),
+                "DROP_PROCEDURE" => Some(Self::DropProcedure),
+                "DROP_SCHEMA" => Some(Self::DropSchema),
+                "DROP_ROW_ACCESS_POLICY" => Some(Self::DropRowAccessPolicy),
+                "DROP_SNAPSHOT_TABLE" => Some(Self::DropSnapshotTable),
+                "ALTER_TABLE" => Some(Self::AlterTable),
+                "ALTER_VIEW" => Some(Self::AlterView),
+                "ALTER_MATERIALIZED_VIEW" => Some(Self::AlterMaterializedView),
+                "ALTER_SCHEMA" => Some(Self::AlterSchema),
+                "SCRIPT" => Some(Self::Script),
+                "TRUNCATE_TABLE" => Some(Self::TruncateTable),
+                "CREATE_EXTERNAL_TABLE" => Some(Self::CreateExternalTable),
+                "EXPORT_DATA" => Some(Self::ExportData),
+                "CALL" => Some(Self::Call),
+                _ => None,
+            }
+        }
+    }
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Event {
+        #[prost(message, tag = "1")]
+        JobInsertion(JobInsertion),
+        #[prost(message, tag = "2")]
+        JobChange(JobChange),
+        #[prost(message, tag = "23")]
+        JobDeletion(JobDeletion),
+        #[prost(message, tag = "3")]
+        DatasetCreation(DatasetCreation),
+        #[prost(message, tag = "4")]
+        DatasetChange(DatasetChange),
+        #[prost(message, tag = "5")]
+        DatasetDeletion(DatasetDeletion),
+        #[prost(message, tag = "6")]
+        TableCreation(TableCreation),
+        #[prost(message, tag = "8")]
+        TableChange(TableChange),
+        #[prost(message, tag = "9")]
+        TableDeletion(TableDeletion),
+        #[prost(message, tag = "10")]
+        TableDataRead(TableDataRead),
+        #[prost(message, tag = "11")]
+        TableDataChange(TableDataChange),
+        #[prost(message, tag = "12")]
+        ModelDeletion(ModelDeletion),
+        #[prost(message, tag = "13")]
+        ModelCreation(ModelCreation),
+        #[prost(message, tag = "14")]
+        ModelMetadataChange(ModelMetadataChange),
+        #[prost(message, tag = "15")]
+        ModelDataChange(ModelDataChange),
+        #[prost(message, tag = "19")]
+        ModelDataRead(ModelDataRead),
+        #[prost(message, tag = "16")]
+        RoutineCreation(RoutineCreation),
+        #[prost(message, tag = "17")]
+        RoutineChange(RoutineChange),
+        #[prost(message, tag = "18")]
+        RoutineDeletion(RoutineDeletion),
+        #[prost(message, tag = "20")]
+        RowAccessPolicyCreation(RowAccessPolicyCreation),
+        #[prost(message, tag = "21")]
+        RowAccessPolicyChange(RowAccessPolicyChange),
+        #[prost(message, tag = "22")]
+        RowAccessPolicyDeletion(RowAccessPolicyDeletion),
+        #[prost(message, tag = "25")]
+        UnlinkDataset(UnlinkDataset),
+    }
+}
+impl ::prost::Name for BigQueryAuditMetadata {
+    const NAME: &'static str = "BigQueryAuditMetadata";
+    const PACKAGE: &'static str = "google.cloud.audit";
+    fn full_name() -> ::prost::alloc::string::String {
+        "google.cloud.audit.BigQueryAuditMetadata".into()
+    }
+    fn type_url() -> ::prost::alloc::string::String {
+        "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata".into()
+    }
+}

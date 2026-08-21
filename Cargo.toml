@@ -85,6 +85,7 @@ members = [
   "src/generated/api/servicemanagement/v1",
   "src/generated/api/serviceusage/v1",
   "src/generated/api/types",
+  "src/generated/appengine/logging/v1",
   "src/generated/appengine/v1",
   "src/generated/apps/card/v1",
   "src/generated/apps/events/subscriptions/v1",
@@ -117,6 +118,7 @@ members = [
   "src/generated/cloud/apphub/v1",
   "src/generated/cloud/asset/v1",
   "src/generated/cloud/assuredworkloads/v1",
+  "src/generated/cloud/audit",
   "src/generated/cloud/auditmanager/v1",
   "src/generated/cloud/backupdr/v1",
   "src/generated/cloud/baremetalsolution/v2",
@@ -539,6 +541,7 @@ google-cloud-rpc         = { default-features = false, version = "1.6.0", path =
 google-cloud-type        = { default-features = false, version = "1.6.0", path = "src/generated/type" }
 # These are used by specific generated libraries.
 google-apps-card-v1                             = { default-features = false, version = "1.0.0", path = "src/generated/apps/card/v1" }
+google-cloud-appengine-logging-v1               = { default-features = false, version = "0.1.0", path = "src/generated/appengine/logging/v1" }
 google-cloud-apps-script-type                   = { default-features = false, version = "1.6.0", path = "src/generated/apps/script/gtype" }
 google-cloud-apps-script-type-calendar          = { default-features = false, version = "1.8.0", path = "src/generated/apps/script/calendar" }
 google-cloud-apps-script-type-docs              = { default-features = false, version = "1.8.0", path = "src/generated/apps/script/docs" }
@@ -546,6 +549,7 @@ google-cloud-apps-script-type-drive             = { default-features = false, ve
 google-cloud-apps-script-type-gmail             = { default-features = false, version = "1.8.0", path = "src/generated/apps/script/gmail" }
 google-cloud-apps-script-type-sheets            = { default-features = false, version = "1.8.0", path = "src/generated/apps/script/sheets" }
 google-cloud-apps-script-type-slides            = { default-features = false, version = "1.8.0", path = "src/generated/apps/script/slides" }
+google-cloud-audit                              = { default-features = false, version = "0.1.0", path = "src/generated/cloud/audit" }
 google-cloud-common                             = { default-features = false, version = "1.7.0", path = "src/generated/cloud/common" }
 google-cloud-gkehub-configmanagement-v1         = { default-features = false, version = "1.7.0", path = "src/generated/cloud/gkehub/configmanagement/v1" }
 google-cloud-gkehub-multiclusteringress-v1      = { default-features = false, version = "1.7.0", path = "src/generated/cloud/gkehub/multiclusteringress/v1" }

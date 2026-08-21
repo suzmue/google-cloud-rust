@@ -48,9 +48,6 @@
 #[allow(clippy::module_inception)]
 pub mod model;
 
-#[allow(dead_code, unused_imports, clippy::enum_variant_names)]
-pub(crate) mod internal_model;
-
 pub use google_cloud_gax::Result;
 pub use google_cloud_gax::error::Error;
 

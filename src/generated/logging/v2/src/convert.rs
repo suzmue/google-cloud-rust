@@ -51,14 +51,14 @@ fn any_to_proto_google_logging_v2_log_entry_proto_payload(
     match value.type_url().unwrap_or_default() {
         "" => Ok(prost_types::Any::default()),
         "type.googleapis.com/google.cloud.audit.AuditLog" => value
-            .to_msg::<crate::internal_model::audit::AuditLog>()
+            .to_msg::<google_cloud_audit::model::AuditLog>()
             .map_err(gaxi::prost::ConvertError::other)?
             .to_proto()
             .and_then(|prost_msg| {
                 prost_types::Any::from_msg(&prost_msg).map_err(gaxi::prost::ConvertError::other)
             }),
         "type.googleapis.com/google.appengine.logging.v1.RequestLog" => value
-            .to_msg::<crate::internal_model::appengine::RequestLog>()
+            .to_msg::<google_cloud_appengine_logging_v1::model::RequestLog>()
             .map_err(gaxi::prost::ConvertError::other)?
             .to_proto()
             .and_then(|prost_msg| {
@@ -346,7 +346,7 @@ impl gaxi::prost::FromProto<google_cloud_api::model::MonitoredResource> for crat
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::LogLine> for crate::internal_model::appengine::LogLine {
+impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::LogLine> for google_cloud_appengine_logging_v1::model::LogLine {
     type Output = crate::prost::google::appengine::logging::v1::LogLine;
     fn to_proto(self) -> std::result::Result<crate::prost::google::appengine::logging::v1::LogLine, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -358,10 +358,10 @@ impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::LogLine>
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::appengine::LogLine> for crate::prost::google::appengine::logging::v1::LogLine {
-    fn cnv(self) -> std::result::Result<crate::internal_model::appengine::LogLine, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_appengine_logging_v1::model::LogLine> for crate::prost::google::appengine::logging::v1::LogLine {
+    fn cnv(self) -> std::result::Result<google_cloud_appengine_logging_v1::model::LogLine, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::appengine::LogLine::new()
+            google_cloud_appengine_logging_v1::model::LogLine::new()
                 .set_or_clear_time(self.time.map(|v| v.cnv()).transpose()?)
                 .set_severity(self.severity)
                 .set_log_message(self.log_message)
@@ -370,7 +370,7 @@ impl gaxi::prost::FromProto<crate::internal_model::appengine::LogLine> for crate
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::RequestLog> for crate::internal_model::appengine::RequestLog {
+impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::RequestLog> for google_cloud_appengine_logging_v1::model::RequestLog {
     type Output = crate::prost::google::appengine::logging::v1::RequestLog;
     fn to_proto(self) -> std::result::Result<crate::prost::google::appengine::logging::v1::RequestLog, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -417,10 +417,10 @@ impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::RequestL
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::appengine::RequestLog> for crate::prost::google::appengine::logging::v1::RequestLog {
-    fn cnv(self) -> std::result::Result<crate::internal_model::appengine::RequestLog, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_appengine_logging_v1::model::RequestLog> for crate::prost::google::appengine::logging::v1::RequestLog {
+    fn cnv(self) -> std::result::Result<google_cloud_appengine_logging_v1::model::RequestLog, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::appengine::RequestLog::new()
+            google_cloud_appengine_logging_v1::model::RequestLog::new()
                 .set_app_id(self.app_id)
                 .set_module_id(self.module_id)
                 .set_version_id(self.version_id)
@@ -460,7 +460,7 @@ impl gaxi::prost::FromProto<crate::internal_model::appengine::RequestLog> for cr
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::SourceLocation> for crate::internal_model::appengine::SourceLocation {
+impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::SourceLocation> for google_cloud_appengine_logging_v1::model::SourceLocation {
     type Output = crate::prost::google::appengine::logging::v1::SourceLocation;
     fn to_proto(self) -> std::result::Result<crate::prost::google::appengine::logging::v1::SourceLocation, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -471,10 +471,10 @@ impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::SourceLo
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::appengine::SourceLocation> for crate::prost::google::appengine::logging::v1::SourceLocation {
-    fn cnv(self) -> std::result::Result<crate::internal_model::appengine::SourceLocation, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_appengine_logging_v1::model::SourceLocation> for crate::prost::google::appengine::logging::v1::SourceLocation {
+    fn cnv(self) -> std::result::Result<google_cloud_appengine_logging_v1::model::SourceLocation, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::appengine::SourceLocation::new()
+            google_cloud_appengine_logging_v1::model::SourceLocation::new()
                 .set_file(self.file)
                 .set_line(self.line)
                 .set_function_name(self.function_name)
@@ -482,7 +482,7 @@ impl gaxi::prost::FromProto<crate::internal_model::appengine::SourceLocation> fo
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::SourceReference> for crate::internal_model::appengine::SourceReference {
+impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::SourceReference> for google_cloud_appengine_logging_v1::model::SourceReference {
     type Output = crate::prost::google::appengine::logging::v1::SourceReference;
     fn to_proto(self) -> std::result::Result<crate::prost::google::appengine::logging::v1::SourceReference, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -492,17 +492,17 @@ impl gaxi::prost::ToProto<crate::prost::google::appengine::logging::v1::SourceRe
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::appengine::SourceReference> for crate::prost::google::appengine::logging::v1::SourceReference {
-    fn cnv(self) -> std::result::Result<crate::internal_model::appengine::SourceReference, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_appengine_logging_v1::model::SourceReference> for crate::prost::google::appengine::logging::v1::SourceReference {
+    fn cnv(self) -> std::result::Result<google_cloud_appengine_logging_v1::model::SourceReference, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::appengine::SourceReference::new()
+            google_cloud_appengine_logging_v1::model::SourceReference::new()
                 .set_repository(self.repository)
                 .set_revision_id(self.revision_id)
         )
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuditLog> for crate::internal_model::audit::AuditLog {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuditLog> for google_cloud_audit::model::AuditLog {
     type Output = crate::prost::google::cloud::audit::AuditLog;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::AuditLog, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -528,10 +528,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuditLog> for crat
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::AuditLog> for crate::prost::google::cloud::audit::AuditLog {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::AuditLog, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::AuditLog> for crate::prost::google::cloud::audit::AuditLog {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::AuditLog, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::AuditLog::new()
+            google_cloud_audit::model::AuditLog::new()
                 .set_service_name(self.service_name)
                 .set_method_name(self.method_name)
                 .set_resource_name(self.resource_name)
@@ -551,7 +551,7 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::AuditLog> for crate::p
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuthenticationInfo> for crate::internal_model::audit::AuthenticationInfo {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuthenticationInfo> for google_cloud_audit::model::AuthenticationInfo {
     type Output = crate::prost::google::cloud::audit::AuthenticationInfo;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::AuthenticationInfo, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -568,10 +568,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuthenticationInfo
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::AuthenticationInfo> for crate::prost::google::cloud::audit::AuthenticationInfo {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::AuthenticationInfo, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::AuthenticationInfo> for crate::prost::google::cloud::audit::AuthenticationInfo {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::AuthenticationInfo, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::AuthenticationInfo::new()
+            google_cloud_audit::model::AuthenticationInfo::new()
                 .set_principal_email(self.principal_email)
                 .set_authority_selector(self.authority_selector)
                 .set_or_clear_third_party_principal(self.third_party_principal.map(|v| v.cnv()).transpose()?)
@@ -583,14 +583,14 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::AuthenticationInfo> fo
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::authorization_info::PermissionType> for crate::internal_model::audit::authorization_info::PermissionType {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::authorization_info::PermissionType> for google_cloud_audit::model::authorization_info::PermissionType {
     type Output = i32;
     fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
-        self.value().ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue("crate::internal_model::audit::authorization_info::PermissionType"))
+        self.value().ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue("google_cloud_audit::model::authorization_info::PermissionType"))
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuthorizationInfo> for crate::internal_model::audit::AuthorizationInfo {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuthorizationInfo> for google_cloud_audit::model::AuthorizationInfo {
     type Output = crate::prost::google::cloud::audit::AuthorizationInfo;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::AuthorizationInfo, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -603,10 +603,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::AuthorizationInfo>
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::AuthorizationInfo> for crate::prost::google::cloud::audit::AuthorizationInfo {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::AuthorizationInfo, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::AuthorizationInfo> for crate::prost::google::cloud::audit::AuthorizationInfo {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::AuthorizationInfo, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::AuthorizationInfo::new()
+            google_cloud_audit::model::AuthorizationInfo::new()
                 .set_resource(self.resource)
                 .set_permission(self.permission)
                 .set_granted(self.granted)
@@ -616,7 +616,7 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::AuthorizationInfo> for
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::OrgPolicyViolationInfo> for crate::internal_model::audit::OrgPolicyViolationInfo {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::OrgPolicyViolationInfo> for google_cloud_audit::model::OrgPolicyViolationInfo {
     type Output = crate::prost::google::cloud::audit::OrgPolicyViolationInfo;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::OrgPolicyViolationInfo, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -635,10 +635,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::OrgPolicyViolation
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::OrgPolicyViolationInfo> for crate::prost::google::cloud::audit::OrgPolicyViolationInfo {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::OrgPolicyViolationInfo, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::OrgPolicyViolationInfo> for crate::prost::google::cloud::audit::OrgPolicyViolationInfo {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::OrgPolicyViolationInfo, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::OrgPolicyViolationInfo::new()
+            google_cloud_audit::model::OrgPolicyViolationInfo::new()
                 .set_or_clear_payload(self.payload.map(|v| v.cnv()).transpose()?)
                 .set_resource_type(self.resource_type)
                 .set_resource_tags(self.resource_tags.into_iter()
@@ -651,7 +651,7 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::OrgPolicyViolationInfo
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::PolicyViolationInfo> for crate::internal_model::audit::PolicyViolationInfo {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::PolicyViolationInfo> for google_cloud_audit::model::PolicyViolationInfo {
     type Output = crate::prost::google::cloud::audit::PolicyViolationInfo;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::PolicyViolationInfo, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -660,16 +660,16 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::PolicyViolationInf
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::PolicyViolationInfo> for crate::prost::google::cloud::audit::PolicyViolationInfo {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::PolicyViolationInfo, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::PolicyViolationInfo> for crate::prost::google::cloud::audit::PolicyViolationInfo {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::PolicyViolationInfo, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::PolicyViolationInfo::new()
+            google_cloud_audit::model::PolicyViolationInfo::new()
                 .set_or_clear_org_policy_violation_info(self.org_policy_violation_info.map(|v| v.cnv()).transpose()?)
         )
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::RequestMetadata> for crate::internal_model::audit::RequestMetadata {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::RequestMetadata> for google_cloud_audit::model::RequestMetadata {
     type Output = crate::prost::google::cloud::audit::RequestMetadata;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::RequestMetadata, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -682,10 +682,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::RequestMetadata> f
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::RequestMetadata> for crate::prost::google::cloud::audit::RequestMetadata {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::RequestMetadata, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::RequestMetadata> for crate::prost::google::cloud::audit::RequestMetadata {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::RequestMetadata, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::RequestMetadata::new()
+            google_cloud_audit::model::RequestMetadata::new()
                 .set_caller_ip(self.caller_ip)
                 .set_caller_supplied_user_agent(self.caller_supplied_user_agent)
                 .set_caller_network(self.caller_network)
@@ -695,7 +695,7 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::RequestMetadata> for c
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ResourceLocation> for crate::internal_model::audit::ResourceLocation {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ResourceLocation> for google_cloud_audit::model::ResourceLocation {
     type Output = crate::prost::google::cloud::audit::ResourceLocation;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::ResourceLocation, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -711,10 +711,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ResourceLocation> 
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::ResourceLocation> for crate::prost::google::cloud::audit::ResourceLocation {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::ResourceLocation, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::ResourceLocation> for crate::prost::google::cloud::audit::ResourceLocation {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::ResourceLocation, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::ResourceLocation::new()
+            google_cloud_audit::model::ResourceLocation::new()
                 .set_current_locations(self.current_locations.into_iter().map(|v| v.cnv())
                     .collect::<std::result::Result<std::vec::Vec<_>, _>>()?)
                 .set_original_locations(self.original_locations.into_iter().map(|v| v.cnv())
@@ -723,7 +723,7 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::ResourceLocation> for 
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_delegation_info::FirstPartyPrincipal> for crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_delegation_info::FirstPartyPrincipal> for google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal {
     type Output = crate::prost::google::cloud::audit::service_account_delegation_info::FirstPartyPrincipal;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::service_account_delegation_info::FirstPartyPrincipal, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -733,17 +733,17 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_de
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal> for crate::prost::google::cloud::audit::service_account_delegation_info::FirstPartyPrincipal {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal> for crate::prost::google::cloud::audit::service_account_delegation_info::FirstPartyPrincipal {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal::new()
+            google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal::new()
                 .set_principal_email(self.principal_email)
                 .set_or_clear_service_metadata(self.service_metadata.map(|v| v.cnv()).transpose()?)
         )
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_delegation_info::ThirdPartyPrincipal> for crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_delegation_info::ThirdPartyPrincipal> for google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal {
     type Output = crate::prost::google::cloud::audit::service_account_delegation_info::ThirdPartyPrincipal;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::service_account_delegation_info::ThirdPartyPrincipal, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -752,28 +752,29 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_de
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal> for crate::prost::google::cloud::audit::service_account_delegation_info::ThirdPartyPrincipal {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal> for crate::prost::google::cloud::audit::service_account_delegation_info::ThirdPartyPrincipal {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal::new()
+            google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal::new()
                 .set_or_clear_third_party_claims(self.third_party_claims.map(|v| v.cnv()).transpose()?)
         )
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_delegation_info::Authority> for crate::internal_model::audit::service_account_delegation_info::Authority {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::service_account_delegation_info::Authority> for google_cloud_audit::model::service_account_delegation_info::Authority {
     type Output = crate::prost::google::cloud::audit::service_account_delegation_info::Authority;
     fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
         match self {
             Self::FirstPartyPrincipal(v) => Ok(Self::Output::FirstPartyPrincipal((*v).to_proto()?)),
             Self::ThirdPartyPrincipal(v) => Ok(Self::Output::ThirdPartyPrincipal((*v).to_proto()?)),
+            _ => Err(gaxi::prost::ConvertError::other("unexpected oneof variant in non-exhaustive enum")),
         }
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::service_account_delegation_info::Authority> for crate::prost::google::cloud::audit::service_account_delegation_info::Authority {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::service_account_delegation_info::Authority, gaxi::prost::ConvertError> {
-        use crate::internal_model::audit::service_account_delegation_info::Authority as T;
+impl gaxi::prost::FromProto<google_cloud_audit::model::service_account_delegation_info::Authority> for crate::prost::google::cloud::audit::service_account_delegation_info::Authority {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::service_account_delegation_info::Authority, gaxi::prost::ConvertError> {
+        use google_cloud_audit::model::service_account_delegation_info::Authority as T;
         match self {
             Self::FirstPartyPrincipal(v) => Ok(T::FirstPartyPrincipal(std::boxed::Box::new(v.cnv()?))),
             Self::ThirdPartyPrincipal(v) => Ok(T::ThirdPartyPrincipal(std::boxed::Box::new(v.cnv()?))),
@@ -781,7 +782,7 @@ impl gaxi::prost::FromProto<crate::internal_model::audit::service_account_delega
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ServiceAccountDelegationInfo> for crate::internal_model::audit::ServiceAccountDelegationInfo {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ServiceAccountDelegationInfo> for google_cloud_audit::model::ServiceAccountDelegationInfo {
     type Output = crate::prost::google::cloud::audit::ServiceAccountDelegationInfo;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::ServiceAccountDelegationInfo, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -791,24 +792,24 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ServiceAccountDele
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::ServiceAccountDelegationInfo> for crate::prost::google::cloud::audit::ServiceAccountDelegationInfo {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::ServiceAccountDelegationInfo, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::ServiceAccountDelegationInfo> for crate::prost::google::cloud::audit::ServiceAccountDelegationInfo {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::ServiceAccountDelegationInfo, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::ServiceAccountDelegationInfo::new()
+            google_cloud_audit::model::ServiceAccountDelegationInfo::new()
                 .set_principal_subject(self.principal_subject)
                 .set_authority(self.authority.map(|v| v.cnv()).transpose()?)
         )
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::violation_info::PolicyType> for crate::internal_model::audit::violation_info::PolicyType {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::violation_info::PolicyType> for google_cloud_audit::model::violation_info::PolicyType {
     type Output = i32;
     fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
-        self.value().ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue("crate::internal_model::audit::violation_info::PolicyType"))
+        self.value().ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue("google_cloud_audit::model::violation_info::PolicyType"))
     }
 }
 
-impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ViolationInfo> for crate::internal_model::audit::ViolationInfo {
+impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ViolationInfo> for google_cloud_audit::model::ViolationInfo {
     type Output = crate::prost::google::cloud::audit::ViolationInfo;
     fn to_proto(self) -> std::result::Result<crate::prost::google::cloud::audit::ViolationInfo, gaxi::prost::ConvertError> {
         Ok(Self::Output {
@@ -820,10 +821,10 @@ impl gaxi::prost::ToProto<crate::prost::google::cloud::audit::ViolationInfo> for
     }
 }
 
-impl gaxi::prost::FromProto<crate::internal_model::audit::ViolationInfo> for crate::prost::google::cloud::audit::ViolationInfo {
-    fn cnv(self) -> std::result::Result<crate::internal_model::audit::ViolationInfo, gaxi::prost::ConvertError> {
+impl gaxi::prost::FromProto<google_cloud_audit::model::ViolationInfo> for crate::prost::google::cloud::audit::ViolationInfo {
+    fn cnv(self) -> std::result::Result<google_cloud_audit::model::ViolationInfo, gaxi::prost::ConvertError> {
         Ok(
-            crate::internal_model::audit::ViolationInfo::new()
+            google_cloud_audit::model::ViolationInfo::new()
                 .set_constraint(self.constraint)
                 .set_error_message(self.error_message)
                 .set_checked_value(self.checked_value)

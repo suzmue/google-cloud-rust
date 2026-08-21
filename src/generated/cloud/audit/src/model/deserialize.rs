@@ -149,9 +149,9 @@ impl<'de> serde::de::Deserialize<'de> for super::AuditLog {
                                     "multiple values for resource_location",
                                 ));
                             }
-                            result.resource_location = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::ResourceLocation,
-                            >>()?;
+                            result.resource_location = map
+                                .next_value::<std::option::Option<crate::model::ResourceLocation>>(
+                                )?;
                         }
                         __FieldTag::__resource_original_state => {
                             if !fields.insert(__FieldTag::__resource_original_state) {
@@ -198,9 +198,8 @@ impl<'de> serde::de::Deserialize<'de> for super::AuditLog {
                                     "multiple values for authentication_info",
                                 ));
                             }
-                            result.authentication_info = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::AuthenticationInfo,
-                            >>()?;
+                            result.authentication_info = map.next_value::<std::option::Option<crate::model::AuthenticationInfo>>()?
+                                ;
                         }
                         __FieldTag::__authorization_info => {
                             if !fields.insert(__FieldTag::__authorization_info) {
@@ -208,9 +207,9 @@ impl<'de> serde::de::Deserialize<'de> for super::AuditLog {
                                     "multiple values for authorization_info",
                                 ));
                             }
-                            result.authorization_info = map
-                                .next_value::<std::option::Option<
-                                    std::vec::Vec<crate::internal_model::audit::AuthorizationInfo>,
+                            result.authorization_info =
+                                map.next_value::<std::option::Option<
+                                    std::vec::Vec<crate::model::AuthorizationInfo>,
                                 >>()?
                                 .unwrap_or_default();
                         }
@@ -220,9 +219,8 @@ impl<'de> serde::de::Deserialize<'de> for super::AuditLog {
                                     "multiple values for policy_violation_info",
                                 ));
                             }
-                            result.policy_violation_info = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::PolicyViolationInfo,
-                            >>()?;
+                            result.policy_violation_info = map.next_value::<std::option::Option<crate::model::PolicyViolationInfo>>()?
+                                ;
                         }
                         __FieldTag::__request_metadata => {
                             if !fields.insert(__FieldTag::__request_metadata) {
@@ -230,9 +228,9 @@ impl<'de> serde::de::Deserialize<'de> for super::AuditLog {
                                     "multiple values for request_metadata",
                                 ));
                             }
-                            result.request_metadata = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::RequestMetadata,
-                            >>()?;
+                            result.request_metadata = map
+                                .next_value::<std::option::Option<crate::model::RequestMetadata>>(
+                                )?;
                         }
                         __FieldTag::__request => {
                             if !fields.insert(__FieldTag::__request) {
@@ -409,9 +407,7 @@ impl<'de> serde::de::Deserialize<'de> for super::AuthenticationInfo {
                             }
                             result.service_account_delegation_info = map
                                 .next_value::<std::option::Option<
-                                    std::vec::Vec<
-                                        crate::internal_model::audit::ServiceAccountDelegationInfo,
-                                    >,
+                                    std::vec::Vec<crate::model::ServiceAccountDelegationInfo>,
                                 >>()?
                                 .unwrap_or_default();
                         }
@@ -551,7 +547,11 @@ impl<'de> serde::de::Deserialize<'de> for super::AuthorizationInfo {
                                     "multiple values for permission_type",
                                 ));
                             }
-                            result.permission_type = map.next_value::<std::option::Option<crate::internal_model::audit::authorization_info::PermissionType>>()?.unwrap_or_default();
+                            result.permission_type = map
+                                .next_value::<std::option::Option<
+                                    crate::model::authorization_info::PermissionType,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -879,8 +879,8 @@ impl<'de> serde::de::Deserialize<'de> for super::ServiceAccountDelegationInfo {
                                 ));
                             }
                             result.authority = std::option::Option::Some(
-                                crate::internal_model::audit::service_account_delegation_info::Authority::FirstPartyPrincipal(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal>>>()?.unwrap_or_default()
+                                crate::model::service_account_delegation_info::Authority::FirstPartyPrincipal(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::service_account_delegation_info::FirstPartyPrincipal>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -896,8 +896,8 @@ impl<'de> serde::de::Deserialize<'de> for super::ServiceAccountDelegationInfo {
                                 ));
                             }
                             result.authority = std::option::Option::Some(
-                                crate::internal_model::audit::service_account_delegation_info::Authority::ThirdPartyPrincipal(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal>>>()?.unwrap_or_default()
+                                crate::model::service_account_delegation_info::Authority::ThirdPartyPrincipal(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::service_account_delegation_info::ThirdPartyPrincipal>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -1157,10 +1157,8 @@ impl<'de> serde::de::Deserialize<'de> for super::PolicyViolationInfo {
                                     "multiple values for org_policy_violation_info",
                                 ));
                             }
-                            result.org_policy_violation_info = map
-                                .next_value::<std::option::Option<
-                                    crate::internal_model::audit::OrgPolicyViolationInfo,
-                                >>()?;
+                            result.org_policy_violation_info = map.next_value::<std::option::Option<crate::model::OrgPolicyViolationInfo>>()?
+                                ;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -1281,11 +1279,7 @@ impl<'de> serde::de::Deserialize<'de> for super::OrgPolicyViolationInfo {
                                     "multiple values for violation_info",
                                 ));
                             }
-                            result.violation_info = map
-                                .next_value::<std::option::Option<
-                                    std::vec::Vec<crate::internal_model::audit::ViolationInfo>,
-                                >>()?
-                                .unwrap_or_default();
+                            result.violation_info = map.next_value::<std::option::Option<std::vec::Vec<crate::model::ViolationInfo>>>()?.unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -1402,11 +1396,7 @@ impl<'de> serde::de::Deserialize<'de> for super::ViolationInfo {
                                     "multiple values for policy_type",
                                 ));
                             }
-                            result.policy_type = map
-                                .next_value::<std::option::Option<
-                                    crate::internal_model::audit::violation_info::PolicyType,
-                                >>()?
-                                .unwrap_or_default();
+                            result.policy_type = map.next_value::<std::option::Option<crate::model::violation_info::PolicyType>>()?.unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -1572,8 +1562,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::JobInsertion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobInsertion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::JobInsertion(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::JobInsertion,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1589,8 +1584,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::JobChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::JobChange(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::JobChange,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1606,8 +1606,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::JobDeletion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobDeletion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::JobDeletion(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::JobDeletion,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1623,8 +1628,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::DatasetCreation(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetCreation>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::DatasetCreation(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::DatasetCreation,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1640,8 +1650,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::DatasetChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::DatasetChange(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::DatasetChange,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1657,8 +1672,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::DatasetDeletion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetDeletion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::DatasetDeletion(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::DatasetDeletion,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1674,8 +1694,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::TableCreation(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableCreation>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::TableCreation(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::TableCreation,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1691,8 +1716,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::TableChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::TableChange(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::TableChange,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1708,8 +1738,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::TableDeletion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDeletion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::TableDeletion(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::TableDeletion,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1725,8 +1760,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::TableDataRead(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDataRead>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::TableDataRead(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::TableDataRead,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1742,8 +1782,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::TableDataChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDataChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::TableDataChange(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::TableDataChange,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1759,8 +1804,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::ModelDeletion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDeletion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::ModelDeletion(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::ModelDeletion,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1776,8 +1826,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::ModelCreation(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelCreation>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::ModelCreation(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::ModelCreation,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1793,8 +1848,8 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::ModelMetadataChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::ModelMetadataChange(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::ModelMetadataChange>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -1810,8 +1865,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::ModelDataChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDataChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::ModelDataChange(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::ModelDataChange,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1827,8 +1887,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::ModelDataRead(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDataRead>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::ModelDataRead(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::ModelDataRead,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1844,8 +1909,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::RoutineCreation(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineCreation>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::RoutineCreation(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::RoutineCreation,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1861,8 +1931,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::RoutineChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::RoutineChange(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::RoutineChange,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1878,8 +1953,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::RoutineDeletion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::RoutineDeletion(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::RoutineDeletion,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1895,8 +1975,8 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyCreation(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::RowAccessPolicyCreation(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyCreation>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -1912,8 +1992,8 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyChange(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::RowAccessPolicyChange(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyChange>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -1929,8 +2009,8 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyDeletion(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::RowAccessPolicyDeletion(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyDeletion>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -1946,8 +2026,13 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                 ));
                             }
                             result.event = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::Event::UnlinkDataset(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::Event::UnlinkDataset(
+                                    map.next_value::<std::option::Option<
+                                        std::boxed::Box<
+                                            crate::model::big_query_audit_metadata::UnlinkDataset,
+                                        >,
+                                    >>()?
+                                    .unwrap_or_default(),
                                 ),
                             );
                         }
@@ -1957,8 +2042,10 @@ impl<'de> serde::de::Deserialize<'de> for super::BigQueryAuditMetadata {
                                     "multiple values for first_party_app_metadata",
                                 ));
                             }
-                            result.first_party_app_metadata = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata>>()?
-                                ;
+                            result.first_party_app_metadata = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::FirstPartyAppMetadata,
+                                >>()?;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -2038,9 +2125,10 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobIn
                                     "multiple values for job",
                                 ));
                             }
-                            result.job = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Job,
-                            >>()?;
+                            result.job =
+                                map.next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::Job,
+                                >>()?;
                         }
                         __FieldTag::__reason => {
                             if !fields.insert(__FieldTag::__reason) {
@@ -2048,7 +2136,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobIn
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::job_insertion::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::job_insertion::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -2130,7 +2222,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCh
                                     "multiple values for before",
                                 ));
                             }
-                            result.before = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::JobState>>()?.unwrap_or_default();
+                            result.before = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::JobState,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__after => {
                             if !fields.insert(__FieldTag::__after) {
@@ -2138,7 +2234,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCh
                                     "multiple values for after",
                                 ));
                             }
-                            result.after = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::JobState>>()?.unwrap_or_default();
+                            result.after = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::JobState,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job => {
                             if !fields.insert(__FieldTag::__job) {
@@ -2146,9 +2246,10 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCh
                                     "multiple values for job",
                                 ));
                             }
-                            result.job = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Job,
-                            >>()?;
+                            result.job =
+                                map.next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::Job,
+                                >>()?;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -2239,7 +2340,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobDe
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::job_deletion::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::job_deletion::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -2323,7 +2428,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                 ));
                             }
                             result.dataset = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Dataset,
+                                crate::model::big_query_audit_metadata::Dataset,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -2332,7 +2437,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::dataset_creation::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::dataset_creation::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -2426,7 +2531,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                 ));
                             }
                             result.dataset = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Dataset,
+                                crate::model::big_query_audit_metadata::Dataset,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -2435,7 +2540,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::dataset_change::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::dataset_change::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -2526,7 +2635,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::dataset_deletion::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::dataset_deletion::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -2620,7 +2729,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                 ));
                             }
                             result.table = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Table,
+                                crate::model::big_query_audit_metadata::Table,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -2629,7 +2738,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::table_creation::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::table_creation::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -2723,7 +2836,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                 ));
                             }
                             result.model = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Model,
+                                crate::model::big_query_audit_metadata::Model,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -2732,7 +2845,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::model_creation::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::model_creation::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -2826,7 +2943,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Routi
                                 ));
                             }
                             result.routine = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Routine,
+                                crate::model::big_query_audit_metadata::Routine,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -2835,7 +2952,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Routi
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::routine_creation::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::routine_creation::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -2976,7 +3093,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::table_data_read::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::table_data_read::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3082,7 +3203,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                 ));
                             }
                             result.table = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Table,
+                                crate::model::big_query_audit_metadata::Table,
                             >>()?;
                         }
                         __FieldTag::__truncated => {
@@ -3101,7 +3222,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::table_change::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::table_change::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3195,7 +3320,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                 ));
                             }
                             result.model = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Model,
+                                crate::model::big_query_audit_metadata::Model,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -3204,7 +3329,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::model_metadata_change::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::model_metadata_change::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3298,7 +3423,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Routi
                                 ));
                             }
                             result.routine = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Routine,
+                                crate::model::big_query_audit_metadata::Routine,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -3307,7 +3432,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Routi
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::routine_change::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::routine_change::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3459,7 +3588,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::table_data_change::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::table_data_change::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3560,7 +3689,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::model_data_change::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::model_data_change::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3651,7 +3780,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::model_data_read::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::model_data_read::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3742,7 +3875,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::table_deletion::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::table_deletion::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3833,7 +3970,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::model_deletion::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::model_deletion::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -3927,7 +4068,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Routi
                                 ));
                             }
                             result.routine = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::Routine,
+                                crate::model::big_query_audit_metadata::Routine,
                             >>()?;
                         }
                         __FieldTag::__reason => {
@@ -3936,7 +4077,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Routi
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::routine_deletion::Reason>>()?.unwrap_or_default();
+                            result.reason = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::routine_deletion::Reason>>()?.unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -4028,8 +4169,9 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::RowAc
                                     "multiple values for row_access_policy",
                                 ));
                             }
-                            result.row_access_policy = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy>>()?
-                                ;
+                            result.row_access_policy = map.next_value::<std::option::Option<
+                                crate::model::big_query_audit_metadata::RowAccessPolicy,
+                            >>()?;
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -4121,8 +4263,9 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::RowAc
                                     "multiple values for row_access_policy",
                                 ));
                             }
-                            result.row_access_policy = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy>>()?
-                                ;
+                            result.row_access_policy = map.next_value::<std::option::Option<
+                                crate::model::big_query_audit_metadata::RowAccessPolicy,
+                            >>()?;
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -4221,7 +4364,13 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::RowAc
                                     "multiple values for row_access_policies",
                                 ));
                             }
-                            result.row_access_policies = map.next_value::<std::option::Option<std::vec::Vec<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy>>>()?.unwrap_or_default();
+                            result.row_access_policies = map
+                                .next_value::<std::option::Option<
+                                    std::vec::Vec<
+                                        crate::model::big_query_audit_metadata::RowAccessPolicy,
+                                    >,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__job_name => {
                             if !fields.insert(__FieldTag::__job_name) {
@@ -4345,7 +4494,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Unlin
                                     "multiple values for reason",
                                 ));
                             }
-                            result.reason = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::unlink_dataset::Reason>>()?.unwrap_or_default();
+                            result.reason = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::unlink_dataset::Reason,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -4444,7 +4597,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Job {
                                 ));
                             }
                             result.job_config = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::JobConfig,
+                                crate::model::big_query_audit_metadata::JobConfig,
                             >>()?;
                         }
                         __FieldTag::__job_status => {
@@ -4454,7 +4607,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Job {
                                 ));
                             }
                             result.job_status = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::JobStatus,
+                                crate::model::big_query_audit_metadata::JobStatus,
                             >>()?;
                         }
                         __FieldTag::__job_stats => {
@@ -4464,7 +4617,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Job {
                                 ));
                             }
                             result.job_stats = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::JobStats,
+                                crate::model::big_query_audit_metadata::JobStats,
                             >>()?;
                         }
                         __FieldTag::Unknown(key) => {
@@ -4557,7 +4710,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCo
                                     "multiple values for type",
                                 ));
                             }
-                            result.r#type = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::job_config::Type>>()?.unwrap_or_default();
+                            result.r#type = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::job_config::Type,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__query_config => {
                             if !fields.insert(__FieldTag::__query_config) {
@@ -4571,8 +4728,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCo
                                 ));
                             }
                             result.config = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::QueryConfig(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_config::Query>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_config::Config::QueryConfig(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Query>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -4588,8 +4745,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCo
                                 ));
                             }
                             result.config = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::LoadConfig(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_config::Load>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_config::Config::LoadConfig(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Load>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -4605,8 +4762,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCo
                                 ));
                             }
                             result.config = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::ExtractConfig(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_config::Extract>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_config::Config::ExtractConfig(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Extract>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -4622,8 +4779,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobCo
                                 ));
                             }
                             result.config = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::TableCopyConfig(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_config::Config::TableCopyConfig(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_config::TableCopy>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -4778,7 +4935,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for create_disposition",
                                 ));
                             }
-                            result.create_disposition = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::CreateDisposition>>()?.unwrap_or_default();
+                            result.create_disposition = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::CreateDisposition,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__write_disposition => {
                             if !fields.insert(__FieldTag::__write_disposition) {
@@ -4786,7 +4947,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for write_disposition",
                                 ));
                             }
-                            result.write_disposition = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::WriteDisposition>>()?.unwrap_or_default();
+                            result.write_disposition = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::WriteDisposition,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__default_dataset => {
                             if !fields.insert(__FieldTag::__default_dataset) {
@@ -4804,7 +4969,13 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for table_definitions",
                                 ));
                             }
-                            result.table_definitions = map.next_value::<std::option::Option<std::vec::Vec<crate::internal_model::audit::big_query_audit_metadata::TableDefinition>>>()?.unwrap_or_default();
+                            result.table_definitions = map
+                                .next_value::<std::option::Option<
+                                    std::vec::Vec<
+                                        crate::model::big_query_audit_metadata::TableDefinition,
+                                    >,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__priority => {
                             if !fields.insert(__FieldTag::__priority) {
@@ -4812,7 +4983,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for priority",
                                 ));
                             }
-                            result.priority = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::job_config::query::Priority>>()?.unwrap_or_default();
+                            result.priority = map.next_value::<std::option::Option<crate::model::big_query_audit_metadata::job_config::query::Priority>>()?.unwrap_or_default();
                         }
                         __FieldTag::__destination_table_encryption => {
                             if !fields.insert(__FieldTag::__destination_table_encryption) {
@@ -4820,8 +4991,10 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for destination_table_encryption",
                                 ));
                             }
-                            result.destination_table_encryption = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo>>()?
-                                ;
+                            result.destination_table_encryption = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::EncryptionInfo,
+                                >>()?;
                         }
                         __FieldTag::__statement_type => {
                             if !fields.insert(__FieldTag::__statement_type) {
@@ -4829,7 +5002,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for statement_type",
                                 ));
                             }
-                            result.statement_type = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::QueryStatementType>>()?.unwrap_or_default();
+                            result.statement_type = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::QueryStatementType,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -4981,7 +5158,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for create_disposition",
                                 ));
                             }
-                            result.create_disposition = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::CreateDisposition>>()?.unwrap_or_default();
+                            result.create_disposition = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::CreateDisposition,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__write_disposition => {
                             if !fields.insert(__FieldTag::__write_disposition) {
@@ -4989,7 +5170,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for write_disposition",
                                 ));
                             }
-                            result.write_disposition = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::WriteDisposition>>()?.unwrap_or_default();
+                            result.write_disposition = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::WriteDisposition,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__destination_table_encryption => {
                             if !fields.insert(__FieldTag::__destination_table_encryption) {
@@ -4997,8 +5182,10 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for destination_table_encryption",
                                 ));
                             }
-                            result.destination_table_encryption = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo>>()?
-                                ;
+                            result.destination_table_encryption = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::EncryptionInfo,
+                                >>()?;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -5114,7 +5301,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                 ));
                             }
                             result.source = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source::SourceTable(
+                                crate::model::big_query_audit_metadata::job_config::extract::Source::SourceTable(
                                     map.next_value::<std::option::Option<std::string::String>>()?.unwrap_or_default()
                                 ),
                             );
@@ -5131,7 +5318,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                 ));
                             }
                             result.source = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source::SourceModel(
+                                crate::model::big_query_audit_metadata::job_config::extract::Source::SourceModel(
                                     map.next_value::<std::option::Option<std::string::String>>()?.unwrap_or_default()
                                 ),
                             );
@@ -5270,7 +5457,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for create_disposition",
                                 ));
                             }
-                            result.create_disposition = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::CreateDisposition>>()?.unwrap_or_default();
+                            result.create_disposition = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::CreateDisposition,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__write_disposition => {
                             if !fields.insert(__FieldTag::__write_disposition) {
@@ -5278,7 +5469,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for write_disposition",
                                 ));
                             }
-                            result.write_disposition = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::WriteDisposition>>()?.unwrap_or_default();
+                            result.write_disposition = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::WriteDisposition,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__destination_table_encryption => {
                             if !fields.insert(__FieldTag::__destination_table_encryption) {
@@ -5286,8 +5481,10 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for destination_table_encryption",
                                 ));
                             }
-                            result.destination_table_encryption = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo>>()?
-                                ;
+                            result.destination_table_encryption = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::EncryptionInfo,
+                                >>()?;
                         }
                         __FieldTag::__operation_type => {
                             if !fields.insert(__FieldTag::__operation_type) {
@@ -5295,7 +5492,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::job_c
                                     "multiple values for operation_type",
                                 ));
                             }
-                            result.operation_type = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::OperationType>>()?.unwrap_or_default();
+                            result.operation_type = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::OperationType,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__destination_expiration_time => {
                             if !fields.insert(__FieldTag::__destination_expiration_time) {
@@ -5479,7 +5680,11 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobSt
                                     "multiple values for job_state",
                                 ));
                             }
-                            result.job_state = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::JobState>>()?.unwrap_or_default();
+                            result.job_state = map
+                                .next_value::<std::option::Option<
+                                    crate::model::big_query_audit_metadata::JobState,
+                                >>()?
+                                .unwrap_or_default();
                         }
                         __FieldTag::__error_result => {
                             if !fields.insert(__FieldTag::__error_result) {
@@ -5639,8 +5844,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobSt
                                 ));
                             }
                             result.extended = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::QueryStats(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_stats::Query>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_stats::Extended::QueryStats(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Query>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -5656,8 +5861,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobSt
                                 ));
                             }
                             result.extended = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::LoadStats(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_stats::Load>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_stats::Extended::LoadStats(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Load>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -5673,8 +5878,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobSt
                                 ));
                             }
                             result.extended = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::ExtractStats(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_stats::Extract>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::job_stats::Extended::ExtractStats(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Extract>>>()?.unwrap_or_default()
                                 ),
                             );
                         }
@@ -5704,7 +5909,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::JobSt
                                     "multiple values for reservation_usage",
                                 ));
                             }
-                            result.reservation_usage = map.next_value::<std::option::Option<std::vec::Vec<crate::internal_model::audit::big_query_audit_metadata::job_stats::ReservationResourceUsage>>>()?.unwrap_or_default();
+                            result.reservation_usage = map.next_value::<std::option::Option<std::vec::Vec<crate::model::big_query_audit_metadata::job_stats::ReservationResourceUsage>>>()?.unwrap_or_default();
                         }
                         __FieldTag::__reservation => {
                             if !fields.insert(__FieldTag::__reservation) {
@@ -6330,7 +6535,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                 ));
                             }
                             result.table_info = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
+                                crate::model::big_query_audit_metadata::EntityInfo,
                             >>()?;
                         }
                         __FieldTag::__schema_json => {
@@ -6359,8 +6564,9 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for view",
                                 ));
                             }
-                            result.view = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::TableViewDefinition>>()?
-                                ;
+                            result.view = map.next_value::<std::option::Option<
+                                crate::model::big_query_audit_metadata::TableViewDefinition,
+                            >>()?;
                         }
                         __FieldTag::__expire_time => {
                             if !fields.insert(__FieldTag::__expire_time) {
@@ -6404,8 +6610,9 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Table
                                     "multiple values for encryption",
                                 ));
                             }
-                            result.encryption = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo>>()?
-                                ;
+                            result.encryption = map.next_value::<std::option::Option<
+                                crate::model::big_query_audit_metadata::EncryptionInfo,
+                            >>()?;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -6509,7 +6716,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                 ));
                             }
                             result.model_info = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
+                                crate::model::big_query_audit_metadata::EntityInfo,
                             >>()?;
                         }
                         __FieldTag::__expire_time => {
@@ -6545,8 +6752,9 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Model
                                     "multiple values for encryption",
                                 ));
                             }
-                            result.encryption = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo>>()?
-                                ;
+                            result.encryption = map.next_value::<std::option::Option<
+                                crate::model::big_query_audit_metadata::EncryptionInfo,
+                            >>()?;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -6968,7 +7176,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                 ));
                             }
                             result.dataset_info = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
+                                crate::model::big_query_audit_metadata::EntityInfo,
                             >>()?;
                         }
                         __FieldTag::__create_time => {
@@ -6996,7 +7204,7 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                 ));
                             }
                             result.acl = map.next_value::<std::option::Option<
-                                crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl,
+                                crate::model::big_query_audit_metadata::BigQueryAcl,
                             >>()?;
                         }
                         __FieldTag::__default_table_expire_duration => {
@@ -7014,8 +7222,9 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::Datas
                                     "multiple values for default_encryption",
                                 ));
                             }
-                            result.default_encryption = map.next_value::<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo>>()?
-                                ;
+                            result.default_encryption = map.next_value::<std::option::Option<
+                                crate::model::big_query_audit_metadata::EncryptionInfo,
+                            >>()?;
                         }
                         __FieldTag::__default_collation => {
                             if !fields.insert(__FieldTag::__default_collation) {
@@ -7362,8 +7571,8 @@ impl<'de> serde::de::Deserialize<'de> for super::big_query_audit_metadata::First
                                 ));
                             }
                             result.metadata = std::option::Option::Some(
-                                crate::internal_model::audit::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(
-                                    map.next_value::<std::option::Option<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::SheetsMetadata>>>()?.unwrap_or_default()
+                                crate::model::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(
+                                    map.next_value::<std::option::Option<std::boxed::Box<crate::model::big_query_audit_metadata::SheetsMetadata>>>()?.unwrap_or_default()
                                 ),
                             );
                         }

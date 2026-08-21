@@ -119,9 +119,9 @@ impl<'de> serde::de::Deserialize<'de> for super::LogLine {
                                     "multiple values for source_location",
                                 ));
                             }
-                            result.source_location = map.next_value::<std::option::Option<
-                                crate::internal_model::appengine::SourceLocation,
-                            >>()?;
+                            result.source_location = map
+                                .next_value::<std::option::Option<crate::model::SourceLocation>>(
+                                )?;
                         }
                         __FieldTag::Unknown(key) => {
                             let value = map.next_value::<serde_json::Value>()?;
@@ -814,11 +814,7 @@ impl<'de> serde::de::Deserialize<'de> for super::RequestLog {
                                     "multiple values for line",
                                 ));
                             }
-                            result.line = map
-                                .next_value::<std::option::Option<
-                                    std::vec::Vec<crate::internal_model::appengine::LogLine>,
-                                >>()?
-                                .unwrap_or_default();
+                            result.line = map.next_value::<std::option::Option<std::vec::Vec<crate::model::LogLine>>>()?.unwrap_or_default();
                         }
                         __FieldTag::__app_engine_release => {
                             if !fields.insert(__FieldTag::__app_engine_release) {
@@ -856,11 +852,9 @@ impl<'de> serde::de::Deserialize<'de> for super::RequestLog {
                                     "multiple values for source_reference",
                                 ));
                             }
-                            result.source_reference = map
-                                .next_value::<std::option::Option<
-                                    std::vec::Vec<
-                                        crate::internal_model::appengine::SourceReference,
-                                    >,
+                            result.source_reference =
+                                map.next_value::<std::option::Option<
+                                    std::vec::Vec<crate::model::SourceReference>,
                                 >>()?
                                 .unwrap_or_default();
                         }

@@ -18,6 +18,17 @@
 #![allow(rustdoc::broken_intra_doc_links)]
 #![allow(rustdoc::invalid_html_tags)]
 #![allow(rustdoc::redundant_explicit_links)]
+#![no_implicit_prelude]
+extern crate bytes;
+extern crate google_cloud_iam_v1;
+extern crate google_cloud_rpc;
+extern crate google_cloud_rpc_context;
+extern crate google_cloud_type;
+extern crate serde;
+extern crate serde_json;
+extern crate serde_with;
+extern crate std;
+extern crate wkt;
 
 mod debug;
 mod deserialize;
@@ -52,7 +63,7 @@ pub struct AuditLog {
     pub resource_name: std::string::String,
 
     /// The resource location information.
-    pub resource_location: std::option::Option<crate::internal_model::audit::ResourceLocation>,
+    pub resource_location: std::option::Option<crate::model::ResourceLocation>,
 
     /// The resource's original state before mutation. Present only for
     /// operations which have successfully modified the targeted resource(s).
@@ -71,21 +82,20 @@ pub struct AuditLog {
     pub status: std::option::Option<google_cloud_rpc::model::Status>,
 
     /// Authentication information.
-    pub authentication_info: std::option::Option<crate::internal_model::audit::AuthenticationInfo>,
+    pub authentication_info: std::option::Option<crate::model::AuthenticationInfo>,
 
     /// Authorization information. If there are multiple
     /// resources or permissions involved, then there is
     /// one AuthorizationInfo element for each {resource, permission} tuple.
-    pub authorization_info: std::vec::Vec<crate::internal_model::audit::AuthorizationInfo>,
+    pub authorization_info: std::vec::Vec<crate::model::AuthorizationInfo>,
 
     /// Indicates the policy violations for this request. If the request
     /// is denied by the policy, violation information will be logged
     /// here.
-    pub policy_violation_info:
-        std::option::Option<crate::internal_model::audit::PolicyViolationInfo>,
+    pub policy_violation_info: std::option::Option<crate::model::PolicyViolationInfo>,
 
     /// Metadata about the operation.
-    pub request_metadata: std::option::Option<crate::internal_model::audit::RequestMetadata>,
+    pub request_metadata: std::option::Option<crate::model::RequestMetadata>,
 
     /// The operation request. This may not include all request parameters,
     /// such as those that are too large, privacy-sensitive, or duplicated
@@ -122,11 +132,11 @@ impl AuditLog {
         std::default::Default::default()
     }
 
-    /// Sets the value of [service_name][crate::internal_model::audit::AuditLog::service_name].
+    /// Sets the value of [service_name][crate::model::AuditLog::service_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// let x = AuditLog::new().set_service_name("example");
     /// ```
     pub fn set_service_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -134,11 +144,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [method_name][crate::internal_model::audit::AuditLog::method_name].
+    /// Sets the value of [method_name][crate::model::AuditLog::method_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// let x = AuditLog::new().set_method_name("example");
     /// ```
     pub fn set_method_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -146,11 +156,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [resource_name][crate::internal_model::audit::AuditLog::resource_name].
+    /// Sets the value of [resource_name][crate::model::AuditLog::resource_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// let x = AuditLog::new().set_resource_name("example");
     /// ```
     pub fn set_resource_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -158,44 +168,44 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [resource_location][crate::internal_model::audit::AuditLog::resource_location].
+    /// Sets the value of [resource_location][crate::model::AuditLog::resource_location].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::ResourceLocation;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::ResourceLocation;
     /// let x = AuditLog::new().set_resource_location(ResourceLocation::default()/* use setters */);
     /// ```
     pub fn set_resource_location<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::ResourceLocation>,
+        T: std::convert::Into<crate::model::ResourceLocation>,
     {
         self.resource_location = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [resource_location][crate::internal_model::audit::AuditLog::resource_location].
+    /// Sets or clears the value of [resource_location][crate::model::AuditLog::resource_location].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::ResourceLocation;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::ResourceLocation;
     /// let x = AuditLog::new().set_or_clear_resource_location(Some(ResourceLocation::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_resource_location(None::<ResourceLocation>);
     /// ```
     pub fn set_or_clear_resource_location<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::ResourceLocation>,
+        T: std::convert::Into<crate::model::ResourceLocation>,
     {
         self.resource_location = v.map(|x| x.into());
         self
     }
 
-    /// Sets the value of [resource_original_state][crate::internal_model::audit::AuditLog::resource_original_state].
+    /// Sets the value of [resource_original_state][crate::model::AuditLog::resource_original_state].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_resource_original_state(Struct::default()/* use setters */);
     /// ```
@@ -207,11 +217,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets or clears the value of [resource_original_state][crate::internal_model::audit::AuditLog::resource_original_state].
+    /// Sets or clears the value of [resource_original_state][crate::model::AuditLog::resource_original_state].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_or_clear_resource_original_state(Some(Struct::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_resource_original_state(None::<Struct>);
@@ -224,11 +234,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [num_response_items][crate::internal_model::audit::AuditLog::num_response_items].
+    /// Sets the value of [num_response_items][crate::model::AuditLog::num_response_items].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// let x = AuditLog::new().set_num_response_items(42);
     /// ```
     pub fn set_num_response_items<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -236,11 +246,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [status][crate::internal_model::audit::AuditLog::status].
+    /// Sets the value of [status][crate::model::AuditLog::status].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use google_cloud_rpc::model::Status;
     /// let x = AuditLog::new().set_status(Status::default()/* use setters */);
     /// ```
@@ -252,11 +262,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets or clears the value of [status][crate::internal_model::audit::AuditLog::status].
+    /// Sets or clears the value of [status][crate::model::AuditLog::status].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use google_cloud_rpc::model::Status;
     /// let x = AuditLog::new().set_or_clear_status(Some(Status::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_status(None::<Status>);
@@ -269,45 +279,45 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [authentication_info][crate::internal_model::audit::AuditLog::authentication_info].
+    /// Sets the value of [authentication_info][crate::model::AuditLog::authentication_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::AuthenticationInfo;
     /// let x = AuditLog::new().set_authentication_info(AuthenticationInfo::default()/* use setters */);
     /// ```
     pub fn set_authentication_info<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::AuthenticationInfo>,
+        T: std::convert::Into<crate::model::AuthenticationInfo>,
     {
         self.authentication_info = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [authentication_info][crate::internal_model::audit::AuditLog::authentication_info].
+    /// Sets or clears the value of [authentication_info][crate::model::AuditLog::authentication_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::AuthenticationInfo;
     /// let x = AuditLog::new().set_or_clear_authentication_info(Some(AuthenticationInfo::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_authentication_info(None::<AuthenticationInfo>);
     /// ```
     pub fn set_or_clear_authentication_info<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::AuthenticationInfo>,
+        T: std::convert::Into<crate::model::AuthenticationInfo>,
     {
         self.authentication_info = v.map(|x| x.into());
         self
     }
 
-    /// Sets the value of [authorization_info][crate::internal_model::audit::AuditLog::authorization_info].
+    /// Sets the value of [authorization_info][crate::model::AuditLog::authorization_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::AuthorizationInfo;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::AuthorizationInfo;
     /// let x = AuditLog::new()
     ///     .set_authorization_info([
     ///         AuthorizationInfo::default()/* use setters */,
@@ -317,84 +327,84 @@ impl AuditLog {
     pub fn set_authorization_info<T, V>(mut self, v: T) -> Self
     where
         T: std::iter::IntoIterator<Item = V>,
-        V: std::convert::Into<crate::internal_model::audit::AuthorizationInfo>,
+        V: std::convert::Into<crate::model::AuthorizationInfo>,
     {
         use std::iter::Iterator;
         self.authorization_info = v.into_iter().map(|i| i.into()).collect();
         self
     }
 
-    /// Sets the value of [policy_violation_info][crate::internal_model::audit::AuditLog::policy_violation_info].
+    /// Sets the value of [policy_violation_info][crate::model::AuditLog::policy_violation_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::PolicyViolationInfo;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::PolicyViolationInfo;
     /// let x = AuditLog::new().set_policy_violation_info(PolicyViolationInfo::default()/* use setters */);
     /// ```
     pub fn set_policy_violation_info<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::PolicyViolationInfo>,
+        T: std::convert::Into<crate::model::PolicyViolationInfo>,
     {
         self.policy_violation_info = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [policy_violation_info][crate::internal_model::audit::AuditLog::policy_violation_info].
+    /// Sets or clears the value of [policy_violation_info][crate::model::AuditLog::policy_violation_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::PolicyViolationInfo;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::PolicyViolationInfo;
     /// let x = AuditLog::new().set_or_clear_policy_violation_info(Some(PolicyViolationInfo::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_policy_violation_info(None::<PolicyViolationInfo>);
     /// ```
     pub fn set_or_clear_policy_violation_info<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::PolicyViolationInfo>,
+        T: std::convert::Into<crate::model::PolicyViolationInfo>,
     {
         self.policy_violation_info = v.map(|x| x.into());
         self
     }
 
-    /// Sets the value of [request_metadata][crate::internal_model::audit::AuditLog::request_metadata].
+    /// Sets the value of [request_metadata][crate::model::AuditLog::request_metadata].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::RequestMetadata;
     /// let x = AuditLog::new().set_request_metadata(RequestMetadata::default()/* use setters */);
     /// ```
     pub fn set_request_metadata<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::RequestMetadata>,
+        T: std::convert::Into<crate::model::RequestMetadata>,
     {
         self.request_metadata = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [request_metadata][crate::internal_model::audit::AuditLog::request_metadata].
+    /// Sets or clears the value of [request_metadata][crate::model::AuditLog::request_metadata].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
-    /// use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::AuditLog;
+    /// use google_cloud_audit::model::RequestMetadata;
     /// let x = AuditLog::new().set_or_clear_request_metadata(Some(RequestMetadata::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_request_metadata(None::<RequestMetadata>);
     /// ```
     pub fn set_or_clear_request_metadata<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::RequestMetadata>,
+        T: std::convert::Into<crate::model::RequestMetadata>,
     {
         self.request_metadata = v.map(|x| x.into());
         self
     }
 
-    /// Sets the value of [request][crate::internal_model::audit::AuditLog::request].
+    /// Sets the value of [request][crate::model::AuditLog::request].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_request(Struct::default()/* use setters */);
     /// ```
@@ -406,11 +416,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets or clears the value of [request][crate::internal_model::audit::AuditLog::request].
+    /// Sets or clears the value of [request][crate::model::AuditLog::request].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_or_clear_request(Some(Struct::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_request(None::<Struct>);
@@ -423,11 +433,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [response][crate::internal_model::audit::AuditLog::response].
+    /// Sets the value of [response][crate::model::AuditLog::response].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_response(Struct::default()/* use setters */);
     /// ```
@@ -439,11 +449,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets or clears the value of [response][crate::internal_model::audit::AuditLog::response].
+    /// Sets or clears the value of [response][crate::model::AuditLog::response].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_or_clear_response(Some(Struct::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_response(None::<Struct>);
@@ -456,11 +466,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [metadata][crate::internal_model::audit::AuditLog::metadata].
+    /// Sets the value of [metadata][crate::model::AuditLog::metadata].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_metadata(Struct::default()/* use setters */);
     /// ```
@@ -472,11 +482,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets or clears the value of [metadata][crate::internal_model::audit::AuditLog::metadata].
+    /// Sets or clears the value of [metadata][crate::model::AuditLog::metadata].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Struct;
     /// let x = AuditLog::new().set_or_clear_metadata(Some(Struct::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_metadata(None::<Struct>);
@@ -489,11 +499,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets the value of [service_data][crate::internal_model::audit::AuditLog::service_data].
+    /// Sets the value of [service_data][crate::model::AuditLog::service_data].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Any;
     /// let x = AuditLog::new().set_service_data(Any::default()/* use setters */);
     /// ```
@@ -506,11 +516,11 @@ impl AuditLog {
         self
     }
 
-    /// Sets or clears the value of [service_data][crate::internal_model::audit::AuditLog::service_data].
+    /// Sets or clears the value of [service_data][crate::model::AuditLog::service_data].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuditLog;
+    /// # use google_cloud_audit::model::AuditLog;
     /// use wkt::Any;
     /// let x = AuditLog::new().set_or_clear_service_data(Some(Any::default()/* use setters */));
     /// let x = AuditLog::new().set_or_clear_service_data(None::<Any>);
@@ -565,8 +575,7 @@ pub struct AuthenticationInfo {
     /// access GCP resources by delegating on a service account. When multiple
     /// authorities present, they are guaranteed to be sorted based on the original
     /// ordering of the identity delegation events.
-    pub service_account_delegation_info:
-        std::vec::Vec<crate::internal_model::audit::ServiceAccountDelegationInfo>,
+    pub service_account_delegation_info: std::vec::Vec<crate::model::ServiceAccountDelegationInfo>,
 
     /// String representation of identity of requesting party.
     /// Populated for both first and third party identities.
@@ -581,11 +590,11 @@ impl AuthenticationInfo {
         std::default::Default::default()
     }
 
-    /// Sets the value of [principal_email][crate::internal_model::audit::AuthenticationInfo::principal_email].
+    /// Sets the value of [principal_email][crate::model::AuthenticationInfo::principal_email].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
     /// let x = AuthenticationInfo::new().set_principal_email("example");
     /// ```
     pub fn set_principal_email<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -593,11 +602,11 @@ impl AuthenticationInfo {
         self
     }
 
-    /// Sets the value of [authority_selector][crate::internal_model::audit::AuthenticationInfo::authority_selector].
+    /// Sets the value of [authority_selector][crate::model::AuthenticationInfo::authority_selector].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
     /// let x = AuthenticationInfo::new().set_authority_selector("example");
     /// ```
     pub fn set_authority_selector<T: std::convert::Into<std::string::String>>(
@@ -608,11 +617,11 @@ impl AuthenticationInfo {
         self
     }
 
-    /// Sets the value of [third_party_principal][crate::internal_model::audit::AuthenticationInfo::third_party_principal].
+    /// Sets the value of [third_party_principal][crate::model::AuthenticationInfo::third_party_principal].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
     /// use wkt::Struct;
     /// let x = AuthenticationInfo::new().set_third_party_principal(Struct::default()/* use setters */);
     /// ```
@@ -624,11 +633,11 @@ impl AuthenticationInfo {
         self
     }
 
-    /// Sets or clears the value of [third_party_principal][crate::internal_model::audit::AuthenticationInfo::third_party_principal].
+    /// Sets or clears the value of [third_party_principal][crate::model::AuthenticationInfo::third_party_principal].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
     /// use wkt::Struct;
     /// let x = AuthenticationInfo::new().set_or_clear_third_party_principal(Some(Struct::default()/* use setters */));
     /// let x = AuthenticationInfo::new().set_or_clear_third_party_principal(None::<Struct>);
@@ -641,11 +650,11 @@ impl AuthenticationInfo {
         self
     }
 
-    /// Sets the value of [service_account_key_name][crate::internal_model::audit::AuthenticationInfo::service_account_key_name].
+    /// Sets the value of [service_account_key_name][crate::model::AuthenticationInfo::service_account_key_name].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
     /// let x = AuthenticationInfo::new().set_service_account_key_name("example");
     /// ```
     pub fn set_service_account_key_name<T: std::convert::Into<std::string::String>>(
@@ -656,12 +665,12 @@ impl AuthenticationInfo {
         self
     }
 
-    /// Sets the value of [service_account_delegation_info][crate::internal_model::audit::AuthenticationInfo::service_account_delegation_info].
+    /// Sets the value of [service_account_delegation_info][crate::model::AuthenticationInfo::service_account_delegation_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
-    /// use google_cloud_logging_v2::model::ServiceAccountDelegationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
+    /// use google_cloud_audit::model::ServiceAccountDelegationInfo;
     /// let x = AuthenticationInfo::new()
     ///     .set_service_account_delegation_info([
     ///         ServiceAccountDelegationInfo::default()/* use setters */,
@@ -671,18 +680,18 @@ impl AuthenticationInfo {
     pub fn set_service_account_delegation_info<T, V>(mut self, v: T) -> Self
     where
         T: std::iter::IntoIterator<Item = V>,
-        V: std::convert::Into<crate::internal_model::audit::ServiceAccountDelegationInfo>,
+        V: std::convert::Into<crate::model::ServiceAccountDelegationInfo>,
     {
         use std::iter::Iterator;
         self.service_account_delegation_info = v.into_iter().map(|i| i.into()).collect();
         self
     }
 
-    /// Sets the value of [principal_subject][crate::internal_model::audit::AuthenticationInfo::principal_subject].
+    /// Sets the value of [principal_subject][crate::model::AuthenticationInfo::principal_subject].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthenticationInfo;
+    /// # use google_cloud_audit::model::AuthenticationInfo;
     /// let x = AuthenticationInfo::new().set_principal_subject("example");
     /// ```
     pub fn set_principal_subject<T: std::convert::Into<std::string::String>>(
@@ -734,7 +743,7 @@ pub struct AuthorizationInfo {
     /// The type of the permission that was checked. For data access audit logs
     /// this corresponds with the permission type that must be enabled in the
     /// project/folder/organization IAM policy in order for the log to be written.
-    pub permission_type: crate::internal_model::audit::authorization_info::PermissionType,
+    pub permission_type: crate::model::authorization_info::PermissionType,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -745,11 +754,11 @@ impl AuthorizationInfo {
         std::default::Default::default()
     }
 
-    /// Sets the value of [resource][crate::internal_model::audit::AuthorizationInfo::resource].
+    /// Sets the value of [resource][crate::model::AuthorizationInfo::resource].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthorizationInfo;
+    /// # use google_cloud_audit::model::AuthorizationInfo;
     /// let x = AuthorizationInfo::new().set_resource("example");
     /// ```
     pub fn set_resource<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -757,11 +766,11 @@ impl AuthorizationInfo {
         self
     }
 
-    /// Sets the value of [permission][crate::internal_model::audit::AuthorizationInfo::permission].
+    /// Sets the value of [permission][crate::model::AuthorizationInfo::permission].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthorizationInfo;
+    /// # use google_cloud_audit::model::AuthorizationInfo;
     /// let x = AuthorizationInfo::new().set_permission("example");
     /// ```
     pub fn set_permission<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -769,11 +778,11 @@ impl AuthorizationInfo {
         self
     }
 
-    /// Sets the value of [granted][crate::internal_model::audit::AuthorizationInfo::granted].
+    /// Sets the value of [granted][crate::model::AuthorizationInfo::granted].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthorizationInfo;
+    /// # use google_cloud_audit::model::AuthorizationInfo;
     /// let x = AuthorizationInfo::new().set_granted(true);
     /// ```
     pub fn set_granted<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -781,11 +790,11 @@ impl AuthorizationInfo {
         self
     }
 
-    /// Sets the value of [resource_attributes][crate::internal_model::audit::AuthorizationInfo::resource_attributes].
+    /// Sets the value of [resource_attributes][crate::model::AuthorizationInfo::resource_attributes].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthorizationInfo;
+    /// # use google_cloud_audit::model::AuthorizationInfo;
     /// use google_cloud_rpc_context::model::attribute_context::Resource;
     /// let x = AuthorizationInfo::new().set_resource_attributes(Resource::default()/* use setters */);
     /// ```
@@ -797,11 +806,11 @@ impl AuthorizationInfo {
         self
     }
 
-    /// Sets or clears the value of [resource_attributes][crate::internal_model::audit::AuthorizationInfo::resource_attributes].
+    /// Sets or clears the value of [resource_attributes][crate::model::AuthorizationInfo::resource_attributes].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthorizationInfo;
+    /// # use google_cloud_audit::model::AuthorizationInfo;
     /// use google_cloud_rpc_context::model::attribute_context::Resource;
     /// let x = AuthorizationInfo::new().set_or_clear_resource_attributes(Some(Resource::default()/* use setters */));
     /// let x = AuthorizationInfo::new().set_or_clear_resource_attributes(None::<Resource>);
@@ -814,18 +823,18 @@ impl AuthorizationInfo {
         self
     }
 
-    /// Sets the value of [permission_type][crate::internal_model::audit::AuthorizationInfo::permission_type].
+    /// Sets the value of [permission_type][crate::model::AuthorizationInfo::permission_type].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::AuthorizationInfo;
-    /// use google_cloud_logging_v2::model::authorization_info::PermissionType;
+    /// # use google_cloud_audit::model::AuthorizationInfo;
+    /// use google_cloud_audit::model::authorization_info::PermissionType;
     /// let x0 = AuthorizationInfo::new().set_permission_type(PermissionType::AdminRead);
     /// let x1 = AuthorizationInfo::new().set_permission_type(PermissionType::AdminWrite);
     /// let x2 = AuthorizationInfo::new().set_permission_type(PermissionType::DataRead);
     /// ```
     pub fn set_permission_type<
-        T: std::convert::Into<crate::internal_model::audit::authorization_info::PermissionType>,
+        T: std::convert::Into<crate::model::authorization_info::PermissionType>,
     >(
         mut self,
         v: T,
@@ -1061,11 +1070,11 @@ impl RequestMetadata {
         std::default::Default::default()
     }
 
-    /// Sets the value of [caller_ip][crate::internal_model::audit::RequestMetadata::caller_ip].
+    /// Sets the value of [caller_ip][crate::model::RequestMetadata::caller_ip].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// let x = RequestMetadata::new().set_caller_ip("example");
     /// ```
     pub fn set_caller_ip<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -1073,11 +1082,11 @@ impl RequestMetadata {
         self
     }
 
-    /// Sets the value of [caller_supplied_user_agent][crate::internal_model::audit::RequestMetadata::caller_supplied_user_agent].
+    /// Sets the value of [caller_supplied_user_agent][crate::model::RequestMetadata::caller_supplied_user_agent].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// let x = RequestMetadata::new().set_caller_supplied_user_agent("example");
     /// ```
     pub fn set_caller_supplied_user_agent<T: std::convert::Into<std::string::String>>(
@@ -1088,11 +1097,11 @@ impl RequestMetadata {
         self
     }
 
-    /// Sets the value of [caller_network][crate::internal_model::audit::RequestMetadata::caller_network].
+    /// Sets the value of [caller_network][crate::model::RequestMetadata::caller_network].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// let x = RequestMetadata::new().set_caller_network("example");
     /// ```
     pub fn set_caller_network<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -1100,11 +1109,11 @@ impl RequestMetadata {
         self
     }
 
-    /// Sets the value of [request_attributes][crate::internal_model::audit::RequestMetadata::request_attributes].
+    /// Sets the value of [request_attributes][crate::model::RequestMetadata::request_attributes].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// use google_cloud_rpc_context::model::attribute_context::Request;
     /// let x = RequestMetadata::new().set_request_attributes(Request::default()/* use setters */);
     /// ```
@@ -1116,11 +1125,11 @@ impl RequestMetadata {
         self
     }
 
-    /// Sets or clears the value of [request_attributes][crate::internal_model::audit::RequestMetadata::request_attributes].
+    /// Sets or clears the value of [request_attributes][crate::model::RequestMetadata::request_attributes].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// use google_cloud_rpc_context::model::attribute_context::Request;
     /// let x = RequestMetadata::new().set_or_clear_request_attributes(Some(Request::default()/* use setters */));
     /// let x = RequestMetadata::new().set_or_clear_request_attributes(None::<Request>);
@@ -1133,11 +1142,11 @@ impl RequestMetadata {
         self
     }
 
-    /// Sets the value of [destination_attributes][crate::internal_model::audit::RequestMetadata::destination_attributes].
+    /// Sets the value of [destination_attributes][crate::model::RequestMetadata::destination_attributes].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// use google_cloud_rpc_context::model::attribute_context::Peer;
     /// let x = RequestMetadata::new().set_destination_attributes(Peer::default()/* use setters */);
     /// ```
@@ -1149,11 +1158,11 @@ impl RequestMetadata {
         self
     }
 
-    /// Sets or clears the value of [destination_attributes][crate::internal_model::audit::RequestMetadata::destination_attributes].
+    /// Sets or clears the value of [destination_attributes][crate::model::RequestMetadata::destination_attributes].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::RequestMetadata;
+    /// # use google_cloud_audit::model::RequestMetadata;
     /// use google_cloud_rpc_context::model::attribute_context::Peer;
     /// let x = RequestMetadata::new().set_or_clear_destination_attributes(Some(Peer::default()/* use setters */));
     /// let x = RequestMetadata::new().set_or_clear_destination_attributes(None::<Peer>);
@@ -1210,11 +1219,11 @@ impl ResourceLocation {
         std::default::Default::default()
     }
 
-    /// Sets the value of [current_locations][crate::internal_model::audit::ResourceLocation::current_locations].
+    /// Sets the value of [current_locations][crate::model::ResourceLocation::current_locations].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ResourceLocation;
+    /// # use google_cloud_audit::model::ResourceLocation;
     /// let x = ResourceLocation::new().set_current_locations(["a", "b", "c"]);
     /// ```
     pub fn set_current_locations<T, V>(mut self, v: T) -> Self
@@ -1227,11 +1236,11 @@ impl ResourceLocation {
         self
     }
 
-    /// Sets the value of [original_locations][crate::internal_model::audit::ResourceLocation::original_locations].
+    /// Sets the value of [original_locations][crate::model::ResourceLocation::original_locations].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ResourceLocation;
+    /// # use google_cloud_audit::model::ResourceLocation;
     /// let x = ResourceLocation::new().set_original_locations(["a", "b", "c"]);
     /// ```
     pub fn set_original_locations<T, V>(mut self, v: T) -> Self
@@ -1265,9 +1274,7 @@ pub struct ServiceAccountDelegationInfo {
 
     /// Entity that creates credentials for service account and assumes its
     /// identity for authentication.
-    pub authority: std::option::Option<
-        crate::internal_model::audit::service_account_delegation_info::Authority,
-    >,
+    pub authority: std::option::Option<crate::model::service_account_delegation_info::Authority>,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -1278,11 +1285,11 @@ impl ServiceAccountDelegationInfo {
         std::default::Default::default()
     }
 
-    /// Sets the value of [principal_subject][crate::internal_model::audit::ServiceAccountDelegationInfo::principal_subject].
+    /// Sets the value of [principal_subject][crate::model::ServiceAccountDelegationInfo::principal_subject].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ServiceAccountDelegationInfo;
+    /// # use google_cloud_audit::model::ServiceAccountDelegationInfo;
     /// let x = ServiceAccountDelegationInfo::new().set_principal_subject("example");
     /// ```
     pub fn set_principal_subject<T: std::convert::Into<std::string::String>>(
@@ -1293,23 +1300,21 @@ impl ServiceAccountDelegationInfo {
         self
     }
 
-    /// Sets the value of [authority][crate::internal_model::audit::ServiceAccountDelegationInfo::authority].
+    /// Sets the value of [authority][crate::model::ServiceAccountDelegationInfo::authority].
     ///
     /// Note that all the setters affecting `authority` are mutually
     /// exclusive.
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ServiceAccountDelegationInfo;
-    /// use google_cloud_logging_v2::model::service_account_delegation_info::FirstPartyPrincipal;
+    /// # use google_cloud_audit::model::ServiceAccountDelegationInfo;
+    /// use google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal;
     /// let x = ServiceAccountDelegationInfo::new().set_authority(Some(
-    ///     google_cloud_logging_v2::model::service_account_delegation_info::Authority::FirstPartyPrincipal(FirstPartyPrincipal::default().into())));
+    ///     google_cloud_audit::model::service_account_delegation_info::Authority::FirstPartyPrincipal(FirstPartyPrincipal::default().into())));
     /// ```
     pub fn set_authority<
         T: std::convert::Into<
-                std::option::Option<
-                    crate::internal_model::audit::service_account_delegation_info::Authority,
-                >,
+                std::option::Option<crate::model::service_account_delegation_info::Authority>,
             >,
     >(
         mut self,
@@ -1319,24 +1324,24 @@ impl ServiceAccountDelegationInfo {
         self
     }
 
-    /// The value of [authority][crate::internal_model::audit::ServiceAccountDelegationInfo::authority]
+    /// The value of [authority][crate::model::ServiceAccountDelegationInfo::authority]
     /// if it holds a `FirstPartyPrincipal`, `None` if the field is not set or
     /// holds a different branch.
     pub fn first_party_principal(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<
-            crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal,
-        >,
+        &std::boxed::Box<crate::model::service_account_delegation_info::FirstPartyPrincipal>,
     > {
         #[allow(unreachable_patterns)]
         self.authority.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::service_account_delegation_info::Authority::FirstPartyPrincipal(v) => std::option::Option::Some(v),
+            crate::model::service_account_delegation_info::Authority::FirstPartyPrincipal(v) => {
+                std::option::Option::Some(v)
+            }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [authority][crate::internal_model::audit::ServiceAccountDelegationInfo::authority]
+    /// Sets the value of [authority][crate::model::ServiceAccountDelegationInfo::authority]
     /// to hold a `FirstPartyPrincipal`.
     ///
     /// Note that all the setters affecting `authority` are
@@ -1344,39 +1349,44 @@ impl ServiceAccountDelegationInfo {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ServiceAccountDelegationInfo;
-    /// use google_cloud_logging_v2::model::service_account_delegation_info::FirstPartyPrincipal;
+    /// # use google_cloud_audit::model::ServiceAccountDelegationInfo;
+    /// use google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal;
     /// let x = ServiceAccountDelegationInfo::new().set_first_party_principal(FirstPartyPrincipal::default()/* use setters */);
     /// assert!(x.first_party_principal().is_some());
     /// assert!(x.third_party_principal().is_none());
     /// ```
-    pub fn set_first_party_principal<T: std::convert::Into<std::boxed::Box<crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal>>>(mut self, v: T) -> Self{
+    pub fn set_first_party_principal<
+        T: std::convert::Into<
+                std::boxed::Box<crate::model::service_account_delegation_info::FirstPartyPrincipal>,
+            >,
+    >(
+        mut self,
+        v: T,
+    ) -> Self {
         self.authority = std::option::Option::Some(
-            crate::internal_model::audit::service_account_delegation_info::Authority::FirstPartyPrincipal(
-                v.into()
-            )
+            crate::model::service_account_delegation_info::Authority::FirstPartyPrincipal(v.into()),
         );
         self
     }
 
-    /// The value of [authority][crate::internal_model::audit::ServiceAccountDelegationInfo::authority]
+    /// The value of [authority][crate::model::ServiceAccountDelegationInfo::authority]
     /// if it holds a `ThirdPartyPrincipal`, `None` if the field is not set or
     /// holds a different branch.
     pub fn third_party_principal(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<
-            crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal,
-        >,
+        &std::boxed::Box<crate::model::service_account_delegation_info::ThirdPartyPrincipal>,
     > {
         #[allow(unreachable_patterns)]
         self.authority.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::service_account_delegation_info::Authority::ThirdPartyPrincipal(v) => std::option::Option::Some(v),
+            crate::model::service_account_delegation_info::Authority::ThirdPartyPrincipal(v) => {
+                std::option::Option::Some(v)
+            }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [authority][crate::internal_model::audit::ServiceAccountDelegationInfo::authority]
+    /// Sets the value of [authority][crate::model::ServiceAccountDelegationInfo::authority]
     /// to hold a `ThirdPartyPrincipal`.
     ///
     /// Note that all the setters affecting `authority` are
@@ -1384,17 +1394,22 @@ impl ServiceAccountDelegationInfo {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ServiceAccountDelegationInfo;
-    /// use google_cloud_logging_v2::model::service_account_delegation_info::ThirdPartyPrincipal;
+    /// # use google_cloud_audit::model::ServiceAccountDelegationInfo;
+    /// use google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal;
     /// let x = ServiceAccountDelegationInfo::new().set_third_party_principal(ThirdPartyPrincipal::default()/* use setters */);
     /// assert!(x.third_party_principal().is_some());
     /// assert!(x.first_party_principal().is_none());
     /// ```
-    pub fn set_third_party_principal<T: std::convert::Into<std::boxed::Box<crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal>>>(mut self, v: T) -> Self{
+    pub fn set_third_party_principal<
+        T: std::convert::Into<
+                std::boxed::Box<crate::model::service_account_delegation_info::ThirdPartyPrincipal>,
+            >,
+    >(
+        mut self,
+        v: T,
+    ) -> Self {
         self.authority = std::option::Option::Some(
-            crate::internal_model::audit::service_account_delegation_info::Authority::ThirdPartyPrincipal(
-                v.into()
-            )
+            crate::model::service_account_delegation_info::Authority::ThirdPartyPrincipal(v.into()),
         );
         self
     }
@@ -1430,11 +1445,11 @@ pub mod service_account_delegation_info {
             std::default::Default::default()
         }
 
-        /// Sets the value of [principal_email][crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal::principal_email].
+        /// Sets the value of [principal_email][crate::model::service_account_delegation_info::FirstPartyPrincipal::principal_email].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::service_account_delegation_info::FirstPartyPrincipal;
+        /// # use google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal;
         /// let x = FirstPartyPrincipal::new().set_principal_email("example");
         /// ```
         pub fn set_principal_email<T: std::convert::Into<std::string::String>>(
@@ -1445,11 +1460,11 @@ pub mod service_account_delegation_info {
             self
         }
 
-        /// Sets the value of [service_metadata][crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal::service_metadata].
+        /// Sets the value of [service_metadata][crate::model::service_account_delegation_info::FirstPartyPrincipal::service_metadata].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::service_account_delegation_info::FirstPartyPrincipal;
+        /// # use google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal;
         /// use wkt::Struct;
         /// let x = FirstPartyPrincipal::new().set_service_metadata(Struct::default()/* use setters */);
         /// ```
@@ -1461,11 +1476,11 @@ pub mod service_account_delegation_info {
             self
         }
 
-        /// Sets or clears the value of [service_metadata][crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal::service_metadata].
+        /// Sets or clears the value of [service_metadata][crate::model::service_account_delegation_info::FirstPartyPrincipal::service_metadata].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::service_account_delegation_info::FirstPartyPrincipal;
+        /// # use google_cloud_audit::model::service_account_delegation_info::FirstPartyPrincipal;
         /// use wkt::Struct;
         /// let x = FirstPartyPrincipal::new().set_or_clear_service_metadata(Some(Struct::default()/* use setters */));
         /// let x = FirstPartyPrincipal::new().set_or_clear_service_metadata(None::<Struct>);
@@ -1501,11 +1516,11 @@ pub mod service_account_delegation_info {
             std::default::Default::default()
         }
 
-        /// Sets the value of [third_party_claims][crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal::third_party_claims].
+        /// Sets the value of [third_party_claims][crate::model::service_account_delegation_info::ThirdPartyPrincipal::third_party_claims].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::service_account_delegation_info::ThirdPartyPrincipal;
+        /// # use google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal;
         /// use wkt::Struct;
         /// let x = ThirdPartyPrincipal::new().set_third_party_claims(Struct::default()/* use setters */);
         /// ```
@@ -1517,11 +1532,11 @@ pub mod service_account_delegation_info {
             self
         }
 
-        /// Sets or clears the value of [third_party_claims][crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal::third_party_claims].
+        /// Sets or clears the value of [third_party_claims][crate::model::service_account_delegation_info::ThirdPartyPrincipal::third_party_claims].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::service_account_delegation_info::ThirdPartyPrincipal;
+        /// # use google_cloud_audit::model::service_account_delegation_info::ThirdPartyPrincipal;
         /// use wkt::Struct;
         /// let x = ThirdPartyPrincipal::new().set_or_clear_third_party_claims(Some(Struct::default()/* use setters */));
         /// let x = ThirdPartyPrincipal::new().set_or_clear_third_party_claims(None::<Struct>);
@@ -1548,15 +1563,11 @@ pub mod service_account_delegation_info {
     pub enum Authority {
         /// First party (Google) identity as the real authority.
         FirstPartyPrincipal(
-            std::boxed::Box<
-                crate::internal_model::audit::service_account_delegation_info::FirstPartyPrincipal,
-            >,
+            std::boxed::Box<crate::model::service_account_delegation_info::FirstPartyPrincipal>,
         ),
         /// Third party identity as the real authority.
         ThirdPartyPrincipal(
-            std::boxed::Box<
-                crate::internal_model::audit::service_account_delegation_info::ThirdPartyPrincipal,
-            >,
+            std::boxed::Box<crate::model::service_account_delegation_info::ThirdPartyPrincipal>,
         ),
     }
 }
@@ -1566,8 +1577,7 @@ pub mod service_account_delegation_info {
 #[non_exhaustive]
 pub struct PolicyViolationInfo {
     /// Indicates the orgpolicy violations for this resource.
-    pub org_policy_violation_info:
-        std::option::Option<crate::internal_model::audit::OrgPolicyViolationInfo>,
+    pub org_policy_violation_info: std::option::Option<crate::model::OrgPolicyViolationInfo>,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -1578,34 +1588,34 @@ impl PolicyViolationInfo {
         std::default::Default::default()
     }
 
-    /// Sets the value of [org_policy_violation_info][crate::internal_model::audit::PolicyViolationInfo::org_policy_violation_info].
+    /// Sets the value of [org_policy_violation_info][crate::model::PolicyViolationInfo::org_policy_violation_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::PolicyViolationInfo;
-    /// use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
+    /// # use google_cloud_audit::model::PolicyViolationInfo;
+    /// use google_cloud_audit::model::OrgPolicyViolationInfo;
     /// let x = PolicyViolationInfo::new().set_org_policy_violation_info(OrgPolicyViolationInfo::default()/* use setters */);
     /// ```
     pub fn set_org_policy_violation_info<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::OrgPolicyViolationInfo>,
+        T: std::convert::Into<crate::model::OrgPolicyViolationInfo>,
     {
         self.org_policy_violation_info = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [org_policy_violation_info][crate::internal_model::audit::PolicyViolationInfo::org_policy_violation_info].
+    /// Sets or clears the value of [org_policy_violation_info][crate::model::PolicyViolationInfo::org_policy_violation_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::PolicyViolationInfo;
-    /// use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
+    /// # use google_cloud_audit::model::PolicyViolationInfo;
+    /// use google_cloud_audit::model::OrgPolicyViolationInfo;
     /// let x = PolicyViolationInfo::new().set_or_clear_org_policy_violation_info(Some(OrgPolicyViolationInfo::default()/* use setters */));
     /// let x = PolicyViolationInfo::new().set_or_clear_org_policy_violation_info(None::<OrgPolicyViolationInfo>);
     /// ```
     pub fn set_or_clear_org_policy_violation_info<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<crate::internal_model::audit::OrgPolicyViolationInfo>,
+        T: std::convert::Into<crate::model::OrgPolicyViolationInfo>,
     {
         self.org_policy_violation_info = v.map(|x| x.into());
         self
@@ -1641,7 +1651,7 @@ pub struct OrgPolicyViolationInfo {
     pub resource_tags: std::collections::HashMap<std::string::String, std::string::String>,
 
     /// Optional. Policy violations
-    pub violation_info: std::vec::Vec<crate::internal_model::audit::ViolationInfo>,
+    pub violation_info: std::vec::Vec<crate::model::ViolationInfo>,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -1652,11 +1662,11 @@ impl OrgPolicyViolationInfo {
         std::default::Default::default()
     }
 
-    /// Sets the value of [payload][crate::internal_model::audit::OrgPolicyViolationInfo::payload].
+    /// Sets the value of [payload][crate::model::OrgPolicyViolationInfo::payload].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
+    /// # use google_cloud_audit::model::OrgPolicyViolationInfo;
     /// use wkt::Struct;
     /// let x = OrgPolicyViolationInfo::new().set_payload(Struct::default()/* use setters */);
     /// ```
@@ -1668,11 +1678,11 @@ impl OrgPolicyViolationInfo {
         self
     }
 
-    /// Sets or clears the value of [payload][crate::internal_model::audit::OrgPolicyViolationInfo::payload].
+    /// Sets or clears the value of [payload][crate::model::OrgPolicyViolationInfo::payload].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
+    /// # use google_cloud_audit::model::OrgPolicyViolationInfo;
     /// use wkt::Struct;
     /// let x = OrgPolicyViolationInfo::new().set_or_clear_payload(Some(Struct::default()/* use setters */));
     /// let x = OrgPolicyViolationInfo::new().set_or_clear_payload(None::<Struct>);
@@ -1685,11 +1695,11 @@ impl OrgPolicyViolationInfo {
         self
     }
 
-    /// Sets the value of [resource_type][crate::internal_model::audit::OrgPolicyViolationInfo::resource_type].
+    /// Sets the value of [resource_type][crate::model::OrgPolicyViolationInfo::resource_type].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
+    /// # use google_cloud_audit::model::OrgPolicyViolationInfo;
     /// let x = OrgPolicyViolationInfo::new().set_resource_type("example");
     /// ```
     pub fn set_resource_type<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -1697,11 +1707,11 @@ impl OrgPolicyViolationInfo {
         self
     }
 
-    /// Sets the value of [resource_tags][crate::internal_model::audit::OrgPolicyViolationInfo::resource_tags].
+    /// Sets the value of [resource_tags][crate::model::OrgPolicyViolationInfo::resource_tags].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
+    /// # use google_cloud_audit::model::OrgPolicyViolationInfo;
     /// let x = OrgPolicyViolationInfo::new().set_resource_tags([
     ///     ("key0", "abc"),
     ///     ("key1", "xyz"),
@@ -1718,12 +1728,12 @@ impl OrgPolicyViolationInfo {
         self
     }
 
-    /// Sets the value of [violation_info][crate::internal_model::audit::OrgPolicyViolationInfo::violation_info].
+    /// Sets the value of [violation_info][crate::model::OrgPolicyViolationInfo::violation_info].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::OrgPolicyViolationInfo;
-    /// use google_cloud_logging_v2::model::ViolationInfo;
+    /// # use google_cloud_audit::model::OrgPolicyViolationInfo;
+    /// use google_cloud_audit::model::ViolationInfo;
     /// let x = OrgPolicyViolationInfo::new()
     ///     .set_violation_info([
     ///         ViolationInfo::default()/* use setters */,
@@ -1733,7 +1743,7 @@ impl OrgPolicyViolationInfo {
     pub fn set_violation_info<T, V>(mut self, v: T) -> Self
     where
         T: std::iter::IntoIterator<Item = V>,
-        V: std::convert::Into<crate::internal_model::audit::ViolationInfo>,
+        V: std::convert::Into<crate::model::ViolationInfo>,
     {
         use std::iter::Iterator;
         self.violation_info = v.into_iter().map(|i| i.into()).collect();
@@ -1763,7 +1773,7 @@ pub struct ViolationInfo {
     pub checked_value: std::string::String,
 
     /// Optional. Indicates the type of the policy.
-    pub policy_type: crate::internal_model::audit::violation_info::PolicyType,
+    pub policy_type: crate::model::violation_info::PolicyType,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -1774,11 +1784,11 @@ impl ViolationInfo {
         std::default::Default::default()
     }
 
-    /// Sets the value of [constraint][crate::internal_model::audit::ViolationInfo::constraint].
+    /// Sets the value of [constraint][crate::model::ViolationInfo::constraint].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ViolationInfo;
+    /// # use google_cloud_audit::model::ViolationInfo;
     /// let x = ViolationInfo::new().set_constraint("example");
     /// ```
     pub fn set_constraint<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -1786,11 +1796,11 @@ impl ViolationInfo {
         self
     }
 
-    /// Sets the value of [error_message][crate::internal_model::audit::ViolationInfo::error_message].
+    /// Sets the value of [error_message][crate::model::ViolationInfo::error_message].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ViolationInfo;
+    /// # use google_cloud_audit::model::ViolationInfo;
     /// let x = ViolationInfo::new().set_error_message("example");
     /// ```
     pub fn set_error_message<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -1798,11 +1808,11 @@ impl ViolationInfo {
         self
     }
 
-    /// Sets the value of [checked_value][crate::internal_model::audit::ViolationInfo::checked_value].
+    /// Sets the value of [checked_value][crate::model::ViolationInfo::checked_value].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ViolationInfo;
+    /// # use google_cloud_audit::model::ViolationInfo;
     /// let x = ViolationInfo::new().set_checked_value("example");
     /// ```
     pub fn set_checked_value<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -1810,19 +1820,17 @@ impl ViolationInfo {
         self
     }
 
-    /// Sets the value of [policy_type][crate::internal_model::audit::ViolationInfo::policy_type].
+    /// Sets the value of [policy_type][crate::model::ViolationInfo::policy_type].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::ViolationInfo;
-    /// use google_cloud_logging_v2::model::violation_info::PolicyType;
+    /// # use google_cloud_audit::model::ViolationInfo;
+    /// use google_cloud_audit::model::violation_info::PolicyType;
     /// let x0 = ViolationInfo::new().set_policy_type(PolicyType::BooleanConstraint);
     /// let x1 = ViolationInfo::new().set_policy_type(PolicyType::ListConstraint);
     /// let x2 = ViolationInfo::new().set_policy_type(PolicyType::CustomConstraint);
     /// ```
-    pub fn set_policy_type<
-        T: std::convert::Into<crate::internal_model::audit::violation_info::PolicyType>,
-    >(
+    pub fn set_policy_type<T: std::convert::Into<crate::model::violation_info::PolicyType>>(
         mut self,
         v: T,
     ) -> Self {
@@ -1987,12 +1995,11 @@ pub mod violation_info {
 #[non_exhaustive]
 pub struct BigQueryAuditMetadata {
     /// First party (Google) application specific metadata.
-    pub first_party_app_metadata: std::option::Option<
-        crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata,
-    >,
+    pub first_party_app_metadata:
+        std::option::Option<crate::model::big_query_audit_metadata::FirstPartyAppMetadata>,
 
     /// BigQuery event information.
-    pub event: std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Event>,
+    pub event: std::option::Option<crate::model::big_query_audit_metadata::Event>,
 
     pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
 }
@@ -2003,59 +2010,53 @@ impl BigQueryAuditMetadata {
         std::default::Default::default()
     }
 
-    /// Sets the value of [first_party_app_metadata][crate::internal_model::audit::BigQueryAuditMetadata::first_party_app_metadata].
+    /// Sets the value of [first_party_app_metadata][crate::model::BigQueryAuditMetadata::first_party_app_metadata].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::FirstPartyAppMetadata;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::FirstPartyAppMetadata;
     /// let x = BigQueryAuditMetadata::new().set_first_party_app_metadata(FirstPartyAppMetadata::default()/* use setters */);
     /// ```
     pub fn set_first_party_app_metadata<T>(mut self, v: T) -> Self
     where
-        T: std::convert::Into<
-                crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata,
-            >,
+        T: std::convert::Into<crate::model::big_query_audit_metadata::FirstPartyAppMetadata>,
     {
         self.first_party_app_metadata = std::option::Option::Some(v.into());
         self
     }
 
-    /// Sets or clears the value of [first_party_app_metadata][crate::internal_model::audit::BigQueryAuditMetadata::first_party_app_metadata].
+    /// Sets or clears the value of [first_party_app_metadata][crate::model::BigQueryAuditMetadata::first_party_app_metadata].
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::FirstPartyAppMetadata;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::FirstPartyAppMetadata;
     /// let x = BigQueryAuditMetadata::new().set_or_clear_first_party_app_metadata(Some(FirstPartyAppMetadata::default()/* use setters */));
     /// let x = BigQueryAuditMetadata::new().set_or_clear_first_party_app_metadata(None::<FirstPartyAppMetadata>);
     /// ```
     pub fn set_or_clear_first_party_app_metadata<T>(mut self, v: std::option::Option<T>) -> Self
     where
-        T: std::convert::Into<
-                crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata,
-            >,
+        T: std::convert::Into<crate::model::big_query_audit_metadata::FirstPartyAppMetadata>,
     {
         self.first_party_app_metadata = v.map(|x| x.into());
         self
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event].
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event].
     ///
     /// Note that all the setters affecting `event` are mutually
     /// exclusive.
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobInsertion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::JobInsertion;
     /// let x = BigQueryAuditMetadata::new().set_event(Some(
-    ///     google_cloud_logging_v2::model::big_query_audit_metadata::Event::JobInsertion(JobInsertion::default().into())));
+    ///     google_cloud_audit::model::big_query_audit_metadata::Event::JobInsertion(JobInsertion::default().into())));
     /// ```
     pub fn set_event<
-        T: std::convert::Into<
-                std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Event>,
-            >,
+        T: std::convert::Into<std::option::Option<crate::model::big_query_audit_metadata::Event>>,
     >(
         mut self,
         v: T,
@@ -2064,24 +2065,23 @@ impl BigQueryAuditMetadata {
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `JobInsertion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn job_insertion(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobInsertion>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::JobInsertion>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::JobInsertion(v) => {
+            crate::model::big_query_audit_metadata::Event::JobInsertion(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `JobInsertion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2089,8 +2089,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobInsertion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::JobInsertion;
     /// let x = BigQueryAuditMetadata::new().set_job_insertion(JobInsertion::default()/* use setters */);
     /// assert!(x.job_insertion().is_some());
     /// assert!(x.job_change().is_none());
@@ -2117,39 +2117,34 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_job_insertion<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::JobInsertion,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::JobInsertion>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::JobInsertion(v.into()),
+            crate::model::big_query_audit_metadata::Event::JobInsertion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `JobChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn job_change(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobChange>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::JobChange>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::JobChange(v) => {
+            crate::model::big_query_audit_metadata::Event::JobChange(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `JobChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2157,8 +2152,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::JobChange;
     /// let x = BigQueryAuditMetadata::new().set_job_change(JobChange::default()/* use setters */);
     /// assert!(x.job_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2185,37 +2180,34 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_job_change<
-        T: std::convert::Into<
-                std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobChange>,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::JobChange>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::JobChange(v.into()),
+            crate::model::big_query_audit_metadata::Event::JobChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `JobDeletion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn job_deletion(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobDeletion>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::JobDeletion>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::JobDeletion(v) => {
+            crate::model::big_query_audit_metadata::Event::JobDeletion(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `JobDeletion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2223,8 +2215,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobDeletion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::JobDeletion;
     /// let x = BigQueryAuditMetadata::new().set_job_deletion(JobDeletion::default()/* use setters */);
     /// assert!(x.job_deletion().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2251,39 +2243,35 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_job_deletion<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::JobDeletion,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::JobDeletion>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::JobDeletion(v.into()),
+            crate::model::big_query_audit_metadata::Event::JobDeletion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `DatasetCreation`, `None` if the field is not set or
     /// holds a different branch.
     pub fn dataset_creation(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetCreation>,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::DatasetCreation>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::DatasetCreation(v) => {
+            crate::model::big_query_audit_metadata::Event::DatasetCreation(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `DatasetCreation`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2291,8 +2279,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetCreation;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::DatasetCreation;
     /// let x = BigQueryAuditMetadata::new().set_dataset_creation(DatasetCreation::default()/* use setters */);
     /// assert!(x.dataset_creation().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2320,40 +2308,35 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_dataset_creation<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::DatasetCreation,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::DatasetCreation>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::DatasetCreation(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::DatasetCreation(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `DatasetChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn dataset_change(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetChange>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::DatasetChange>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::DatasetChange(v) => {
+            crate::model::big_query_audit_metadata::Event::DatasetChange(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `DatasetChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2361,8 +2344,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::DatasetChange;
     /// let x = BigQueryAuditMetadata::new().set_dataset_change(DatasetChange::default()/* use setters */);
     /// assert!(x.dataset_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2389,39 +2372,35 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_dataset_change<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::DatasetChange,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::DatasetChange>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::DatasetChange(v.into()),
+            crate::model::big_query_audit_metadata::Event::DatasetChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `DatasetDeletion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn dataset_deletion(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetDeletion>,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::DatasetDeletion>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::DatasetDeletion(v) => {
+            crate::model::big_query_audit_metadata::Event::DatasetDeletion(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `DatasetDeletion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2429,8 +2408,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetDeletion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::DatasetDeletion;
     /// let x = BigQueryAuditMetadata::new().set_dataset_deletion(DatasetDeletion::default()/* use setters */);
     /// assert!(x.dataset_deletion().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2458,40 +2437,35 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_dataset_deletion<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::DatasetDeletion,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::DatasetDeletion>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::DatasetDeletion(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::DatasetDeletion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `TableCreation`, `None` if the field is not set or
     /// holds a different branch.
     pub fn table_creation(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableCreation>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::TableCreation>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableCreation(v) => {
+            crate::model::big_query_audit_metadata::Event::TableCreation(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `TableCreation`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2499,8 +2473,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableCreation;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::TableCreation;
     /// let x = BigQueryAuditMetadata::new().set_table_creation(TableCreation::default()/* use setters */);
     /// assert!(x.table_creation().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2527,39 +2501,34 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_table_creation<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::TableCreation,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::TableCreation>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableCreation(v.into()),
+            crate::model::big_query_audit_metadata::Event::TableCreation(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `TableChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn table_change(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableChange>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::TableChange>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableChange(v) => {
+            crate::model::big_query_audit_metadata::Event::TableChange(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `TableChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2567,8 +2536,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::TableChange;
     /// let x = BigQueryAuditMetadata::new().set_table_change(TableChange::default()/* use setters */);
     /// assert!(x.table_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2595,39 +2564,34 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_table_change<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::TableChange,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::TableChange>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableChange(v.into()),
+            crate::model::big_query_audit_metadata::Event::TableChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `TableDeletion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn table_deletion(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDeletion>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::TableDeletion>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableDeletion(v) => {
+            crate::model::big_query_audit_metadata::Event::TableDeletion(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `TableDeletion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2635,8 +2599,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableDeletion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::TableDeletion;
     /// let x = BigQueryAuditMetadata::new().set_table_deletion(TableDeletion::default()/* use setters */);
     /// assert!(x.table_deletion().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2663,39 +2627,34 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_table_deletion<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::TableDeletion,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::TableDeletion>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableDeletion(v.into()),
+            crate::model::big_query_audit_metadata::Event::TableDeletion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `TableDataRead`, `None` if the field is not set or
     /// holds a different branch.
     pub fn table_data_read(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDataRead>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::TableDataRead>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableDataRead(v) => {
+            crate::model::big_query_audit_metadata::Event::TableDataRead(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `TableDataRead`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2703,8 +2662,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
     /// let x = BigQueryAuditMetadata::new().set_table_data_read(TableDataRead::default()/* use setters */);
     /// assert!(x.table_data_read().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2731,39 +2690,35 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_table_data_read<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::TableDataRead,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::TableDataRead>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableDataRead(v.into()),
+            crate::model::big_query_audit_metadata::Event::TableDataRead(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `TableDataChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn table_data_change(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDataChange>,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::TableDataChange>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableDataChange(v) => {
+            crate::model::big_query_audit_metadata::Event::TableDataChange(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `TableDataChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2771,8 +2726,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
     /// let x = BigQueryAuditMetadata::new().set_table_data_change(TableDataChange::default()/* use setters */);
     /// assert!(x.table_data_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2800,40 +2755,35 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_table_data_change<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::TableDataChange,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::TableDataChange>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::TableDataChange(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::TableDataChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `ModelDeletion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn model_deletion(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDeletion>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::ModelDeletion>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelDeletion(v) => {
+            crate::model::big_query_audit_metadata::Event::ModelDeletion(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `ModelDeletion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2841,8 +2791,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDeletion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::ModelDeletion;
     /// let x = BigQueryAuditMetadata::new().set_model_deletion(ModelDeletion::default()/* use setters */);
     /// assert!(x.model_deletion().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2869,39 +2819,34 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_model_deletion<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::ModelDeletion,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::ModelDeletion>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelDeletion(v.into()),
+            crate::model::big_query_audit_metadata::Event::ModelDeletion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `ModelCreation`, `None` if the field is not set or
     /// holds a different branch.
     pub fn model_creation(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelCreation>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::ModelCreation>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelCreation(v) => {
+            crate::model::big_query_audit_metadata::Event::ModelCreation(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `ModelCreation`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2909,8 +2854,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::ModelCreation;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::ModelCreation;
     /// let x = BigQueryAuditMetadata::new().set_model_creation(ModelCreation::default()/* use setters */);
     /// assert!(x.model_creation().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -2937,41 +2882,35 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_model_creation<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::ModelCreation,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::ModelCreation>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelCreation(v.into()),
+            crate::model::big_query_audit_metadata::Event::ModelCreation(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `ModelMetadataChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn model_metadata_change(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<
-            crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange,
-        >,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::ModelMetadataChange>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelMetadataChange(
-                v,
-            ) => std::option::Option::Some(v),
+            crate::model::big_query_audit_metadata::Event::ModelMetadataChange(v) => {
+                std::option::Option::Some(v)
+            }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `ModelMetadataChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -2979,8 +2918,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::ModelMetadataChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::ModelMetadataChange;
     /// let x = BigQueryAuditMetadata::new().set_model_metadata_change(ModelMetadataChange::default()/* use setters */);
     /// assert!(x.model_metadata_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3008,40 +2947,36 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_model_metadata_change<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::ModelMetadataChange>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelMetadataChange(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::ModelMetadataChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `ModelDataChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn model_data_change(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDataChange>,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::ModelDataChange>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelDataChange(v) => {
+            crate::model::big_query_audit_metadata::Event::ModelDataChange(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `ModelDataChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3049,8 +2984,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDataChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::ModelDataChange;
     /// let x = BigQueryAuditMetadata::new().set_model_data_change(ModelDataChange::default()/* use setters */);
     /// assert!(x.model_data_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3078,40 +3013,35 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_model_data_change<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::ModelDataChange,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::ModelDataChange>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelDataChange(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::ModelDataChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `ModelDataRead`, `None` if the field is not set or
     /// holds a different branch.
     pub fn model_data_read(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDataRead>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::ModelDataRead>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelDataRead(v) => {
+            crate::model::big_query_audit_metadata::Event::ModelDataRead(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `ModelDataRead`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3119,8 +3049,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDataRead;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::ModelDataRead;
     /// let x = BigQueryAuditMetadata::new().set_model_data_read(ModelDataRead::default()/* use setters */);
     /// assert!(x.model_data_read().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3147,39 +3077,35 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_model_data_read<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::ModelDataRead,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::ModelDataRead>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::ModelDataRead(v.into()),
+            crate::model::big_query_audit_metadata::Event::ModelDataRead(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `RoutineCreation`, `None` if the field is not set or
     /// holds a different branch.
     pub fn routine_creation(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineCreation>,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::RoutineCreation>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::RoutineCreation(v) => {
+            crate::model::big_query_audit_metadata::Event::RoutineCreation(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `RoutineCreation`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3187,8 +3113,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineCreation;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::RoutineCreation;
     /// let x = BigQueryAuditMetadata::new().set_routine_creation(RoutineCreation::default()/* use setters */);
     /// assert!(x.routine_creation().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3216,40 +3142,35 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_routine_creation<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::RoutineCreation,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::RoutineCreation>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::RoutineCreation(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::RoutineCreation(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `RoutineChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn routine_change(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineChange>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::RoutineChange>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::RoutineChange(v) => {
+            crate::model::big_query_audit_metadata::Event::RoutineChange(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `RoutineChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3257,8 +3178,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::RoutineChange;
     /// let x = BigQueryAuditMetadata::new().set_routine_change(RoutineChange::default()/* use setters */);
     /// assert!(x.routine_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3285,39 +3206,35 @@ impl BigQueryAuditMetadata {
     /// assert!(x.unlink_dataset().is_none());
     /// ```
     pub fn set_routine_change<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::RoutineChange,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::RoutineChange>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::RoutineChange(v.into()),
+            crate::model::big_query_audit_metadata::Event::RoutineChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `RoutineDeletion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn routine_deletion(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion>,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::RoutineDeletion>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::RoutineDeletion(v) => {
+            crate::model::big_query_audit_metadata::Event::RoutineDeletion(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `RoutineDeletion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3325,8 +3242,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineDeletion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::RoutineDeletion;
     /// let x = BigQueryAuditMetadata::new().set_routine_deletion(RoutineDeletion::default()/* use setters */);
     /// assert!(x.routine_deletion().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3354,40 +3271,36 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_routine_deletion<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::RoutineDeletion>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::RoutineDeletion(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::RoutineDeletion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `RowAccessPolicyCreation`, `None` if the field is not set or
     /// holds a different branch.
     pub fn row_access_policy_creation(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<
-            crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation,
-        >,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyCreation>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyCreation(v) => std::option::Option::Some(v),
+            crate::model::big_query_audit_metadata::Event::RowAccessPolicyCreation(v) => {
+                std::option::Option::Some(v)
+            }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `RowAccessPolicyCreation`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3395,8 +3308,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyCreation;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyCreation;
     /// let x = BigQueryAuditMetadata::new().set_row_access_policy_creation(RowAccessPolicyCreation::default()/* use setters */);
     /// assert!(x.row_access_policy_creation().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3424,40 +3337,36 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_row_access_policy_creation<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyCreation>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyCreation(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::RowAccessPolicyCreation(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `RowAccessPolicyChange`, `None` if the field is not set or
     /// holds a different branch.
     pub fn row_access_policy_change(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<
-            crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange,
-        >,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyChange>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyChange(v) => std::option::Option::Some(v),
+            crate::model::big_query_audit_metadata::Event::RowAccessPolicyChange(v) => {
+                std::option::Option::Some(v)
+            }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `RowAccessPolicyChange`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3465,8 +3374,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyChange;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyChange;
     /// let x = BigQueryAuditMetadata::new().set_row_access_policy_change(RowAccessPolicyChange::default()/* use setters */);
     /// assert!(x.row_access_policy_change().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3494,40 +3403,36 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_row_access_policy_change<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyChange>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyChange(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::RowAccessPolicyChange(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `RowAccessPolicyDeletion`, `None` if the field is not set or
     /// holds a different branch.
     pub fn row_access_policy_deletion(
         &self,
     ) -> std::option::Option<
-        &std::boxed::Box<
-            crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion,
-        >,
+        &std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyDeletion>,
     > {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyDeletion(v) => std::option::Option::Some(v),
+            crate::model::big_query_audit_metadata::Event::RowAccessPolicyDeletion(v) => {
+                std::option::Option::Some(v)
+            }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `RowAccessPolicyDeletion`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3535,8 +3440,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyDeletion;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyDeletion;
     /// let x = BigQueryAuditMetadata::new().set_row_access_policy_deletion(RowAccessPolicyDeletion::default()/* use setters */);
     /// assert!(x.row_access_policy_deletion().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3564,40 +3469,35 @@ impl BigQueryAuditMetadata {
     /// ```
     pub fn set_row_access_policy_deletion<
         T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyDeletion>,
             >,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::RowAccessPolicyDeletion(
-                v.into(),
-            ),
+            crate::model::big_query_audit_metadata::Event::RowAccessPolicyDeletion(v.into()),
         );
         self
     }
 
-    /// The value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// The value of [event][crate::model::BigQueryAuditMetadata::event]
     /// if it holds a `UnlinkDataset`, `None` if the field is not set or
     /// holds a different branch.
     pub fn unlink_dataset(
         &self,
-    ) -> std::option::Option<
-        &std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset>,
-    > {
+    ) -> std::option::Option<&std::boxed::Box<crate::model::big_query_audit_metadata::UnlinkDataset>>
+    {
         #[allow(unreachable_patterns)]
         self.event.as_ref().and_then(|v| match v {
-            crate::internal_model::audit::big_query_audit_metadata::Event::UnlinkDataset(v) => {
+            crate::model::big_query_audit_metadata::Event::UnlinkDataset(v) => {
                 std::option::Option::Some(v)
             }
             _ => std::option::Option::None,
         })
     }
 
-    /// Sets the value of [event][crate::internal_model::audit::BigQueryAuditMetadata::event]
+    /// Sets the value of [event][crate::model::BigQueryAuditMetadata::event]
     /// to hold a `UnlinkDataset`.
     ///
     /// Note that all the setters affecting `event` are
@@ -3605,8 +3505,8 @@ impl BigQueryAuditMetadata {
     ///
     /// # Example
     /// ```ignore,no_run
-    /// # use google_cloud_logging_v2::model::BigQueryAuditMetadata;
-    /// use google_cloud_logging_v2::model::big_query_audit_metadata::UnlinkDataset;
+    /// # use google_cloud_audit::model::BigQueryAuditMetadata;
+    /// use google_cloud_audit::model::big_query_audit_metadata::UnlinkDataset;
     /// let x = BigQueryAuditMetadata::new().set_unlink_dataset(UnlinkDataset::default()/* use setters */);
     /// assert!(x.unlink_dataset().is_some());
     /// assert!(x.job_insertion().is_none());
@@ -3633,17 +3533,13 @@ impl BigQueryAuditMetadata {
     /// assert!(x.row_access_policy_deletion().is_none());
     /// ```
     pub fn set_unlink_dataset<
-        T: std::convert::Into<
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset,
-                >,
-            >,
+        T: std::convert::Into<std::boxed::Box<crate::model::big_query_audit_metadata::UnlinkDataset>>,
     >(
         mut self,
         v: T,
     ) -> Self {
         self.event = std::option::Option::Some(
-            crate::internal_model::audit::big_query_audit_metadata::Event::UnlinkDataset(v.into()),
+            crate::model::big_query_audit_metadata::Event::UnlinkDataset(v.into()),
         );
         self
     }
@@ -3665,10 +3561,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct JobInsertion {
         /// Job metadata.
-        pub job: std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Job>,
+        pub job: std::option::Option<crate::model::big_query_audit_metadata::Job>,
 
         /// Describes how the job was inserted.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::job_insertion::Reason,
+        pub reason: crate::model::big_query_audit_metadata::job_insertion::Reason,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -3679,52 +3575,50 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [job][crate::internal_model::audit::big_query_audit_metadata::JobInsertion::job].
+        /// Sets the value of [job][crate::model::big_query_audit_metadata::JobInsertion::job].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobInsertion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobInsertion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Job;
         /// let x = JobInsertion::new().set_job(Job::default()/* use setters */);
         /// ```
         pub fn set_job<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Job>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Job>,
         {
             self.job = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [job][crate::internal_model::audit::big_query_audit_metadata::JobInsertion::job].
+        /// Sets or clears the value of [job][crate::model::big_query_audit_metadata::JobInsertion::job].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobInsertion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobInsertion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Job;
         /// let x = JobInsertion::new().set_or_clear_job(Some(Job::default()/* use setters */));
         /// let x = JobInsertion::new().set_or_clear_job(None::<Job>);
         /// ```
         pub fn set_or_clear_job<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Job>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Job>,
         {
             self.job = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::JobInsertion::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::JobInsertion::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobInsertion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_insertion::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobInsertion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_insertion::Reason;
         /// let x0 = JobInsertion::new().set_reason(Reason::JobInsertRequest);
         /// let x1 = JobInsertion::new().set_reason(Reason::QueryRequest);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::job_insertion::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::job_insertion::Reason>,
         >(
             mut self,
             v: T,
@@ -3886,13 +3780,13 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct JobChange {
         /// Job state before the job state change.
-        pub before: crate::internal_model::audit::big_query_audit_metadata::JobState,
+        pub before: crate::model::big_query_audit_metadata::JobState,
 
         /// Job state after the job state change.
-        pub after: crate::internal_model::audit::big_query_audit_metadata::JobState,
+        pub after: crate::model::big_query_audit_metadata::JobState,
 
         /// Job metadata.
-        pub job: std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Job>,
+        pub job: std::option::Option<crate::model::big_query_audit_metadata::Job>,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -3903,18 +3797,18 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [before][crate::internal_model::audit::big_query_audit_metadata::JobChange::before].
+        /// Sets the value of [before][crate::model::big_query_audit_metadata::JobChange::before].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobState;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobState;
         /// let x0 = JobChange::new().set_before(JobState::Pending);
         /// let x1 = JobChange::new().set_before(JobState::Running);
         /// let x2 = JobChange::new().set_before(JobState::Done);
         /// ```
         pub fn set_before<
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::JobState>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobState>,
         >(
             mut self,
             v: T,
@@ -3923,18 +3817,18 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [after][crate::internal_model::audit::big_query_audit_metadata::JobChange::after].
+        /// Sets the value of [after][crate::model::big_query_audit_metadata::JobChange::after].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobState;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobState;
         /// let x0 = JobChange::new().set_after(JobState::Pending);
         /// let x1 = JobChange::new().set_after(JobState::Running);
         /// let x2 = JobChange::new().set_after(JobState::Done);
         /// ```
         pub fn set_after<
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::JobState>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobState>,
         >(
             mut self,
             v: T,
@@ -3943,34 +3837,34 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job][crate::internal_model::audit::big_query_audit_metadata::JobChange::job].
+        /// Sets the value of [job][crate::model::big_query_audit_metadata::JobChange::job].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Job;
         /// let x = JobChange::new().set_job(Job::default()/* use setters */);
         /// ```
         pub fn set_job<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Job>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Job>,
         {
             self.job = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [job][crate::internal_model::audit::big_query_audit_metadata::JobChange::job].
+        /// Sets or clears the value of [job][crate::model::big_query_audit_metadata::JobChange::job].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Job;
         /// let x = JobChange::new().set_or_clear_job(Some(Job::default()/* use setters */));
         /// let x = JobChange::new().set_or_clear_job(None::<Job>);
         /// ```
         pub fn set_or_clear_job<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Job>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Job>,
         {
             self.job = v.map(|x| x.into());
             self
@@ -3993,7 +3887,7 @@ pub mod big_query_audit_metadata {
         pub job_name: std::string::String,
 
         /// Describes how the job was deleted.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::job_deletion::Reason,
+        pub reason: crate::model::big_query_audit_metadata::job_deletion::Reason,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -4004,11 +3898,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::JobDeletion::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::JobDeletion::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobDeletion;
         /// let x = JobDeletion::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -4016,18 +3910,16 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::JobDeletion::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::JobDeletion::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_deletion::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_deletion::Reason;
         /// let x0 = JobDeletion::new().set_reason(Reason::JobDeleteRequest);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::job_deletion::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::job_deletion::Reason>,
         >(
             mut self,
             v: T,
@@ -4182,12 +4074,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct DatasetCreation {
         /// Dataset metadata.
-        pub dataset:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Dataset>,
+        pub dataset: std::option::Option<crate::model::big_query_audit_metadata::Dataset>,
 
         /// Describes how the dataset was created.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::dataset_creation::Reason,
+        pub reason: crate::model::big_query_audit_metadata::dataset_creation::Reason,
 
         /// The URI of the job that created the dataset.
         /// Present if the reason is QUERY.
@@ -4204,58 +4094,63 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [dataset][crate::internal_model::audit::big_query_audit_metadata::DatasetCreation::dataset].
+        /// Sets the value of [dataset][crate::model::big_query_audit_metadata::DatasetCreation::dataset].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// let x = DatasetCreation::new().set_dataset(Dataset::default()/* use setters */);
         /// ```
         pub fn set_dataset<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Dataset>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Dataset>,
         {
             self.dataset = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [dataset][crate::internal_model::audit::big_query_audit_metadata::DatasetCreation::dataset].
+        /// Sets or clears the value of [dataset][crate::model::big_query_audit_metadata::DatasetCreation::dataset].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// let x = DatasetCreation::new().set_or_clear_dataset(Some(Dataset::default()/* use setters */));
         /// let x = DatasetCreation::new().set_or_clear_dataset(None::<Dataset>);
         /// ```
         pub fn set_or_clear_dataset<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Dataset>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Dataset>,
         {
             self.dataset = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::DatasetCreation::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::DatasetCreation::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::dataset_creation::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::dataset_creation::Reason;
         /// let x0 = DatasetCreation::new().set_reason(Reason::Create);
         /// let x1 = DatasetCreation::new().set_reason(Reason::Query);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::dataset_creation::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<crate::model::big_query_audit_metadata::dataset_creation::Reason>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::DatasetCreation::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::DatasetCreation::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetCreation;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetCreation;
         /// let x = DatasetCreation::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -4416,11 +4311,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct DatasetChange {
         /// Dataset metadata after the change.
-        pub dataset:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Dataset>,
+        pub dataset: std::option::Option<crate::model::big_query_audit_metadata::Dataset>,
 
         /// Describes how the dataset was changed.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::dataset_change::Reason,
+        pub reason: crate::model::big_query_audit_metadata::dataset_change::Reason,
 
         /// The URI of the job that updated the dataset.
         /// Present if the reason is QUERY.
@@ -4437,53 +4331,51 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [dataset][crate::internal_model::audit::big_query_audit_metadata::DatasetChange::dataset].
+        /// Sets the value of [dataset][crate::model::big_query_audit_metadata::DatasetChange::dataset].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// let x = DatasetChange::new().set_dataset(Dataset::default()/* use setters */);
         /// ```
         pub fn set_dataset<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Dataset>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Dataset>,
         {
             self.dataset = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [dataset][crate::internal_model::audit::big_query_audit_metadata::DatasetChange::dataset].
+        /// Sets or clears the value of [dataset][crate::model::big_query_audit_metadata::DatasetChange::dataset].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// let x = DatasetChange::new().set_or_clear_dataset(Some(Dataset::default()/* use setters */));
         /// let x = DatasetChange::new().set_or_clear_dataset(None::<Dataset>);
         /// ```
         pub fn set_or_clear_dataset<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Dataset>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Dataset>,
         {
             self.dataset = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::DatasetChange::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::DatasetChange::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::dataset_change::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::dataset_change::Reason;
         /// let x0 = DatasetChange::new().set_reason(Reason::Update);
         /// let x1 = DatasetChange::new().set_reason(Reason::SetIamPolicy);
         /// let x2 = DatasetChange::new().set_reason(Reason::Query);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::dataset_change::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::dataset_change::Reason>,
         >(
             mut self,
             v: T,
@@ -4492,11 +4384,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::DatasetChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::DatasetChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetChange;
         /// let x = DatasetChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -4664,8 +4556,7 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct DatasetDeletion {
         /// Describes how the dataset was deleted.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::dataset_deletion::Reason,
+        pub reason: crate::model::big_query_audit_metadata::dataset_deletion::Reason,
 
         /// The URI of the job that deleted the dataset.
         /// Present if the reason is QUERY.
@@ -4682,25 +4573,30 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::DatasetDeletion::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::DatasetDeletion::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::dataset_deletion::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::dataset_deletion::Reason;
         /// let x0 = DatasetDeletion::new().set_reason(Reason::Delete);
         /// let x1 = DatasetDeletion::new().set_reason(Reason::Query);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::dataset_deletion::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<crate::model::big_query_audit_metadata::dataset_deletion::Reason>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::DatasetDeletion::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::DatasetDeletion::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::DatasetDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::DatasetDeletion;
         /// let x = DatasetDeletion::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -4861,11 +4757,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct TableCreation {
         /// Table metadata.
-        pub table:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Table>,
+        pub table: std::option::Option<crate::model::big_query_audit_metadata::Table>,
 
         /// Describes how the table was created.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::table_creation::Reason,
+        pub reason: crate::model::big_query_audit_metadata::table_creation::Reason,
 
         /// The URI of the job that created a table.
         /// Present if the reason is JOB or QUERY.
@@ -4882,53 +4777,51 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [table][crate::internal_model::audit::big_query_audit_metadata::TableCreation::table].
+        /// Sets the value of [table][crate::model::big_query_audit_metadata::TableCreation::table].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = TableCreation::new().set_table(Table::default()/* use setters */);
         /// ```
         pub fn set_table<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Table>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Table>,
         {
             self.table = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [table][crate::internal_model::audit::big_query_audit_metadata::TableCreation::table].
+        /// Sets or clears the value of [table][crate::model::big_query_audit_metadata::TableCreation::table].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = TableCreation::new().set_or_clear_table(Some(Table::default()/* use setters */));
         /// let x = TableCreation::new().set_or_clear_table(None::<Table>);
         /// ```
         pub fn set_or_clear_table<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Table>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Table>,
         {
             self.table = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::TableCreation::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::TableCreation::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::table_creation::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::table_creation::Reason;
         /// let x0 = TableCreation::new().set_reason(Reason::Job);
         /// let x1 = TableCreation::new().set_reason(Reason::Query);
         /// let x2 = TableCreation::new().set_reason(Reason::TableInsertRequest);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::table_creation::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::table_creation::Reason>,
         >(
             mut self,
             v: T,
@@ -4937,11 +4830,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::TableCreation::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::TableCreation::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableCreation;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableCreation;
         /// let x = TableCreation::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -5110,11 +5003,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct ModelCreation {
         /// Model metadata.
-        pub model:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Model>,
+        pub model: std::option::Option<crate::model::big_query_audit_metadata::Model>,
 
         /// Describes how the model was created.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::model_creation::Reason,
+        pub reason: crate::model::big_query_audit_metadata::model_creation::Reason,
 
         /// The URI of the job that created the model.
         ///
@@ -5130,51 +5022,49 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [model][crate::internal_model::audit::big_query_audit_metadata::ModelCreation::model].
+        /// Sets the value of [model][crate::model::big_query_audit_metadata::ModelCreation::model].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// let x = ModelCreation::new().set_model(Model::default()/* use setters */);
         /// ```
         pub fn set_model<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Model>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Model>,
         {
             self.model = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [model][crate::internal_model::audit::big_query_audit_metadata::ModelCreation::model].
+        /// Sets or clears the value of [model][crate::model::big_query_audit_metadata::ModelCreation::model].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// let x = ModelCreation::new().set_or_clear_model(Some(Model::default()/* use setters */));
         /// let x = ModelCreation::new().set_or_clear_model(None::<Model>);
         /// ```
         pub fn set_or_clear_model<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Model>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Model>,
         {
             self.model = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::ModelCreation::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::ModelCreation::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::model_creation::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::model_creation::Reason;
         /// let x0 = ModelCreation::new().set_reason(Reason::Query);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::model_creation::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::model_creation::Reason>,
         >(
             mut self,
             v: T,
@@ -5183,11 +5073,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::ModelCreation::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::ModelCreation::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelCreation;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelCreation;
         /// let x = ModelCreation::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -5341,12 +5231,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct RoutineCreation {
         /// Created routine.
-        pub routine:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+        pub routine: std::option::Option<crate::model::big_query_audit_metadata::Routine>,
 
         /// Describes how the routine was created.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::routine_creation::Reason,
+        pub reason: crate::model::big_query_audit_metadata::routine_creation::Reason,
 
         /// The URI of the job that created the routine.
         ///
@@ -5362,58 +5250,63 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [routine][crate::internal_model::audit::big_query_audit_metadata::RoutineCreation::routine].
+        /// Sets the value of [routine][crate::model::big_query_audit_metadata::RoutineCreation::routine].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = RoutineCreation::new().set_routine(Routine::default()/* use setters */);
         /// ```
         pub fn set_routine<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Routine>,
         {
             self.routine = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [routine][crate::internal_model::audit::big_query_audit_metadata::RoutineCreation::routine].
+        /// Sets or clears the value of [routine][crate::model::big_query_audit_metadata::RoutineCreation::routine].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = RoutineCreation::new().set_or_clear_routine(Some(Routine::default()/* use setters */));
         /// let x = RoutineCreation::new().set_or_clear_routine(None::<Routine>);
         /// ```
         pub fn set_or_clear_routine<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Routine>,
         {
             self.routine = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::RoutineCreation::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::RoutineCreation::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::routine_creation::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::routine_creation::Reason;
         /// let x0 = RoutineCreation::new().set_reason(Reason::Query);
         /// let x1 = RoutineCreation::new().set_reason(Reason::RoutineInsertRequest);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::routine_creation::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<crate::model::big_query_audit_metadata::routine_creation::Reason>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::RoutineCreation::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::RoutineCreation::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineCreation;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineCreation;
         /// let x = RoutineCreation::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -5593,7 +5486,7 @@ pub mod big_query_audit_metadata {
         pub policy_tags_truncated: bool,
 
         /// Describes how the table data was read.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::table_data_read::Reason,
+        pub reason: crate::model::big_query_audit_metadata::table_data_read::Reason,
 
         /// The URI of the job that read a table.
         /// Present if the reason is JOB but can be redacted for privacy reasons.
@@ -5617,11 +5510,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [fields][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::fields].
+        /// Sets the value of [fields][crate::model::big_query_audit_metadata::TableDataRead::fields].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
         /// let x = TableDataRead::new().set_fields(["a", "b", "c"]);
         /// ```
         pub fn set_fields<T, V>(mut self, v: T) -> Self
@@ -5634,11 +5527,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [fields_truncated][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::fields_truncated].
+        /// Sets the value of [fields_truncated][crate::model::big_query_audit_metadata::TableDataRead::fields_truncated].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
         /// let x = TableDataRead::new().set_fields_truncated(true);
         /// ```
         pub fn set_fields_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -5646,11 +5539,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [policy_tags][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::policy_tags].
+        /// Sets the value of [policy_tags][crate::model::big_query_audit_metadata::TableDataRead::policy_tags].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
         /// let x = TableDataRead::new().set_policy_tags(["a", "b", "c"]);
         /// ```
         pub fn set_policy_tags<T, V>(mut self, v: T) -> Self
@@ -5663,11 +5556,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [policy_tags_truncated][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::policy_tags_truncated].
+        /// Sets the value of [policy_tags_truncated][crate::model::big_query_audit_metadata::TableDataRead::policy_tags_truncated].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
         /// let x = TableDataRead::new().set_policy_tags_truncated(true);
         /// ```
         pub fn set_policy_tags_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -5675,20 +5568,18 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::TableDataRead::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::table_data_read::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
+        /// use google_cloud_audit::model::big_query_audit_metadata::table_data_read::Reason;
         /// let x0 = TableDataRead::new().set_reason(Reason::Job);
         /// let x1 = TableDataRead::new().set_reason(Reason::TabledataListRequest);
         /// let x2 = TableDataRead::new().set_reason(Reason::GetQueryResultsRequest);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::table_data_read::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::table_data_read::Reason>,
         >(
             mut self,
             v: T,
@@ -5697,11 +5588,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::TableDataRead::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
         /// let x = TableDataRead::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -5709,11 +5600,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [session_name][crate::internal_model::audit::big_query_audit_metadata::TableDataRead::session_name].
+        /// Sets the value of [session_name][crate::model::big_query_audit_metadata::TableDataRead::session_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataRead;
         /// let x = TableDataRead::new().set_session_name("example");
         /// ```
         pub fn set_session_name<T: std::convert::Into<std::string::String>>(
@@ -5911,14 +5802,13 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct TableChange {
         /// Updated table metadata.
-        pub table:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Table>,
+        pub table: std::option::Option<crate::model::big_query_audit_metadata::Table>,
 
         /// True if the table was truncated.
         pub truncated: bool,
 
         /// Describes how the table metadata was changed.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::table_change::Reason,
+        pub reason: crate::model::big_query_audit_metadata::table_change::Reason,
 
         /// The URI of the job that changed a table.
         /// Present if the reason is JOB or QUERY.
@@ -5935,44 +5825,44 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [table][crate::internal_model::audit::big_query_audit_metadata::TableChange::table].
+        /// Sets the value of [table][crate::model::big_query_audit_metadata::TableChange::table].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = TableChange::new().set_table(Table::default()/* use setters */);
         /// ```
         pub fn set_table<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Table>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Table>,
         {
             self.table = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [table][crate::internal_model::audit::big_query_audit_metadata::TableChange::table].
+        /// Sets or clears the value of [table][crate::model::big_query_audit_metadata::TableChange::table].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = TableChange::new().set_or_clear_table(Some(Table::default()/* use setters */));
         /// let x = TableChange::new().set_or_clear_table(None::<Table>);
         /// ```
         pub fn set_or_clear_table<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Table>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Table>,
         {
             self.table = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [truncated][crate::internal_model::audit::big_query_audit_metadata::TableChange::truncated].
+        /// Sets the value of [truncated][crate::model::big_query_audit_metadata::TableChange::truncated].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableChange;
         /// let x = TableChange::new().set_truncated(true);
         /// ```
         pub fn set_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -5980,20 +5870,18 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::TableChange::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::TableChange::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::table_change::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::table_change::Reason;
         /// let x0 = TableChange::new().set_reason(Reason::TableUpdateRequest);
         /// let x1 = TableChange::new().set_reason(Reason::Job);
         /// let x2 = TableChange::new().set_reason(Reason::Query);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::table_change::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::table_change::Reason>,
         >(
             mut self,
             v: T,
@@ -6002,11 +5890,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::TableChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::TableChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableChange;
         /// let x = TableChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -6174,12 +6062,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct ModelMetadataChange {
         /// Updated model.
-        pub model:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Model>,
+        pub model: std::option::Option<crate::model::big_query_audit_metadata::Model>,
 
         /// Describes how the model metadata was changed.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::model_metadata_change::Reason,
+        pub reason: crate::model::big_query_audit_metadata::model_metadata_change::Reason,
 
         /// The URI of the job that changed the model metadata.
         /// Present if and only if the reason is QUERY.
@@ -6196,58 +6082,65 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [model][crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange::model].
+        /// Sets the value of [model][crate::model::big_query_audit_metadata::ModelMetadataChange::model].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelMetadataChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelMetadataChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// let x = ModelMetadataChange::new().set_model(Model::default()/* use setters */);
         /// ```
         pub fn set_model<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Model>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Model>,
         {
             self.model = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [model][crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange::model].
+        /// Sets or clears the value of [model][crate::model::big_query_audit_metadata::ModelMetadataChange::model].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelMetadataChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelMetadataChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// let x = ModelMetadataChange::new().set_or_clear_model(Some(Model::default()/* use setters */));
         /// let x = ModelMetadataChange::new().set_or_clear_model(None::<Model>);
         /// ```
         pub fn set_or_clear_model<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Model>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Model>,
         {
             self.model = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::ModelMetadataChange::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelMetadataChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::model_metadata_change::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelMetadataChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::model_metadata_change::Reason;
         /// let x0 = ModelMetadataChange::new().set_reason(Reason::ModelPatchRequest);
         /// let x1 = ModelMetadataChange::new().set_reason(Reason::Query);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::model_metadata_change::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<
+                    crate::model::big_query_audit_metadata::model_metadata_change::Reason,
+                >,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::ModelMetadataChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelMetadataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelMetadataChange;
         /// let x = ModelMetadataChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -6408,11 +6301,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct RoutineChange {
         /// Updated routine.
-        pub routine:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+        pub routine: std::option::Option<crate::model::big_query_audit_metadata::Routine>,
 
         /// Describes how the routine was updated.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::routine_change::Reason,
+        pub reason: crate::model::big_query_audit_metadata::routine_change::Reason,
 
         /// The URI of the job that updated the routine.
         ///
@@ -6428,52 +6320,50 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [routine][crate::internal_model::audit::big_query_audit_metadata::RoutineChange::routine].
+        /// Sets the value of [routine][crate::model::big_query_audit_metadata::RoutineChange::routine].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = RoutineChange::new().set_routine(Routine::default()/* use setters */);
         /// ```
         pub fn set_routine<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Routine>,
         {
             self.routine = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [routine][crate::internal_model::audit::big_query_audit_metadata::RoutineChange::routine].
+        /// Sets or clears the value of [routine][crate::model::big_query_audit_metadata::RoutineChange::routine].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = RoutineChange::new().set_or_clear_routine(Some(Routine::default()/* use setters */));
         /// let x = RoutineChange::new().set_or_clear_routine(None::<Routine>);
         /// ```
         pub fn set_or_clear_routine<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Routine>,
         {
             self.routine = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::RoutineChange::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::RoutineChange::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::routine_change::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::routine_change::Reason;
         /// let x0 = RoutineChange::new().set_reason(Reason::Query);
         /// let x1 = RoutineChange::new().set_reason(Reason::RoutineUpdateRequest);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::routine_change::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::routine_change::Reason>,
         >(
             mut self,
             v: T,
@@ -6482,11 +6372,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::RoutineChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::RoutineChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineChange;
         /// let x = RoutineChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -6658,8 +6548,7 @@ pub mod big_query_audit_metadata {
         pub truncated: bool,
 
         /// Describes how the table data was changed.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::table_data_change::Reason,
+        pub reason: crate::model::big_query_audit_metadata::table_data_change::Reason,
 
         /// The URI of the job that changed a table.
         ///
@@ -6681,11 +6570,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [deleted_rows_count][crate::internal_model::audit::big_query_audit_metadata::TableDataChange::deleted_rows_count].
+        /// Sets the value of [deleted_rows_count][crate::model::big_query_audit_metadata::TableDataChange::deleted_rows_count].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
         /// let x = TableDataChange::new().set_deleted_rows_count(42);
         /// ```
         pub fn set_deleted_rows_count<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -6693,11 +6582,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [inserted_rows_count][crate::internal_model::audit::big_query_audit_metadata::TableDataChange::inserted_rows_count].
+        /// Sets the value of [inserted_rows_count][crate::model::big_query_audit_metadata::TableDataChange::inserted_rows_count].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
         /// let x = TableDataChange::new().set_inserted_rows_count(42);
         /// ```
         pub fn set_inserted_rows_count<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -6705,11 +6594,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [truncated][crate::internal_model::audit::big_query_audit_metadata::TableDataChange::truncated].
+        /// Sets the value of [truncated][crate::model::big_query_audit_metadata::TableDataChange::truncated].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
         /// let x = TableDataChange::new().set_truncated(true);
         /// ```
         pub fn set_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -6717,26 +6606,31 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::TableDataChange::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::TableDataChange::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::table_data_change::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::table_data_change::Reason;
         /// let x0 = TableDataChange::new().set_reason(Reason::Job);
         /// let x1 = TableDataChange::new().set_reason(Reason::Query);
         /// let x2 = TableDataChange::new().set_reason(Reason::MaterializedViewRefresh);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::table_data_change::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<crate::model::big_query_audit_metadata::table_data_change::Reason>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::TableDataChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::TableDataChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
         /// let x = TableDataChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -6744,11 +6638,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [stream_name][crate::internal_model::audit::big_query_audit_metadata::TableDataChange::stream_name].
+        /// Sets the value of [stream_name][crate::model::big_query_audit_metadata::TableDataChange::stream_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDataChange;
         /// let x = TableDataChange::new().set_stream_name("example");
         /// ```
         pub fn set_stream_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -6925,8 +6819,7 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct ModelDataChange {
         /// Describes how the model data was changed.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::model_data_change::Reason,
+        pub reason: crate::model::big_query_audit_metadata::model_data_change::Reason,
 
         /// The URI of the job that changed the model data.
         ///
@@ -6942,24 +6835,29 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::ModelDataChange::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::ModelDataChange::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDataChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::model_data_change::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelDataChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::model_data_change::Reason;
         /// let x0 = ModelDataChange::new().set_reason(Reason::Query);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::model_data_change::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<crate::model::big_query_audit_metadata::model_data_change::Reason>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::ModelDataChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::ModelDataChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDataChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelDataChange;
         /// let x = ModelDataChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -7113,7 +7011,7 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct ModelDataRead {
         /// Describes how the model data was read.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::model_data_read::Reason,
+        pub reason: crate::model::big_query_audit_metadata::model_data_read::Reason,
 
         /// The URI of the job that read the model data.
         ///
@@ -7129,18 +7027,16 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::ModelDataRead::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::ModelDataRead::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDataRead;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::model_data_read::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelDataRead;
+        /// use google_cloud_audit::model::big_query_audit_metadata::model_data_read::Reason;
         /// let x0 = ModelDataRead::new().set_reason(Reason::Job);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::model_data_read::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::model_data_read::Reason>,
         >(
             mut self,
             v: T,
@@ -7149,11 +7045,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::ModelDataRead::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::ModelDataRead::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDataRead;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelDataRead;
         /// let x = ModelDataRead::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -7307,7 +7203,7 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct TableDeletion {
         /// Describes how table was deleted.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::table_deletion::Reason,
+        pub reason: crate::model::big_query_audit_metadata::table_deletion::Reason,
 
         /// The URI of the job that deleted a table.
         /// Present if the reason is QUERY.
@@ -7324,20 +7220,18 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::TableDeletion::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::TableDeletion::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::table_deletion::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::table_deletion::Reason;
         /// let x0 = TableDeletion::new().set_reason(Reason::TableDeleteRequest);
         /// let x1 = TableDeletion::new().set_reason(Reason::Expired);
         /// let x2 = TableDeletion::new().set_reason(Reason::Query);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::table_deletion::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::table_deletion::Reason>,
         >(
             mut self,
             v: T,
@@ -7346,11 +7240,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::TableDeletion::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::TableDeletion::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDeletion;
         /// let x = TableDeletion::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -7518,7 +7412,7 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct ModelDeletion {
         /// Describes how the model was deleted.
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::model_deletion::Reason,
+        pub reason: crate::model::big_query_audit_metadata::model_deletion::Reason,
 
         /// The URI of the job that deleted a model.
         /// Present if the reason is QUERY.
@@ -7535,20 +7429,18 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::ModelDeletion::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::ModelDeletion::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::model_deletion::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::model_deletion::Reason;
         /// let x0 = ModelDeletion::new().set_reason(Reason::ModelDeleteRequest);
         /// let x1 = ModelDeletion::new().set_reason(Reason::Expired);
         /// let x2 = ModelDeletion::new().set_reason(Reason::Query);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::model_deletion::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::model_deletion::Reason>,
         >(
             mut self,
             v: T,
@@ -7557,11 +7449,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::ModelDeletion::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::ModelDeletion::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::ModelDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::ModelDeletion;
         /// let x = ModelDeletion::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -7729,12 +7621,10 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct RoutineDeletion {
         /// Deleted routine.
-        pub routine:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+        pub routine: std::option::Option<crate::model::big_query_audit_metadata::Routine>,
 
         /// Describes how the routine was deleted.
-        pub reason:
-            crate::internal_model::audit::big_query_audit_metadata::routine_deletion::Reason,
+        pub reason: crate::model::big_query_audit_metadata::routine_deletion::Reason,
 
         /// The URI of the job that deleted the routine.
         /// Present if the reason is QUERY.
@@ -7751,58 +7641,63 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [routine][crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion::routine].
+        /// Sets the value of [routine][crate::model::big_query_audit_metadata::RoutineDeletion::routine].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = RoutineDeletion::new().set_routine(Routine::default()/* use setters */);
         /// ```
         pub fn set_routine<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Routine>,
         {
             self.routine = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [routine][crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion::routine].
+        /// Sets or clears the value of [routine][crate::model::big_query_audit_metadata::RoutineDeletion::routine].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = RoutineDeletion::new().set_or_clear_routine(Some(Routine::default()/* use setters */));
         /// let x = RoutineDeletion::new().set_or_clear_routine(None::<Routine>);
         /// ```
         pub fn set_or_clear_routine<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::Routine>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::Routine>,
         {
             self.routine = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::RoutineDeletion::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::routine_deletion::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::routine_deletion::Reason;
         /// let x0 = RoutineDeletion::new().set_reason(Reason::Query);
         /// let x1 = RoutineDeletion::new().set_reason(Reason::RoutineDeleteRequest);
         /// ```
-        pub fn set_reason<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::routine_deletion::Reason>>(mut self, v: T) -> Self{
+        pub fn set_reason<
+            T: std::convert::Into<crate::model::big_query_audit_metadata::routine_deletion::Reason>,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.reason = v.into();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::RoutineDeletion::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RoutineDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RoutineDeletion;
         /// let x = RoutineDeletion::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -7965,9 +7860,8 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct RowAccessPolicyCreation {
         /// The row access policy created by this event.
-        pub row_access_policy: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-        >,
+        pub row_access_policy:
+            std::option::Option<crate::model::big_query_audit_metadata::RowAccessPolicy>,
 
         /// The URI of the job that created this row access policy.
         ///
@@ -7983,48 +7877,44 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [row_access_policy][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation::row_access_policy].
+        /// Sets the value of [row_access_policy][crate::model::big_query_audit_metadata::RowAccessPolicyCreation::row_access_policy].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicy;
         /// let x = RowAccessPolicyCreation::new().set_row_access_policy(RowAccessPolicy::default()/* use setters */);
         /// ```
         pub fn set_row_access_policy<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::RowAccessPolicy>,
         {
             self.row_access_policy = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [row_access_policy][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation::row_access_policy].
+        /// Sets or clears the value of [row_access_policy][crate::model::big_query_audit_metadata::RowAccessPolicyCreation::row_access_policy].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyCreation;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyCreation;
+        /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicy;
         /// let x = RowAccessPolicyCreation::new().set_or_clear_row_access_policy(Some(RowAccessPolicy::default()/* use setters */));
         /// let x = RowAccessPolicyCreation::new().set_or_clear_row_access_policy(None::<RowAccessPolicy>);
         /// ```
         pub fn set_or_clear_row_access_policy<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::RowAccessPolicy>,
         {
             self.row_access_policy = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::RowAccessPolicyCreation::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyCreation;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyCreation;
         /// let x = RowAccessPolicyCreation::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -8044,9 +7934,8 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct RowAccessPolicyChange {
         /// The row access policy that was changed by this event.
-        pub row_access_policy: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-        >,
+        pub row_access_policy:
+            std::option::Option<crate::model::big_query_audit_metadata::RowAccessPolicy>,
 
         /// The URI of the job that created this row access policy.
         ///
@@ -8062,48 +7951,44 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [row_access_policy][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange::row_access_policy].
+        /// Sets the value of [row_access_policy][crate::model::big_query_audit_metadata::RowAccessPolicyChange::row_access_policy].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicy;
         /// let x = RowAccessPolicyChange::new().set_row_access_policy(RowAccessPolicy::default()/* use setters */);
         /// ```
         pub fn set_row_access_policy<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::RowAccessPolicy>,
         {
             self.row_access_policy = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [row_access_policy][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange::row_access_policy].
+        /// Sets or clears the value of [row_access_policy][crate::model::big_query_audit_metadata::RowAccessPolicyChange::row_access_policy].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyChange;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyChange;
+        /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicy;
         /// let x = RowAccessPolicyChange::new().set_or_clear_row_access_policy(Some(RowAccessPolicy::default()/* use setters */));
         /// let x = RowAccessPolicyChange::new().set_or_clear_row_access_policy(None::<RowAccessPolicy>);
         /// ```
         pub fn set_or_clear_row_access_policy<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::RowAccessPolicy>,
         {
             self.row_access_policy = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::RowAccessPolicyChange::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyChange;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyChange;
         /// let x = RowAccessPolicyChange::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -8125,7 +8010,7 @@ pub mod big_query_audit_metadata {
         /// The row access policies that were deleted. At present, only populated
         /// when a single policy is dropped.
         pub row_access_policies:
-            std::vec::Vec<crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy>,
+            std::vec::Vec<crate::model::big_query_audit_metadata::RowAccessPolicy>,
 
         /// The job that deleted these row access policies.
         ///
@@ -8145,12 +8030,12 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [row_access_policies][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion::row_access_policies].
+        /// Sets the value of [row_access_policies][crate::model::big_query_audit_metadata::RowAccessPolicyDeletion::row_access_policies].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyDeletion;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyDeletion;
+        /// use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicy;
         /// let x = RowAccessPolicyDeletion::new()
         ///     .set_row_access_policies([
         ///         RowAccessPolicy::default()/* use setters */,
@@ -8160,20 +8045,18 @@ pub mod big_query_audit_metadata {
         pub fn set_row_access_policies<T, V>(mut self, v: T) -> Self
         where
             T: std::iter::IntoIterator<Item = V>,
-            V: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy,
-                >,
+            V: std::convert::Into<crate::model::big_query_audit_metadata::RowAccessPolicy>,
         {
             use std::iter::Iterator;
             self.row_access_policies = v.into_iter().map(|i| i.into()).collect();
             self
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::RowAccessPolicyDeletion::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyDeletion;
         /// let x = RowAccessPolicyDeletion::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -8181,11 +8064,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [all_row_access_policies_dropped][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion::all_row_access_policies_dropped].
+        /// Sets the value of [all_row_access_policies_dropped][crate::model::big_query_audit_metadata::RowAccessPolicyDeletion::all_row_access_policies_dropped].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicyDeletion;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicyDeletion;
         /// let x = RowAccessPolicyDeletion::new().set_all_row_access_policies_dropped(true);
         /// ```
         pub fn set_all_row_access_policies_dropped<T: std::convert::Into<bool>>(
@@ -8218,7 +8101,7 @@ pub mod big_query_audit_metadata {
         pub source_dataset: std::string::String,
 
         /// Reason for unlinking linked dataset
-        pub reason: crate::internal_model::audit::big_query_audit_metadata::unlink_dataset::Reason,
+        pub reason: crate::model::big_query_audit_metadata::unlink_dataset::Reason,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -8229,11 +8112,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [linked_dataset][crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset::linked_dataset].
+        /// Sets the value of [linked_dataset][crate::model::big_query_audit_metadata::UnlinkDataset::linked_dataset].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::UnlinkDataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::UnlinkDataset;
         /// let x = UnlinkDataset::new().set_linked_dataset("example");
         /// ```
         pub fn set_linked_dataset<T: std::convert::Into<std::string::String>>(
@@ -8244,11 +8127,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [source_dataset][crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset::source_dataset].
+        /// Sets the value of [source_dataset][crate::model::big_query_audit_metadata::UnlinkDataset::source_dataset].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::UnlinkDataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::UnlinkDataset;
         /// let x = UnlinkDataset::new().set_source_dataset("example");
         /// ```
         pub fn set_source_dataset<T: std::convert::Into<std::string::String>>(
@@ -8259,18 +8142,16 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [reason][crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset::reason].
+        /// Sets the value of [reason][crate::model::big_query_audit_metadata::UnlinkDataset::reason].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::UnlinkDataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::unlink_dataset::Reason;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::UnlinkDataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::unlink_dataset::Reason;
         /// let x0 = UnlinkDataset::new().set_reason(Reason::UnlinkApi);
         /// ```
         pub fn set_reason<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::unlink_dataset::Reason,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::unlink_dataset::Reason>,
         >(
             mut self,
             v: T,
@@ -8430,16 +8311,13 @@ pub mod big_query_audit_metadata {
         pub job_name: std::string::String,
 
         /// Job configuration.
-        pub job_config:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::JobConfig>,
+        pub job_config: std::option::Option<crate::model::big_query_audit_metadata::JobConfig>,
 
         /// Job status.
-        pub job_status:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::JobStatus>,
+        pub job_status: std::option::Option<crate::model::big_query_audit_metadata::JobStatus>,
 
         /// Job statistics.
-        pub job_stats:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::JobStats>,
+        pub job_stats: std::option::Option<crate::model::big_query_audit_metadata::JobStats>,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -8450,11 +8328,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [job_name][crate::internal_model::audit::big_query_audit_metadata::Job::job_name].
+        /// Sets the value of [job_name][crate::model::big_query_audit_metadata::Job::job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
         /// let x = Job::new().set_job_name("example");
         /// ```
         pub fn set_job_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -8462,108 +8340,100 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [job_config][crate::internal_model::audit::big_query_audit_metadata::Job::job_config].
+        /// Sets the value of [job_config][crate::model::big_query_audit_metadata::Job::job_config].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
         /// let x = Job::new().set_job_config(JobConfig::default()/* use setters */);
         /// ```
         pub fn set_job_config<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::JobConfig,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobConfig>,
         {
             self.job_config = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [job_config][crate::internal_model::audit::big_query_audit_metadata::Job::job_config].
+        /// Sets or clears the value of [job_config][crate::model::big_query_audit_metadata::Job::job_config].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
         /// let x = Job::new().set_or_clear_job_config(Some(JobConfig::default()/* use setters */));
         /// let x = Job::new().set_or_clear_job_config(None::<JobConfig>);
         /// ```
         pub fn set_or_clear_job_config<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::JobConfig,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobConfig>,
         {
             self.job_config = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [job_status][crate::internal_model::audit::big_query_audit_metadata::Job::job_status].
+        /// Sets the value of [job_status][crate::model::big_query_audit_metadata::Job::job_status].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobStatus;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobStatus;
         /// let x = Job::new().set_job_status(JobStatus::default()/* use setters */);
         /// ```
         pub fn set_job_status<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::JobStatus,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobStatus>,
         {
             self.job_status = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [job_status][crate::internal_model::audit::big_query_audit_metadata::Job::job_status].
+        /// Sets or clears the value of [job_status][crate::model::big_query_audit_metadata::Job::job_status].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobStatus;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobStatus;
         /// let x = Job::new().set_or_clear_job_status(Some(JobStatus::default()/* use setters */));
         /// let x = Job::new().set_or_clear_job_status(None::<JobStatus>);
         /// ```
         pub fn set_or_clear_job_status<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::JobStatus,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobStatus>,
         {
             self.job_status = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [job_stats][crate::internal_model::audit::big_query_audit_metadata::Job::job_stats].
+        /// Sets the value of [job_stats][crate::model::big_query_audit_metadata::Job::job_stats].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// let x = Job::new().set_job_stats(JobStats::default()/* use setters */);
         /// ```
         pub fn set_job_stats<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::JobStats>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobStats>,
         {
             self.job_stats = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [job_stats][crate::internal_model::audit::big_query_audit_metadata::Job::job_stats].
+        /// Sets or clears the value of [job_stats][crate::model::big_query_audit_metadata::Job::job_stats].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Job;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Job;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// let x = Job::new().set_or_clear_job_stats(Some(JobStats::default()/* use setters */));
         /// let x = Job::new().set_or_clear_job_stats(None::<JobStats>);
         /// ```
         pub fn set_or_clear_job_stats<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::JobStats>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobStats>,
         {
             self.job_stats = v.map(|x| x.into());
             self
@@ -8583,15 +8453,13 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct JobConfig {
         /// Job type.
-        pub r#type: crate::internal_model::audit::big_query_audit_metadata::job_config::Type,
+        pub r#type: crate::model::big_query_audit_metadata::job_config::Type,
 
         /// Labels provided for the job.
         pub labels: std::collections::HashMap<std::string::String, std::string::String>,
 
         /// Job configuration information.
-        pub config: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::job_config::Config,
-        >,
+        pub config: std::option::Option<crate::model::big_query_audit_metadata::job_config::Config>,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -8602,20 +8470,18 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [r#type][crate::internal_model::audit::big_query_audit_metadata::JobConfig::type].
+        /// Sets the value of [r#type][crate::model::big_query_audit_metadata::JobConfig::type].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Type;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_config::Type;
         /// let x0 = JobConfig::new().set_type(Type::Query);
         /// let x1 = JobConfig::new().set_type(Type::Copy);
         /// let x2 = JobConfig::new().set_type(Type::Export);
         /// ```
         pub fn set_type<
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::Type,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::job_config::Type>,
         >(
             mut self,
             v: T,
@@ -8624,11 +8490,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [labels][crate::internal_model::audit::big_query_audit_metadata::JobConfig::labels].
+        /// Sets the value of [labels][crate::model::big_query_audit_metadata::JobConfig::labels].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
         /// let x = JobConfig::new().set_labels([
         ///     ("key0", "abc"),
         ///     ("key1", "xyz"),
@@ -8645,23 +8511,21 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config].
+        /// Sets the value of [config][crate::model::big_query_audit_metadata::JobConfig::config].
         ///
         /// Note that all the setters affecting `config` are mutually
         /// exclusive.
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
         /// let x = JobConfig::new().set_config(Some(
-        ///     google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Config::QueryConfig(Query::default().into())));
+        ///     google_cloud_audit::model::big_query_audit_metadata::job_config::Config::QueryConfig(Query::default().into())));
         /// ```
         pub fn set_config<
             T: std::convert::Into<
-                    std::option::Option<
-                        crate::internal_model::audit::big_query_audit_metadata::job_config::Config,
-                    >,
+                    std::option::Option<crate::model::big_query_audit_metadata::job_config::Config>,
                 >,
         >(
             mut self,
@@ -8671,24 +8535,24 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// The value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// The value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// if it holds a `QueryConfig`, `None` if the field is not set or
         /// holds a different branch.
         pub fn query_config(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Query,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Query>,
         > {
             #[allow(unreachable_patterns)]
             self.config.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::QueryConfig(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_config::Config::QueryConfig(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// Sets the value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// to hold a `QueryConfig`.
         ///
         /// Note that all the setters affecting `config` are
@@ -8696,8 +8560,8 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
         /// let x = JobConfig::new().set_query_config(Query::default()/* use setters */);
         /// assert!(x.query_config().is_some());
         /// assert!(x.load_config().is_none());
@@ -8706,40 +8570,36 @@ pub mod big_query_audit_metadata {
         /// ```
         pub fn set_query_config<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::job_config::Query,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Query>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.config = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::QueryConfig(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_config::Config::QueryConfig(v.into()),
             );
             self
         }
 
-        /// The value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// The value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// if it holds a `LoadConfig`, `None` if the field is not set or
         /// holds a different branch.
         pub fn load_config(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Load,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Load>,
         > {
             #[allow(unreachable_patterns)]
             self.config.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::LoadConfig(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_config::Config::LoadConfig(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// Sets the value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// to hold a `LoadConfig`.
         ///
         /// Note that all the setters affecting `config` are
@@ -8747,8 +8607,8 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
         /// let x = JobConfig::new().set_load_config(Load::default()/* use setters */);
         /// assert!(x.load_config().is_some());
         /// assert!(x.query_config().is_none());
@@ -8757,40 +8617,36 @@ pub mod big_query_audit_metadata {
         /// ```
         pub fn set_load_config<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::job_config::Load,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Load>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.config = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::LoadConfig(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_config::Config::LoadConfig(v.into()),
             );
             self
         }
 
-        /// The value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// The value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// if it holds a `ExtractConfig`, `None` if the field is not set or
         /// holds a different branch.
         pub fn extract_config(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Extract,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Extract>,
         > {
             #[allow(unreachable_patterns)]
             self.config.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::ExtractConfig(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_config::Config::ExtractConfig(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// Sets the value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// to hold a `ExtractConfig`.
         ///
         /// Note that all the setters affecting `config` are
@@ -8798,8 +8654,8 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Extract;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_config::Extract;
         /// let x = JobConfig::new().set_extract_config(Extract::default()/* use setters */);
         /// assert!(x.extract_config().is_some());
         /// assert!(x.query_config().is_none());
@@ -8808,40 +8664,36 @@ pub mod big_query_audit_metadata {
         /// ```
         pub fn set_extract_config<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::job_config::Extract,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Extract>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.config = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::ExtractConfig(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_config::Config::ExtractConfig(v.into()),
             );
             self
         }
 
-        /// The value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// The value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// if it holds a `TableCopyConfig`, `None` if the field is not set or
         /// holds a different branch.
         pub fn table_copy_config(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_config::TableCopy>,
         > {
             #[allow(unreachable_patterns)]
             self.config.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::TableCopyConfig(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_config::Config::TableCopyConfig(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [config][crate::internal_model::audit::big_query_audit_metadata::JobConfig::config]
+        /// Sets the value of [config][crate::model::big_query_audit_metadata::JobConfig::config]
         /// to hold a `TableCopyConfig`.
         ///
         /// Note that all the setters affecting `config` are
@@ -8849,19 +8701,26 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobConfig;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobConfig;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
         /// let x = JobConfig::new().set_table_copy_config(TableCopy::default()/* use setters */);
         /// assert!(x.table_copy_config().is_some());
         /// assert!(x.query_config().is_none());
         /// assert!(x.load_config().is_none());
         /// assert!(x.extract_config().is_none());
         /// ```
-        pub fn set_table_copy_config<T: std::convert::Into<std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy>>>(mut self, v: T) -> Self{
+        pub fn set_table_copy_config<
+            T: std::convert::Into<
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_config::TableCopy>,
+                >,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.config = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_config::Config::TableCopyConfig(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_config::Config::TableCopyConfig(
+                    v.into(),
+                ),
             );
             self
         }
@@ -8892,34 +8751,28 @@ pub mod big_query_audit_metadata {
             pub destination_table: std::string::String,
 
             /// Destination table create disposition.
-            pub create_disposition:
-                crate::internal_model::audit::big_query_audit_metadata::CreateDisposition,
+            pub create_disposition: crate::model::big_query_audit_metadata::CreateDisposition,
 
             /// Destination table write disposition.
-            pub write_disposition:
-                crate::internal_model::audit::big_query_audit_metadata::WriteDisposition,
+            pub write_disposition: crate::model::big_query_audit_metadata::WriteDisposition,
 
             /// Default dataset for the query.
             pub default_dataset: std::string::String,
 
             /// External data sources used in the query.
-            pub table_definitions: std::vec::Vec<
-                crate::internal_model::audit::big_query_audit_metadata::TableDefinition,
-            >,
+            pub table_definitions:
+                std::vec::Vec<crate::model::big_query_audit_metadata::TableDefinition>,
 
             /// Priority given to the query.
-            pub priority:
-                crate::internal_model::audit::big_query_audit_metadata::job_config::query::Priority,
+            pub priority: crate::model::big_query_audit_metadata::job_config::query::Priority,
 
             /// Result table encryption information. Set when non-default encryption is
             /// used.
-            pub destination_table_encryption: std::option::Option<
-                crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-            >,
+            pub destination_table_encryption:
+                std::option::Option<crate::model::big_query_audit_metadata::EncryptionInfo>,
 
             /// Type of the query.
-            pub statement_type:
-                crate::internal_model::audit::big_query_audit_metadata::QueryStatementType,
+            pub statement_type: crate::model::big_query_audit_metadata::QueryStatementType,
 
             pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
         }
@@ -8930,11 +8783,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [query][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::query].
+            /// Sets the value of [query][crate::model::big_query_audit_metadata::job_config::Query::query].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
             /// let x = Query::new().set_query("example");
             /// ```
             pub fn set_query<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -8942,11 +8795,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [query_truncated][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::query_truncated].
+            /// Sets the value of [query_truncated][crate::model::big_query_audit_metadata::job_config::Query::query_truncated].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
             /// let x = Query::new().set_query_truncated(true);
             /// ```
             pub fn set_query_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -8954,11 +8807,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_table][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::destination_table].
+            /// Sets the value of [destination_table][crate::model::big_query_audit_metadata::job_config::Query::destination_table].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
             /// let x = Query::new().set_destination_table("example");
             /// ```
             pub fn set_destination_table<T: std::convert::Into<std::string::String>>(
@@ -8969,19 +8822,17 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [create_disposition][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::create_disposition].
+            /// Sets the value of [create_disposition][crate::model::big_query_audit_metadata::job_config::Query::create_disposition].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::CreateDisposition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::CreateDisposition;
             /// let x0 = Query::new().set_create_disposition(CreateDisposition::CreateNever);
             /// let x1 = Query::new().set_create_disposition(CreateDisposition::CreateIfNeeded);
             /// ```
             pub fn set_create_disposition<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::CreateDisposition,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::CreateDisposition>,
             >(
                 mut self,
                 v: T,
@@ -8990,20 +8841,18 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [write_disposition][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::write_disposition].
+            /// Sets the value of [write_disposition][crate::model::big_query_audit_metadata::job_config::Query::write_disposition].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::WriteDisposition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::WriteDisposition;
             /// let x0 = Query::new().set_write_disposition(WriteDisposition::WriteEmpty);
             /// let x1 = Query::new().set_write_disposition(WriteDisposition::WriteTruncate);
             /// let x2 = Query::new().set_write_disposition(WriteDisposition::WriteAppend);
             /// ```
             pub fn set_write_disposition<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::WriteDisposition,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::WriteDisposition>,
             >(
                 mut self,
                 v: T,
@@ -9012,11 +8861,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [default_dataset][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::default_dataset].
+            /// Sets the value of [default_dataset][crate::model::big_query_audit_metadata::job_config::Query::default_dataset].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
             /// let x = Query::new().set_default_dataset("example");
             /// ```
             pub fn set_default_dataset<T: std::convert::Into<std::string::String>>(
@@ -9027,12 +8876,12 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [table_definitions][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::table_definitions].
+            /// Sets the value of [table_definitions][crate::model::big_query_audit_metadata::job_config::Query::table_definitions].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableDefinition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::TableDefinition;
             /// let x = Query::new()
             ///     .set_table_definitions([
             ///         TableDefinition::default()/* use setters */,
@@ -9042,53 +8891,56 @@ pub mod big_query_audit_metadata {
             pub fn set_table_definitions<T, V>(mut self, v: T) -> Self
             where
                 T: std::iter::IntoIterator<Item = V>,
-                V: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::TableDefinition,
-                    >,
+                V: std::convert::Into<crate::model::big_query_audit_metadata::TableDefinition>,
             {
                 use std::iter::Iterator;
                 self.table_definitions = v.into_iter().map(|i| i.into()).collect();
                 self
             }
 
-            /// Sets the value of [priority][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::priority].
+            /// Sets the value of [priority][crate::model::big_query_audit_metadata::job_config::Query::priority].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::query::Priority;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::job_config::query::Priority;
             /// let x0 = Query::new().set_priority(Priority::QueryInteractive);
             /// let x1 = Query::new().set_priority(Priority::QueryBatch);
             /// ```
-            pub fn set_priority<T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::job_config::query::Priority>>(mut self, v: T) -> Self{
+            pub fn set_priority<
+                T: std::convert::Into<
+                        crate::model::big_query_audit_metadata::job_config::query::Priority,
+                    >,
+            >(
+                mut self,
+                v: T,
+            ) -> Self {
                 self.priority = v.into();
                 self
             }
 
-            /// Sets the value of [destination_table_encryption][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::destination_table_encryption].
+            /// Sets the value of [destination_table_encryption][crate::model::big_query_audit_metadata::job_config::Query::destination_table_encryption].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
             /// let x = Query::new().set_destination_table_encryption(EncryptionInfo::default()/* use setters */);
             /// ```
             pub fn set_destination_table_encryption<T>(mut self, v: T) -> Self
             where
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
             {
                 self.destination_table_encryption = std::option::Option::Some(v.into());
                 self
             }
 
-            /// Sets or clears the value of [destination_table_encryption][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::destination_table_encryption].
+            /// Sets or clears the value of [destination_table_encryption][crate::model::big_query_audit_metadata::job_config::Query::destination_table_encryption].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
             /// let x = Query::new().set_or_clear_destination_table_encryption(Some(EncryptionInfo::default()/* use setters */));
             /// let x = Query::new().set_or_clear_destination_table_encryption(None::<EncryptionInfo>);
             /// ```
@@ -9097,28 +8949,24 @@ pub mod big_query_audit_metadata {
                 v: std::option::Option<T>,
             ) -> Self
             where
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
             {
                 self.destination_table_encryption = v.map(|x| x.into());
                 self
             }
 
-            /// Sets the value of [statement_type][crate::internal_model::audit::big_query_audit_metadata::job_config::Query::statement_type].
+            /// Sets the value of [statement_type][crate::model::big_query_audit_metadata::job_config::Query::statement_type].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Query;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::QueryStatementType;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Query;
+            /// use google_cloud_audit::model::big_query_audit_metadata::QueryStatementType;
             /// let x0 = Query::new().set_statement_type(QueryStatementType::Select);
             /// let x1 = Query::new().set_statement_type(QueryStatementType::Assert);
             /// let x2 = Query::new().set_statement_type(QueryStatementType::Insert);
             /// ```
             pub fn set_statement_type<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::QueryStatementType,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::QueryStatementType>,
             >(
                 mut self,
                 v: T,
@@ -9297,18 +9145,15 @@ pub mod big_query_audit_metadata {
             pub destination_table: std::string::String,
 
             /// Destination table create disposition.
-            pub create_disposition:
-                crate::internal_model::audit::big_query_audit_metadata::CreateDisposition,
+            pub create_disposition: crate::model::big_query_audit_metadata::CreateDisposition,
 
             /// Destination table write disposition.
-            pub write_disposition:
-                crate::internal_model::audit::big_query_audit_metadata::WriteDisposition,
+            pub write_disposition: crate::model::big_query_audit_metadata::WriteDisposition,
 
             /// Result table encryption information. Set when non-default encryption is
             /// used.
-            pub destination_table_encryption: std::option::Option<
-                crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-            >,
+            pub destination_table_encryption:
+                std::option::Option<crate::model::big_query_audit_metadata::EncryptionInfo>,
 
             pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
         }
@@ -9319,11 +9164,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [source_uris][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::source_uris].
+            /// Sets the value of [source_uris][crate::model::big_query_audit_metadata::job_config::Load::source_uris].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
             /// let x = Load::new().set_source_uris(["a", "b", "c"]);
             /// ```
             pub fn set_source_uris<T, V>(mut self, v: T) -> Self
@@ -9336,11 +9181,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [source_uris_truncated][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::source_uris_truncated].
+            /// Sets the value of [source_uris_truncated][crate::model::big_query_audit_metadata::job_config::Load::source_uris_truncated].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
             /// let x = Load::new().set_source_uris_truncated(true);
             /// ```
             pub fn set_source_uris_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -9348,11 +9193,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [schema_json][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::schema_json].
+            /// Sets the value of [schema_json][crate::model::big_query_audit_metadata::job_config::Load::schema_json].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
             /// let x = Load::new().set_schema_json("example");
             /// ```
             pub fn set_schema_json<T: std::convert::Into<std::string::String>>(
@@ -9363,11 +9208,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [schema_json_truncated][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::schema_json_truncated].
+            /// Sets the value of [schema_json_truncated][crate::model::big_query_audit_metadata::job_config::Load::schema_json_truncated].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
             /// let x = Load::new().set_schema_json_truncated(true);
             /// ```
             pub fn set_schema_json_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -9375,11 +9220,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_table][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::destination_table].
+            /// Sets the value of [destination_table][crate::model::big_query_audit_metadata::job_config::Load::destination_table].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
             /// let x = Load::new().set_destination_table("example");
             /// ```
             pub fn set_destination_table<T: std::convert::Into<std::string::String>>(
@@ -9390,19 +9235,17 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [create_disposition][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::create_disposition].
+            /// Sets the value of [create_disposition][crate::model::big_query_audit_metadata::job_config::Load::create_disposition].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::CreateDisposition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
+            /// use google_cloud_audit::model::big_query_audit_metadata::CreateDisposition;
             /// let x0 = Load::new().set_create_disposition(CreateDisposition::CreateNever);
             /// let x1 = Load::new().set_create_disposition(CreateDisposition::CreateIfNeeded);
             /// ```
             pub fn set_create_disposition<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::CreateDisposition,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::CreateDisposition>,
             >(
                 mut self,
                 v: T,
@@ -9411,20 +9254,18 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [write_disposition][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::write_disposition].
+            /// Sets the value of [write_disposition][crate::model::big_query_audit_metadata::job_config::Load::write_disposition].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::WriteDisposition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
+            /// use google_cloud_audit::model::big_query_audit_metadata::WriteDisposition;
             /// let x0 = Load::new().set_write_disposition(WriteDisposition::WriteEmpty);
             /// let x1 = Load::new().set_write_disposition(WriteDisposition::WriteTruncate);
             /// let x2 = Load::new().set_write_disposition(WriteDisposition::WriteAppend);
             /// ```
             pub fn set_write_disposition<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::WriteDisposition,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::WriteDisposition>,
             >(
                 mut self,
                 v: T,
@@ -9433,30 +9274,28 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_table_encryption][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::destination_table_encryption].
+            /// Sets the value of [destination_table_encryption][crate::model::big_query_audit_metadata::job_config::Load::destination_table_encryption].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
+            /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
             /// let x = Load::new().set_destination_table_encryption(EncryptionInfo::default()/* use setters */);
             /// ```
             pub fn set_destination_table_encryption<T>(mut self, v: T) -> Self
             where
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
             {
                 self.destination_table_encryption = std::option::Option::Some(v.into());
                 self
             }
 
-            /// Sets or clears the value of [destination_table_encryption][crate::internal_model::audit::big_query_audit_metadata::job_config::Load::destination_table_encryption].
+            /// Sets or clears the value of [destination_table_encryption][crate::model::big_query_audit_metadata::job_config::Load::destination_table_encryption].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Load;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Load;
+            /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
             /// let x = Load::new().set_or_clear_destination_table_encryption(Some(EncryptionInfo::default()/* use setters */));
             /// let x = Load::new().set_or_clear_destination_table_encryption(None::<EncryptionInfo>);
             /// ```
@@ -9465,9 +9304,7 @@ pub mod big_query_audit_metadata {
                 v: std::option::Option<T>,
             ) -> Self
             where
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
             {
                 self.destination_table_encryption = v.map(|x| x.into());
                 self
@@ -9493,7 +9330,7 @@ pub mod big_query_audit_metadata {
 
             #[allow(missing_docs)]
             pub source: std::option::Option<
-                crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source,
+                crate::model::big_query_audit_metadata::job_config::extract::Source,
             >,
 
             pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
@@ -9505,11 +9342,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [destination_uris][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::destination_uris].
+            /// Sets the value of [destination_uris][crate::model::big_query_audit_metadata::job_config::Extract::destination_uris].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Extract;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Extract;
             /// let x = Extract::new().set_destination_uris(["a", "b", "c"]);
             /// ```
             pub fn set_destination_uris<T, V>(mut self, v: T) -> Self
@@ -9522,11 +9359,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_uris_truncated][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::destination_uris_truncated].
+            /// Sets the value of [destination_uris_truncated][crate::model::big_query_audit_metadata::job_config::Extract::destination_uris_truncated].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Extract;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Extract;
             /// let x = Extract::new().set_destination_uris_truncated(true);
             /// ```
             pub fn set_destination_uris_truncated<T: std::convert::Into<bool>>(
@@ -9537,35 +9374,43 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [source][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::source].
+            /// Sets the value of [source][crate::model::big_query_audit_metadata::job_config::Extract::source].
             ///
             /// Note that all the setters affecting `source` are mutually
             /// exclusive.
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Extract;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::extract::Source;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Extract;
+            /// use google_cloud_audit::model::big_query_audit_metadata::job_config::extract::Source;
             /// let x = Extract::new().set_source(Some(Source::SourceTable("example".to_string())));
             /// ```
-            pub fn set_source<T: std::convert::Into<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source>>>(mut self, v: T) -> Self
-            {
+            pub fn set_source<
+                T: std::convert::Into<
+                        std::option::Option<
+                            crate::model::big_query_audit_metadata::job_config::extract::Source,
+                        >,
+                    >,
+            >(
+                mut self,
+                v: T,
+            ) -> Self {
                 self.source = v.into();
                 self
             }
 
-            /// The value of [source][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::source]
+            /// The value of [source][crate::model::big_query_audit_metadata::job_config::Extract::source]
             /// if it holds a `SourceTable`, `None` if the field is not set or
             /// holds a different branch.
             pub fn source_table(&self) -> std::option::Option<&std::string::String> {
                 #[allow(unreachable_patterns)]
                 self.source.as_ref().and_then(|v| match v {
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source::SourceTable(v) => std::option::Option::Some(v),
+                    crate::model::big_query_audit_metadata::job_config::extract::Source::SourceTable(v) => std::option::Option::Some(v),
                     _ => std::option::Option::None,
                 })
             }
 
-            /// Sets the value of [source][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::source]
+            /// Sets the value of [source][crate::model::big_query_audit_metadata::job_config::Extract::source]
             /// to hold a `SourceTable`.
             ///
             /// Note that all the setters affecting `source` are
@@ -9573,7 +9418,7 @@ pub mod big_query_audit_metadata {
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Extract;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Extract;
             /// let x = Extract::new().set_source_table("example");
             /// assert!(x.source_table().is_some());
             /// assert!(x.source_model().is_none());
@@ -9583,25 +9428,25 @@ pub mod big_query_audit_metadata {
                 v: T,
             ) -> Self {
                 self.source = std::option::Option::Some(
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source::SourceTable(
+                    crate::model::big_query_audit_metadata::job_config::extract::Source::SourceTable(
                         v.into()
                     )
                 );
                 self
             }
 
-            /// The value of [source][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::source]
+            /// The value of [source][crate::model::big_query_audit_metadata::job_config::Extract::source]
             /// if it holds a `SourceModel`, `None` if the field is not set or
             /// holds a different branch.
             pub fn source_model(&self) -> std::option::Option<&std::string::String> {
                 #[allow(unreachable_patterns)]
                 self.source.as_ref().and_then(|v| match v {
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source::SourceModel(v) => std::option::Option::Some(v),
+                    crate::model::big_query_audit_metadata::job_config::extract::Source::SourceModel(v) => std::option::Option::Some(v),
                     _ => std::option::Option::None,
                 })
             }
 
-            /// Sets the value of [source][crate::internal_model::audit::big_query_audit_metadata::job_config::Extract::source]
+            /// Sets the value of [source][crate::model::big_query_audit_metadata::job_config::Extract::source]
             /// to hold a `SourceModel`.
             ///
             /// Note that all the setters affecting `source` are
@@ -9609,7 +9454,7 @@ pub mod big_query_audit_metadata {
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::Extract;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::Extract;
             /// let x = Extract::new().set_source_model("example");
             /// assert!(x.source_model().is_some());
             /// assert!(x.source_table().is_none());
@@ -9619,7 +9464,7 @@ pub mod big_query_audit_metadata {
                 v: T,
             ) -> Self {
                 self.source = std::option::Option::Some(
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::extract::Source::SourceModel(
+                    crate::model::big_query_audit_metadata::job_config::extract::Source::SourceModel(
                         v.into()
                     )
                 );
@@ -9663,22 +9508,18 @@ pub mod big_query_audit_metadata {
             pub destination_table: std::string::String,
 
             /// Destination table create disposition.
-            pub create_disposition:
-                crate::internal_model::audit::big_query_audit_metadata::CreateDisposition,
+            pub create_disposition: crate::model::big_query_audit_metadata::CreateDisposition,
 
             /// Destination table write disposition.
-            pub write_disposition:
-                crate::internal_model::audit::big_query_audit_metadata::WriteDisposition,
+            pub write_disposition: crate::model::big_query_audit_metadata::WriteDisposition,
 
             /// Result table encryption information. Set when non-default encryption is
             /// used.
-            pub destination_table_encryption: std::option::Option<
-                crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-            >,
+            pub destination_table_encryption:
+                std::option::Option<crate::model::big_query_audit_metadata::EncryptionInfo>,
 
             /// Supported operation types in the table copy job.
-            pub operation_type:
-                crate::internal_model::audit::big_query_audit_metadata::OperationType,
+            pub operation_type: crate::model::big_query_audit_metadata::OperationType,
 
             /// Expiration time set on the destination table. Expired tables will be
             /// deleted and their storage reclaimed.
@@ -9693,11 +9534,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [source_tables][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::source_tables].
+            /// Sets the value of [source_tables][crate::model::big_query_audit_metadata::job_config::TableCopy::source_tables].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
             /// let x = TableCopy::new().set_source_tables(["a", "b", "c"]);
             /// ```
             pub fn set_source_tables<T, V>(mut self, v: T) -> Self
@@ -9710,11 +9551,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [source_tables_truncated][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::source_tables_truncated].
+            /// Sets the value of [source_tables_truncated][crate::model::big_query_audit_metadata::job_config::TableCopy::source_tables_truncated].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
             /// let x = TableCopy::new().set_source_tables_truncated(true);
             /// ```
             pub fn set_source_tables_truncated<T: std::convert::Into<bool>>(
@@ -9725,11 +9566,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_table][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::destination_table].
+            /// Sets the value of [destination_table][crate::model::big_query_audit_metadata::job_config::TableCopy::destination_table].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
             /// let x = TableCopy::new().set_destination_table("example");
             /// ```
             pub fn set_destination_table<T: std::convert::Into<std::string::String>>(
@@ -9740,19 +9581,17 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [create_disposition][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::create_disposition].
+            /// Sets the value of [create_disposition][crate::model::big_query_audit_metadata::job_config::TableCopy::create_disposition].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::CreateDisposition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
+            /// use google_cloud_audit::model::big_query_audit_metadata::CreateDisposition;
             /// let x0 = TableCopy::new().set_create_disposition(CreateDisposition::CreateNever);
             /// let x1 = TableCopy::new().set_create_disposition(CreateDisposition::CreateIfNeeded);
             /// ```
             pub fn set_create_disposition<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::CreateDisposition,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::CreateDisposition>,
             >(
                 mut self,
                 v: T,
@@ -9761,20 +9600,18 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [write_disposition][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::write_disposition].
+            /// Sets the value of [write_disposition][crate::model::big_query_audit_metadata::job_config::TableCopy::write_disposition].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::WriteDisposition;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
+            /// use google_cloud_audit::model::big_query_audit_metadata::WriteDisposition;
             /// let x0 = TableCopy::new().set_write_disposition(WriteDisposition::WriteEmpty);
             /// let x1 = TableCopy::new().set_write_disposition(WriteDisposition::WriteTruncate);
             /// let x2 = TableCopy::new().set_write_disposition(WriteDisposition::WriteAppend);
             /// ```
             pub fn set_write_disposition<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::WriteDisposition,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::WriteDisposition>,
             >(
                 mut self,
                 v: T,
@@ -9783,30 +9620,28 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_table_encryption][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::destination_table_encryption].
+            /// Sets the value of [destination_table_encryption][crate::model::big_query_audit_metadata::job_config::TableCopy::destination_table_encryption].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
+            /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
             /// let x = TableCopy::new().set_destination_table_encryption(EncryptionInfo::default()/* use setters */);
             /// ```
             pub fn set_destination_table_encryption<T>(mut self, v: T) -> Self
             where
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
             {
                 self.destination_table_encryption = std::option::Option::Some(v.into());
                 self
             }
 
-            /// Sets or clears the value of [destination_table_encryption][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::destination_table_encryption].
+            /// Sets or clears the value of [destination_table_encryption][crate::model::big_query_audit_metadata::job_config::TableCopy::destination_table_encryption].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
+            /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
             /// let x = TableCopy::new().set_or_clear_destination_table_encryption(Some(EncryptionInfo::default()/* use setters */));
             /// let x = TableCopy::new().set_or_clear_destination_table_encryption(None::<EncryptionInfo>);
             /// ```
@@ -9815,28 +9650,24 @@ pub mod big_query_audit_metadata {
                 v: std::option::Option<T>,
             ) -> Self
             where
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
             {
                 self.destination_table_encryption = v.map(|x| x.into());
                 self
             }
 
-            /// Sets the value of [operation_type][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::operation_type].
+            /// Sets the value of [operation_type][crate::model::big_query_audit_metadata::job_config::TableCopy::operation_type].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
-            /// use google_cloud_logging_v2::model::big_query_audit_metadata::OperationType;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
+            /// use google_cloud_audit::model::big_query_audit_metadata::OperationType;
             /// let x0 = TableCopy::new().set_operation_type(OperationType::Copy);
             /// let x1 = TableCopy::new().set_operation_type(OperationType::Snapshot);
             /// let x2 = TableCopy::new().set_operation_type(OperationType::Restore);
             /// ```
             pub fn set_operation_type<
-                T: std::convert::Into<
-                        crate::internal_model::audit::big_query_audit_metadata::OperationType,
-                    >,
+                T: std::convert::Into<crate::model::big_query_audit_metadata::OperationType>,
             >(
                 mut self,
                 v: T,
@@ -9845,11 +9676,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [destination_expiration_time][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::destination_expiration_time].
+            /// Sets the value of [destination_expiration_time][crate::model::big_query_audit_metadata::job_config::TableCopy::destination_expiration_time].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
             /// use wkt::Timestamp;
             /// let x = TableCopy::new().set_destination_expiration_time(Timestamp::default()/* use setters */);
             /// ```
@@ -9861,11 +9692,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets or clears the value of [destination_expiration_time][crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy::destination_expiration_time].
+            /// Sets or clears the value of [destination_expiration_time][crate::model::big_query_audit_metadata::job_config::TableCopy::destination_expiration_time].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_config::TableCopy;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_config::TableCopy;
             /// use wkt::Timestamp;
             /// let x = TableCopy::new().set_or_clear_destination_expiration_time(Some(Timestamp::default()/* use setters */));
             /// let x = TableCopy::new().set_or_clear_destination_expiration_time(None::<Timestamp>);
@@ -10042,28 +9873,16 @@ pub mod big_query_audit_metadata {
         #[non_exhaustive]
         pub enum Config {
             /// Query job information.
-            QueryConfig(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::Query,
-                >,
-            ),
+            QueryConfig(std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Query>),
             /// Load job information.
-            LoadConfig(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::Load,
-                >,
-            ),
+            LoadConfig(std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Load>),
             /// Extract job information.
             ExtractConfig(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::Extract,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::job_config::Extract>,
             ),
             /// TableCopy job information.
             TableCopyConfig(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_config::TableCopy,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::job_config::TableCopy>,
             ),
         }
     }
@@ -10087,11 +9906,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [name][crate::internal_model::audit::big_query_audit_metadata::TableDefinition::name].
+        /// Sets the value of [name][crate::model::big_query_audit_metadata::TableDefinition::name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDefinition;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDefinition;
         /// let x = TableDefinition::new().set_name("example");
         /// ```
         pub fn set_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -10099,11 +9918,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [source_uris][crate::internal_model::audit::big_query_audit_metadata::TableDefinition::source_uris].
+        /// Sets the value of [source_uris][crate::model::big_query_audit_metadata::TableDefinition::source_uris].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableDefinition;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableDefinition;
         /// let x = TableDefinition::new().set_source_uris(["a", "b", "c"]);
         /// ```
         pub fn set_source_uris<T, V>(mut self, v: T) -> Self
@@ -10128,7 +9947,7 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub struct JobStatus {
         /// State of the job.
-        pub job_state: crate::internal_model::audit::big_query_audit_metadata::JobState,
+        pub job_state: crate::model::big_query_audit_metadata::JobState,
 
         /// Job error, if the job failed.
         pub error_result: std::option::Option<google_cloud_rpc::model::Status>,
@@ -10146,18 +9965,18 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [job_state][crate::internal_model::audit::big_query_audit_metadata::JobStatus::job_state].
+        /// Sets the value of [job_state][crate::model::big_query_audit_metadata::JobStatus::job_state].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStatus;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::JobState;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStatus;
+        /// use google_cloud_audit::model::big_query_audit_metadata::JobState;
         /// let x0 = JobStatus::new().set_job_state(JobState::Pending);
         /// let x1 = JobStatus::new().set_job_state(JobState::Running);
         /// let x2 = JobStatus::new().set_job_state(JobState::Done);
         /// ```
         pub fn set_job_state<
-            T: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::JobState>,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::JobState>,
         >(
             mut self,
             v: T,
@@ -10166,11 +9985,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [error_result][crate::internal_model::audit::big_query_audit_metadata::JobStatus::error_result].
+        /// Sets the value of [error_result][crate::model::big_query_audit_metadata::JobStatus::error_result].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStatus;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStatus;
         /// use google_cloud_rpc::model::Status;
         /// let x = JobStatus::new().set_error_result(Status::default()/* use setters */);
         /// ```
@@ -10182,11 +10001,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [error_result][crate::internal_model::audit::big_query_audit_metadata::JobStatus::error_result].
+        /// Sets or clears the value of [error_result][crate::model::big_query_audit_metadata::JobStatus::error_result].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStatus;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStatus;
         /// use google_cloud_rpc::model::Status;
         /// let x = JobStatus::new().set_or_clear_error_result(Some(Status::default()/* use setters */));
         /// let x = JobStatus::new().set_or_clear_error_result(None::<Status>);
@@ -10199,11 +10018,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [errors][crate::internal_model::audit::big_query_audit_metadata::JobStatus::errors].
+        /// Sets the value of [errors][crate::model::big_query_audit_metadata::JobStatus::errors].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStatus;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStatus;
         /// use google_cloud_rpc::model::Status;
         /// let x = JobStatus::new()
         ///     .set_errors([
@@ -10232,7 +10051,6 @@ pub mod big_query_audit_metadata {
     #[derive(Clone, Default, PartialEq)]
     #[non_exhaustive]
     pub struct JobStats {
-
         /// Job creation time.
         pub create_time: std::option::Option<wkt::Timestamp>,
 
@@ -10250,7 +10068,9 @@ pub mod big_query_audit_metadata {
         /// populated. Aggregate usage of all jobs submitted to a reservation
         /// should provide a more reliable indicator of reservation imbalance.
         #[deprecated]
-        pub reservation_usage: std::vec::Vec<crate::internal_model::audit::big_query_audit_metadata::job_stats::ReservationResourceUsage>,
+        pub reservation_usage: std::vec::Vec<
+            crate::model::big_query_audit_metadata::job_stats::ReservationResourceUsage,
+        >,
 
         /// Reservation name or "unreserved" for on-demand resource usage.
         pub reservation: std::string::String,
@@ -10259,7 +10079,8 @@ pub mod big_query_audit_metadata {
         pub parent_job_name: std::string::String,
 
         /// Statistics specific to the job type.
-        pub extended: std::option::Option<crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended>,
+        pub extended:
+            std::option::Option<crate::model::big_query_audit_metadata::job_stats::Extended>,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -10270,11 +10091,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::JobStats::create_time].
+        /// Sets the value of [create_time][crate::model::big_query_audit_metadata::JobStats::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// use wkt::Timestamp;
         /// let x = JobStats::new().set_create_time(Timestamp::default()/* use setters */);
         /// ```
@@ -10286,11 +10107,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::JobStats::create_time].
+        /// Sets or clears the value of [create_time][crate::model::big_query_audit_metadata::JobStats::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// use wkt::Timestamp;
         /// let x = JobStats::new().set_or_clear_create_time(Some(Timestamp::default()/* use setters */));
         /// let x = JobStats::new().set_or_clear_create_time(None::<Timestamp>);
@@ -10303,11 +10124,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [start_time][crate::internal_model::audit::big_query_audit_metadata::JobStats::start_time].
+        /// Sets the value of [start_time][crate::model::big_query_audit_metadata::JobStats::start_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// use wkt::Timestamp;
         /// let x = JobStats::new().set_start_time(Timestamp::default()/* use setters */);
         /// ```
@@ -10319,11 +10140,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [start_time][crate::internal_model::audit::big_query_audit_metadata::JobStats::start_time].
+        /// Sets or clears the value of [start_time][crate::model::big_query_audit_metadata::JobStats::start_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// use wkt::Timestamp;
         /// let x = JobStats::new().set_or_clear_start_time(Some(Timestamp::default()/* use setters */));
         /// let x = JobStats::new().set_or_clear_start_time(None::<Timestamp>);
@@ -10336,11 +10157,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [end_time][crate::internal_model::audit::big_query_audit_metadata::JobStats::end_time].
+        /// Sets the value of [end_time][crate::model::big_query_audit_metadata::JobStats::end_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// use wkt::Timestamp;
         /// let x = JobStats::new().set_end_time(Timestamp::default()/* use setters */);
         /// ```
@@ -10352,11 +10173,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [end_time][crate::internal_model::audit::big_query_audit_metadata::JobStats::end_time].
+        /// Sets or clears the value of [end_time][crate::model::big_query_audit_metadata::JobStats::end_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// use wkt::Timestamp;
         /// let x = JobStats::new().set_or_clear_end_time(Some(Timestamp::default()/* use setters */));
         /// let x = JobStats::new().set_or_clear_end_time(None::<Timestamp>);
@@ -10369,11 +10190,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [total_slot_ms][crate::internal_model::audit::big_query_audit_metadata::JobStats::total_slot_ms].
+        /// Sets the value of [total_slot_ms][crate::model::big_query_audit_metadata::JobStats::total_slot_ms].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// let x = JobStats::new().set_total_slot_ms(42);
         /// ```
         pub fn set_total_slot_ms<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10381,12 +10202,12 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [reservation_usage][crate::internal_model::audit::big_query_audit_metadata::JobStats::reservation_usage].
+        /// Sets the value of [reservation_usage][crate::model::big_query_audit_metadata::JobStats::reservation_usage].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::ReservationResourceUsage;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_stats::ReservationResourceUsage;
         /// let x = JobStats::new()
         ///     .set_reservation_usage([
         ///         ReservationResourceUsage::default()/* use setters */,
@@ -10397,18 +10218,20 @@ pub mod big_query_audit_metadata {
         pub fn set_reservation_usage<T, V>(mut self, v: T) -> Self
         where
             T: std::iter::IntoIterator<Item = V>,
-            V: std::convert::Into<crate::internal_model::audit::big_query_audit_metadata::job_stats::ReservationResourceUsage>
+            V: std::convert::Into<
+                    crate::model::big_query_audit_metadata::job_stats::ReservationResourceUsage,
+                >,
         {
             use std::iter::Iterator;
             self.reservation_usage = v.into_iter().map(|i| i.into()).collect();
             self
         }
 
-        /// Sets the value of [reservation][crate::internal_model::audit::big_query_audit_metadata::JobStats::reservation].
+        /// Sets the value of [reservation][crate::model::big_query_audit_metadata::JobStats::reservation].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// let x = JobStats::new().set_reservation("example");
         /// ```
         pub fn set_reservation<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -10416,11 +10239,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [parent_job_name][crate::internal_model::audit::big_query_audit_metadata::JobStats::parent_job_name].
+        /// Sets the value of [parent_job_name][crate::model::big_query_audit_metadata::JobStats::parent_job_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
         /// let x = JobStats::new().set_parent_job_name("example");
         /// ```
         pub fn set_parent_job_name<T: std::convert::Into<std::string::String>>(
@@ -10431,22 +10254,22 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended].
+        /// Sets the value of [extended][crate::model::big_query_audit_metadata::JobStats::extended].
         ///
         /// Note that all the setters affecting `extended` are mutually
         /// exclusive.
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
         /// let x = JobStats::new().set_extended(Some(
-        ///     google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Extended::QueryStats(Query::default().into())));
+        ///     google_cloud_audit::model::big_query_audit_metadata::job_stats::Extended::QueryStats(Query::default().into())));
         /// ```
         pub fn set_extended<
             T: std::convert::Into<
                     std::option::Option<
-                        crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended,
+                        crate::model::big_query_audit_metadata::job_stats::Extended,
                     >,
                 >,
         >(
@@ -10457,24 +10280,24 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// The value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended]
+        /// The value of [extended][crate::model::big_query_audit_metadata::JobStats::extended]
         /// if it holds a `QueryStats`, `None` if the field is not set or
         /// holds a different branch.
         pub fn query_stats(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Query,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Query>,
         > {
             #[allow(unreachable_patterns)]
             self.extended.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::QueryStats(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_stats::Extended::QueryStats(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended]
+        /// Sets the value of [extended][crate::model::big_query_audit_metadata::JobStats::extended]
         /// to hold a `QueryStats`.
         ///
         /// Note that all the setters affecting `extended` are
@@ -10482,8 +10305,8 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
         /// let x = JobStats::new().set_query_stats(Query::default()/* use setters */);
         /// assert!(x.query_stats().is_some());
         /// assert!(x.load_stats().is_none());
@@ -10491,40 +10314,36 @@ pub mod big_query_audit_metadata {
         /// ```
         pub fn set_query_stats<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::job_stats::Query,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Query>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.extended = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::QueryStats(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_stats::Extended::QueryStats(v.into()),
             );
             self
         }
 
-        /// The value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended]
+        /// The value of [extended][crate::model::big_query_audit_metadata::JobStats::extended]
         /// if it holds a `LoadStats`, `None` if the field is not set or
         /// holds a different branch.
         pub fn load_stats(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Load,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Load>,
         > {
             #[allow(unreachable_patterns)]
             self.extended.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::LoadStats(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_stats::Extended::LoadStats(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended]
+        /// Sets the value of [extended][crate::model::big_query_audit_metadata::JobStats::extended]
         /// to hold a `LoadStats`.
         ///
         /// Note that all the setters affecting `extended` are
@@ -10532,8 +10351,8 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Load;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_stats::Load;
         /// let x = JobStats::new().set_load_stats(Load::default()/* use setters */);
         /// assert!(x.load_stats().is_some());
         /// assert!(x.query_stats().is_none());
@@ -10541,40 +10360,36 @@ pub mod big_query_audit_metadata {
         /// ```
         pub fn set_load_stats<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::job_stats::Load,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Load>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.extended = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::LoadStats(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_stats::Extended::LoadStats(v.into()),
             );
             self
         }
 
-        /// The value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended]
+        /// The value of [extended][crate::model::big_query_audit_metadata::JobStats::extended]
         /// if it holds a `ExtractStats`, `None` if the field is not set or
         /// holds a different branch.
         pub fn extract_stats(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extract,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Extract>,
         > {
             #[allow(unreachable_patterns)]
             self.extended.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::ExtractStats(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::job_stats::Extended::ExtractStats(v) => {
+                    std::option::Option::Some(v)
+                }
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [extended][crate::internal_model::audit::big_query_audit_metadata::JobStats::extended]
+        /// Sets the value of [extended][crate::model::big_query_audit_metadata::JobStats::extended]
         /// to hold a `ExtractStats`.
         ///
         /// Note that all the setters affecting `extended` are
@@ -10582,8 +10397,8 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::JobStats;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Extract;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::JobStats;
+        /// use google_cloud_audit::model::big_query_audit_metadata::job_stats::Extract;
         /// let x = JobStats::new().set_extract_stats(Extract::default()/* use setters */);
         /// assert!(x.extract_stats().is_some());
         /// assert!(x.query_stats().is_none());
@@ -10591,18 +10406,14 @@ pub mod big_query_audit_metadata {
         /// ```
         pub fn set_extract_stats<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::job_stats::Extract,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Extract>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.extended = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::job_stats::Extended::ExtractStats(
-                    v.into()
-                )
+                crate::model::big_query_audit_metadata::job_stats::Extended::ExtractStats(v.into()),
             );
             self
         }
@@ -10656,11 +10467,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [total_processed_bytes][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::total_processed_bytes].
+            /// Sets the value of [total_processed_bytes][crate::model::big_query_audit_metadata::job_stats::Query::total_processed_bytes].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_total_processed_bytes(42);
             /// ```
             pub fn set_total_processed_bytes<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10668,11 +10479,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [total_billed_bytes][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::total_billed_bytes].
+            /// Sets the value of [total_billed_bytes][crate::model::big_query_audit_metadata::job_stats::Query::total_billed_bytes].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_total_billed_bytes(42);
             /// ```
             pub fn set_total_billed_bytes<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10680,11 +10491,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [billing_tier][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::billing_tier].
+            /// Sets the value of [billing_tier][crate::model::big_query_audit_metadata::job_stats::Query::billing_tier].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_billing_tier(42);
             /// ```
             pub fn set_billing_tier<T: std::convert::Into<i32>>(mut self, v: T) -> Self {
@@ -10692,11 +10503,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [referenced_tables][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::referenced_tables].
+            /// Sets the value of [referenced_tables][crate::model::big_query_audit_metadata::job_stats::Query::referenced_tables].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_referenced_tables(["a", "b", "c"]);
             /// ```
             pub fn set_referenced_tables<T, V>(mut self, v: T) -> Self
@@ -10709,11 +10520,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [referenced_views][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::referenced_views].
+            /// Sets the value of [referenced_views][crate::model::big_query_audit_metadata::job_stats::Query::referenced_views].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_referenced_views(["a", "b", "c"]);
             /// ```
             pub fn set_referenced_views<T, V>(mut self, v: T) -> Self
@@ -10726,11 +10537,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [referenced_routines][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::referenced_routines].
+            /// Sets the value of [referenced_routines][crate::model::big_query_audit_metadata::job_stats::Query::referenced_routines].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_referenced_routines(["a", "b", "c"]);
             /// ```
             pub fn set_referenced_routines<T, V>(mut self, v: T) -> Self
@@ -10743,11 +10554,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [output_row_count][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::output_row_count].
+            /// Sets the value of [output_row_count][crate::model::big_query_audit_metadata::job_stats::Query::output_row_count].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_output_row_count(42);
             /// ```
             pub fn set_output_row_count<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10755,11 +10566,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [cache_hit][crate::internal_model::audit::big_query_audit_metadata::job_stats::Query::cache_hit].
+            /// Sets the value of [cache_hit][crate::model::big_query_audit_metadata::job_stats::Query::cache_hit].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Query;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Query;
             /// let x = Query::new().set_cache_hit(true);
             /// ```
             pub fn set_cache_hit<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -10790,11 +10601,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [total_output_bytes][crate::internal_model::audit::big_query_audit_metadata::job_stats::Load::total_output_bytes].
+            /// Sets the value of [total_output_bytes][crate::model::big_query_audit_metadata::job_stats::Load::total_output_bytes].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Load;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Load;
             /// let x = Load::new().set_total_output_bytes(42);
             /// ```
             pub fn set_total_output_bytes<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10825,11 +10636,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [total_input_bytes][crate::internal_model::audit::big_query_audit_metadata::job_stats::Extract::total_input_bytes].
+            /// Sets the value of [total_input_bytes][crate::model::big_query_audit_metadata::job_stats::Extract::total_input_bytes].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::Extract;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::Extract;
             /// let x = Extract::new().set_total_input_bytes(42);
             /// ```
             pub fn set_total_input_bytes<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10863,11 +10674,11 @@ pub mod big_query_audit_metadata {
                 std::default::Default::default()
             }
 
-            /// Sets the value of [name][crate::internal_model::audit::big_query_audit_metadata::job_stats::ReservationResourceUsage::name].
+            /// Sets the value of [name][crate::model::big_query_audit_metadata::job_stats::ReservationResourceUsage::name].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::ReservationResourceUsage;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::ReservationResourceUsage;
             /// let x = ReservationResourceUsage::new().set_name("example");
             /// ```
             pub fn set_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -10875,11 +10686,11 @@ pub mod big_query_audit_metadata {
                 self
             }
 
-            /// Sets the value of [slot_ms][crate::internal_model::audit::big_query_audit_metadata::job_stats::ReservationResourceUsage::slot_ms].
+            /// Sets the value of [slot_ms][crate::model::big_query_audit_metadata::job_stats::ReservationResourceUsage::slot_ms].
             ///
             /// # Example
             /// ```ignore,no_run
-            /// # use google_cloud_logging_v2::model::big_query_audit_metadata::job_stats::ReservationResourceUsage;
+            /// # use google_cloud_audit::model::big_query_audit_metadata::job_stats::ReservationResourceUsage;
             /// let x = ReservationResourceUsage::new().set_slot_ms(42);
             /// ```
             pub fn set_slot_ms<T: std::convert::Into<i64>>(mut self, v: T) -> Self {
@@ -10899,22 +10710,12 @@ pub mod big_query_audit_metadata {
         #[non_exhaustive]
         pub enum Extended {
             /// Query job statistics.
-            QueryStats(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_stats::Query,
-                >,
-            ),
+            QueryStats(std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Query>),
             /// Load job statistics.
-            LoadStats(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_stats::Load,
-                >,
-            ),
+            LoadStats(std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Load>),
             /// Extract job statistics.
             ExtractStats(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::job_stats::Extract,
-                >,
+                std::boxed::Box<crate::model::big_query_audit_metadata::job_stats::Extract>,
             ),
         }
     }
@@ -10929,8 +10730,7 @@ pub mod big_query_audit_metadata {
         pub table_name: std::string::String,
 
         /// User-provided metadata for the table.
-        pub table_info:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EntityInfo>,
+        pub table_info: std::option::Option<crate::model::big_query_audit_metadata::EntityInfo>,
 
         /// A JSON representation of the table's schema. Entire field is truncated
         /// if exceeds 40K.
@@ -10940,9 +10740,7 @@ pub mod big_query_audit_metadata {
         pub schema_json_truncated: bool,
 
         /// View metadata. Only present for views.
-        pub view: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::TableViewDefinition,
-        >,
+        pub view: std::option::Option<crate::model::big_query_audit_metadata::TableViewDefinition>,
 
         /// Table expiration time.
         pub expire_time: std::option::Option<wkt::Timestamp>,
@@ -10957,9 +10755,7 @@ pub mod big_query_audit_metadata {
         pub truncate_time: std::option::Option<wkt::Timestamp>,
 
         /// Table encryption information. Set when non-default encryption is used.
-        pub encryption: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-        >,
+        pub encryption: std::option::Option<crate::model::big_query_audit_metadata::EncryptionInfo>,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -10970,11 +10766,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [table_name][crate::internal_model::audit::big_query_audit_metadata::Table::table_name].
+        /// Sets the value of [table_name][crate::model::big_query_audit_metadata::Table::table_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = Table::new().set_table_name("example");
         /// ```
         pub fn set_table_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -10982,48 +10778,44 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [table_info][crate::internal_model::audit::big_query_audit_metadata::Table::table_info].
+        /// Sets the value of [table_info][crate::model::big_query_audit_metadata::Table::table_info].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = Table::new().set_table_info(EntityInfo::default()/* use setters */);
         /// ```
         pub fn set_table_info<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EntityInfo>,
         {
             self.table_info = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [table_info][crate::internal_model::audit::big_query_audit_metadata::Table::table_info].
+        /// Sets or clears the value of [table_info][crate::model::big_query_audit_metadata::Table::table_info].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = Table::new().set_or_clear_table_info(Some(EntityInfo::default()/* use setters */));
         /// let x = Table::new().set_or_clear_table_info(None::<EntityInfo>);
         /// ```
         pub fn set_or_clear_table_info<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EntityInfo>,
         {
             self.table_info = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [schema_json][crate::internal_model::audit::big_query_audit_metadata::Table::schema_json].
+        /// Sets the value of [schema_json][crate::model::big_query_audit_metadata::Table::schema_json].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = Table::new().set_schema_json("example");
         /// ```
         pub fn set_schema_json<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -11031,11 +10823,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [schema_json_truncated][crate::internal_model::audit::big_query_audit_metadata::Table::schema_json_truncated].
+        /// Sets the value of [schema_json_truncated][crate::model::big_query_audit_metadata::Table::schema_json_truncated].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// let x = Table::new().set_schema_json_truncated(true);
         /// ```
         pub fn set_schema_json_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -11043,48 +10835,44 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [view][crate::internal_model::audit::big_query_audit_metadata::Table::view].
+        /// Sets the value of [view][crate::model::big_query_audit_metadata::Table::view].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableViewDefinition;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
+        /// use google_cloud_audit::model::big_query_audit_metadata::TableViewDefinition;
         /// let x = Table::new().set_view(TableViewDefinition::default()/* use setters */);
         /// ```
         pub fn set_view<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::TableViewDefinition,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::TableViewDefinition>,
         {
             self.view = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [view][crate::internal_model::audit::big_query_audit_metadata::Table::view].
+        /// Sets or clears the value of [view][crate::model::big_query_audit_metadata::Table::view].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::TableViewDefinition;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
+        /// use google_cloud_audit::model::big_query_audit_metadata::TableViewDefinition;
         /// let x = Table::new().set_or_clear_view(Some(TableViewDefinition::default()/* use setters */));
         /// let x = Table::new().set_or_clear_view(None::<TableViewDefinition>);
         /// ```
         pub fn set_or_clear_view<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::TableViewDefinition,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::TableViewDefinition>,
         {
             self.view = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [expire_time][crate::internal_model::audit::big_query_audit_metadata::Table::expire_time].
+        /// Sets the value of [expire_time][crate::model::big_query_audit_metadata::Table::expire_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_expire_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11096,11 +10884,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [expire_time][crate::internal_model::audit::big_query_audit_metadata::Table::expire_time].
+        /// Sets or clears the value of [expire_time][crate::model::big_query_audit_metadata::Table::expire_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_or_clear_expire_time(Some(Timestamp::default()/* use setters */));
         /// let x = Table::new().set_or_clear_expire_time(None::<Timestamp>);
@@ -11113,11 +10901,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Table::create_time].
+        /// Sets the value of [create_time][crate::model::big_query_audit_metadata::Table::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_create_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11129,11 +10917,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Table::create_time].
+        /// Sets or clears the value of [create_time][crate::model::big_query_audit_metadata::Table::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_or_clear_create_time(Some(Timestamp::default()/* use setters */));
         /// let x = Table::new().set_or_clear_create_time(None::<Timestamp>);
@@ -11146,11 +10934,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Table::update_time].
+        /// Sets the value of [update_time][crate::model::big_query_audit_metadata::Table::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_update_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11162,11 +10950,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Table::update_time].
+        /// Sets or clears the value of [update_time][crate::model::big_query_audit_metadata::Table::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_or_clear_update_time(Some(Timestamp::default()/* use setters */));
         /// let x = Table::new().set_or_clear_update_time(None::<Timestamp>);
@@ -11179,11 +10967,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [truncate_time][crate::internal_model::audit::big_query_audit_metadata::Table::truncate_time].
+        /// Sets the value of [truncate_time][crate::model::big_query_audit_metadata::Table::truncate_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_truncate_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11195,11 +10983,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [truncate_time][crate::internal_model::audit::big_query_audit_metadata::Table::truncate_time].
+        /// Sets or clears the value of [truncate_time][crate::model::big_query_audit_metadata::Table::truncate_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
         /// use wkt::Timestamp;
         /// let x = Table::new().set_or_clear_truncate_time(Some(Timestamp::default()/* use setters */));
         /// let x = Table::new().set_or_clear_truncate_time(None::<Timestamp>);
@@ -11212,38 +11000,34 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [encryption][crate::internal_model::audit::big_query_audit_metadata::Table::encryption].
+        /// Sets the value of [encryption][crate::model::big_query_audit_metadata::Table::encryption].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = Table::new().set_encryption(EncryptionInfo::default()/* use setters */);
         /// ```
         pub fn set_encryption<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
         {
             self.encryption = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [encryption][crate::internal_model::audit::big_query_audit_metadata::Table::encryption].
+        /// Sets or clears the value of [encryption][crate::model::big_query_audit_metadata::Table::encryption].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Table;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Table;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = Table::new().set_or_clear_encryption(Some(EncryptionInfo::default()/* use setters */));
         /// let x = Table::new().set_or_clear_encryption(None::<EncryptionInfo>);
         /// ```
         pub fn set_or_clear_encryption<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
         {
             self.encryption = v.map(|x| x.into());
             self
@@ -11266,8 +11050,7 @@ pub mod big_query_audit_metadata {
         pub model_name: std::string::String,
 
         /// User-provided metadata for the model.
-        pub model_info:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EntityInfo>,
+        pub model_info: std::option::Option<crate::model::big_query_audit_metadata::EntityInfo>,
 
         /// Model expiration time.
         pub expire_time: std::option::Option<wkt::Timestamp>,
@@ -11279,9 +11062,7 @@ pub mod big_query_audit_metadata {
         pub update_time: std::option::Option<wkt::Timestamp>,
 
         /// Model encryption information. Set when non-default encryption is used.
-        pub encryption: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-        >,
+        pub encryption: std::option::Option<crate::model::big_query_audit_metadata::EncryptionInfo>,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -11292,11 +11073,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [model_name][crate::internal_model::audit::big_query_audit_metadata::Model::model_name].
+        /// Sets the value of [model_name][crate::model::big_query_audit_metadata::Model::model_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// let x = Model::new().set_model_name("example");
         /// ```
         pub fn set_model_name<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -11304,48 +11085,44 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [model_info][crate::internal_model::audit::big_query_audit_metadata::Model::model_info].
+        /// Sets the value of [model_info][crate::model::big_query_audit_metadata::Model::model_info].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = Model::new().set_model_info(EntityInfo::default()/* use setters */);
         /// ```
         pub fn set_model_info<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EntityInfo>,
         {
             self.model_info = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [model_info][crate::internal_model::audit::big_query_audit_metadata::Model::model_info].
+        /// Sets or clears the value of [model_info][crate::model::big_query_audit_metadata::Model::model_info].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = Model::new().set_or_clear_model_info(Some(EntityInfo::default()/* use setters */));
         /// let x = Model::new().set_or_clear_model_info(None::<EntityInfo>);
         /// ```
         pub fn set_or_clear_model_info<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EntityInfo>,
         {
             self.model_info = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [expire_time][crate::internal_model::audit::big_query_audit_metadata::Model::expire_time].
+        /// Sets the value of [expire_time][crate::model::big_query_audit_metadata::Model::expire_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// use wkt::Timestamp;
         /// let x = Model::new().set_expire_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11357,11 +11134,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [expire_time][crate::internal_model::audit::big_query_audit_metadata::Model::expire_time].
+        /// Sets or clears the value of [expire_time][crate::model::big_query_audit_metadata::Model::expire_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// use wkt::Timestamp;
         /// let x = Model::new().set_or_clear_expire_time(Some(Timestamp::default()/* use setters */));
         /// let x = Model::new().set_or_clear_expire_time(None::<Timestamp>);
@@ -11374,11 +11151,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Model::create_time].
+        /// Sets the value of [create_time][crate::model::big_query_audit_metadata::Model::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// use wkt::Timestamp;
         /// let x = Model::new().set_create_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11390,11 +11167,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Model::create_time].
+        /// Sets or clears the value of [create_time][crate::model::big_query_audit_metadata::Model::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// use wkt::Timestamp;
         /// let x = Model::new().set_or_clear_create_time(Some(Timestamp::default()/* use setters */));
         /// let x = Model::new().set_or_clear_create_time(None::<Timestamp>);
@@ -11407,11 +11184,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Model::update_time].
+        /// Sets the value of [update_time][crate::model::big_query_audit_metadata::Model::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// use wkt::Timestamp;
         /// let x = Model::new().set_update_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11423,11 +11200,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Model::update_time].
+        /// Sets or clears the value of [update_time][crate::model::big_query_audit_metadata::Model::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
         /// use wkt::Timestamp;
         /// let x = Model::new().set_or_clear_update_time(Some(Timestamp::default()/* use setters */));
         /// let x = Model::new().set_or_clear_update_time(None::<Timestamp>);
@@ -11440,38 +11217,34 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [encryption][crate::internal_model::audit::big_query_audit_metadata::Model::encryption].
+        /// Sets the value of [encryption][crate::model::big_query_audit_metadata::Model::encryption].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = Model::new().set_encryption(EncryptionInfo::default()/* use setters */);
         /// ```
         pub fn set_encryption<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
         {
             self.encryption = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [encryption][crate::internal_model::audit::big_query_audit_metadata::Model::encryption].
+        /// Sets or clears the value of [encryption][crate::model::big_query_audit_metadata::Model::encryption].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Model;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Model;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = Model::new().set_or_clear_encryption(Some(EncryptionInfo::default()/* use setters */));
         /// let x = Model::new().set_or_clear_encryption(None::<EncryptionInfo>);
         /// ```
         pub fn set_or_clear_encryption<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
         {
             self.encryption = v.map(|x| x.into());
             self
@@ -11509,11 +11282,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [routine_name][crate::internal_model::audit::big_query_audit_metadata::Routine::routine_name].
+        /// Sets the value of [routine_name][crate::model::big_query_audit_metadata::Routine::routine_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// let x = Routine::new().set_routine_name("example");
         /// ```
         pub fn set_routine_name<T: std::convert::Into<std::string::String>>(
@@ -11524,11 +11297,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Routine::create_time].
+        /// Sets the value of [create_time][crate::model::big_query_audit_metadata::Routine::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// use wkt::Timestamp;
         /// let x = Routine::new().set_create_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11540,11 +11313,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Routine::create_time].
+        /// Sets or clears the value of [create_time][crate::model::big_query_audit_metadata::Routine::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// use wkt::Timestamp;
         /// let x = Routine::new().set_or_clear_create_time(Some(Timestamp::default()/* use setters */));
         /// let x = Routine::new().set_or_clear_create_time(None::<Timestamp>);
@@ -11557,11 +11330,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Routine::update_time].
+        /// Sets the value of [update_time][crate::model::big_query_audit_metadata::Routine::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// use wkt::Timestamp;
         /// let x = Routine::new().set_update_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11573,11 +11346,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Routine::update_time].
+        /// Sets or clears the value of [update_time][crate::model::big_query_audit_metadata::Routine::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Routine;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Routine;
         /// use wkt::Timestamp;
         /// let x = Routine::new().set_or_clear_update_time(Some(Timestamp::default()/* use setters */));
         /// let x = Routine::new().set_or_clear_update_time(None::<Timestamp>);
@@ -11619,11 +11392,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [friendly_name][crate::internal_model::audit::big_query_audit_metadata::EntityInfo::friendly_name].
+        /// Sets the value of [friendly_name][crate::model::big_query_audit_metadata::EntityInfo::friendly_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = EntityInfo::new().set_friendly_name("example");
         /// ```
         pub fn set_friendly_name<T: std::convert::Into<std::string::String>>(
@@ -11634,11 +11407,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [description][crate::internal_model::audit::big_query_audit_metadata::EntityInfo::description].
+        /// Sets the value of [description][crate::model::big_query_audit_metadata::EntityInfo::description].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = EntityInfo::new().set_description("example");
         /// ```
         pub fn set_description<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -11646,11 +11419,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [labels][crate::internal_model::audit::big_query_audit_metadata::EntityInfo::labels].
+        /// Sets the value of [labels][crate::model::big_query_audit_metadata::EntityInfo::labels].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = EntityInfo::new().set_labels([
         ///     ("key0", "abc"),
         ///     ("key1", "xyz"),
@@ -11693,11 +11466,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [query][crate::internal_model::audit::big_query_audit_metadata::TableViewDefinition::query].
+        /// Sets the value of [query][crate::model::big_query_audit_metadata::TableViewDefinition::query].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableViewDefinition;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableViewDefinition;
         /// let x = TableViewDefinition::new().set_query("example");
         /// ```
         pub fn set_query<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -11705,11 +11478,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [query_truncated][crate::internal_model::audit::big_query_audit_metadata::TableViewDefinition::query_truncated].
+        /// Sets the value of [query_truncated][crate::model::big_query_audit_metadata::TableViewDefinition::query_truncated].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::TableViewDefinition;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::TableViewDefinition;
         /// let x = TableViewDefinition::new().set_query_truncated(true);
         /// ```
         pub fn set_query_truncated<T: std::convert::Into<bool>>(mut self, v: T) -> Self {
@@ -11734,8 +11507,7 @@ pub mod big_query_audit_metadata {
         pub dataset_name: std::string::String,
 
         /// User-provided metadata for the dataset.
-        pub dataset_info:
-            std::option::Option<crate::internal_model::audit::big_query_audit_metadata::EntityInfo>,
+        pub dataset_info: std::option::Option<crate::model::big_query_audit_metadata::EntityInfo>,
 
         /// Dataset creation time.
         pub create_time: std::option::Option<wkt::Timestamp>,
@@ -11744,17 +11516,14 @@ pub mod big_query_audit_metadata {
         pub update_time: std::option::Option<wkt::Timestamp>,
 
         /// The access control list for the dataset.
-        pub acl: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl,
-        >,
+        pub acl: std::option::Option<crate::model::big_query_audit_metadata::BigQueryAcl>,
 
         /// Default expiration time for tables in the dataset.
         pub default_table_expire_duration: std::option::Option<wkt::Duration>,
 
         /// Default encryption for tables in the dataset.
-        pub default_encryption: std::option::Option<
-            crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-        >,
+        pub default_encryption:
+            std::option::Option<crate::model::big_query_audit_metadata::EncryptionInfo>,
 
         /// Default collation for the dataset.
         pub default_collation: std::string::String,
@@ -11768,11 +11537,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [dataset_name][crate::internal_model::audit::big_query_audit_metadata::Dataset::dataset_name].
+        /// Sets the value of [dataset_name][crate::model::big_query_audit_metadata::Dataset::dataset_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// let x = Dataset::new().set_dataset_name("example");
         /// ```
         pub fn set_dataset_name<T: std::convert::Into<std::string::String>>(
@@ -11783,48 +11552,44 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [dataset_info][crate::internal_model::audit::big_query_audit_metadata::Dataset::dataset_info].
+        /// Sets the value of [dataset_info][crate::model::big_query_audit_metadata::Dataset::dataset_info].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = Dataset::new().set_dataset_info(EntityInfo::default()/* use setters */);
         /// ```
         pub fn set_dataset_info<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EntityInfo>,
         {
             self.dataset_info = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [dataset_info][crate::internal_model::audit::big_query_audit_metadata::Dataset::dataset_info].
+        /// Sets or clears the value of [dataset_info][crate::model::big_query_audit_metadata::Dataset::dataset_info].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EntityInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EntityInfo;
         /// let x = Dataset::new().set_or_clear_dataset_info(Some(EntityInfo::default()/* use setters */));
         /// let x = Dataset::new().set_or_clear_dataset_info(None::<EntityInfo>);
         /// ```
         pub fn set_or_clear_dataset_info<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EntityInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EntityInfo>,
         {
             self.dataset_info = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Dataset::create_time].
+        /// Sets the value of [create_time][crate::model::big_query_audit_metadata::Dataset::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// use wkt::Timestamp;
         /// let x = Dataset::new().set_create_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11836,11 +11601,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [create_time][crate::internal_model::audit::big_query_audit_metadata::Dataset::create_time].
+        /// Sets or clears the value of [create_time][crate::model::big_query_audit_metadata::Dataset::create_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// use wkt::Timestamp;
         /// let x = Dataset::new().set_or_clear_create_time(Some(Timestamp::default()/* use setters */));
         /// let x = Dataset::new().set_or_clear_create_time(None::<Timestamp>);
@@ -11853,11 +11618,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Dataset::update_time].
+        /// Sets the value of [update_time][crate::model::big_query_audit_metadata::Dataset::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// use wkt::Timestamp;
         /// let x = Dataset::new().set_update_time(Timestamp::default()/* use setters */);
         /// ```
@@ -11869,11 +11634,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [update_time][crate::internal_model::audit::big_query_audit_metadata::Dataset::update_time].
+        /// Sets or clears the value of [update_time][crate::model::big_query_audit_metadata::Dataset::update_time].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// use wkt::Timestamp;
         /// let x = Dataset::new().set_or_clear_update_time(Some(Timestamp::default()/* use setters */));
         /// let x = Dataset::new().set_or_clear_update_time(None::<Timestamp>);
@@ -11886,48 +11651,44 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [acl][crate::internal_model::audit::big_query_audit_metadata::Dataset::acl].
+        /// Sets the value of [acl][crate::model::big_query_audit_metadata::Dataset::acl].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::BigQueryAcl;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::BigQueryAcl;
         /// let x = Dataset::new().set_acl(BigQueryAcl::default()/* use setters */);
         /// ```
         pub fn set_acl<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::BigQueryAcl>,
         {
             self.acl = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [acl][crate::internal_model::audit::big_query_audit_metadata::Dataset::acl].
+        /// Sets or clears the value of [acl][crate::model::big_query_audit_metadata::Dataset::acl].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::BigQueryAcl;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::BigQueryAcl;
         /// let x = Dataset::new().set_or_clear_acl(Some(BigQueryAcl::default()/* use setters */));
         /// let x = Dataset::new().set_or_clear_acl(None::<BigQueryAcl>);
         /// ```
         pub fn set_or_clear_acl<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::BigQueryAcl>,
         {
             self.acl = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [default_table_expire_duration][crate::internal_model::audit::big_query_audit_metadata::Dataset::default_table_expire_duration].
+        /// Sets the value of [default_table_expire_duration][crate::model::big_query_audit_metadata::Dataset::default_table_expire_duration].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// use wkt::Duration;
         /// let x = Dataset::new().set_default_table_expire_duration(Duration::default()/* use setters */);
         /// ```
@@ -11939,11 +11700,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [default_table_expire_duration][crate::internal_model::audit::big_query_audit_metadata::Dataset::default_table_expire_duration].
+        /// Sets or clears the value of [default_table_expire_duration][crate::model::big_query_audit_metadata::Dataset::default_table_expire_duration].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// use wkt::Duration;
         /// let x = Dataset::new().set_or_clear_default_table_expire_duration(Some(Duration::default()/* use setters */));
         /// let x = Dataset::new().set_or_clear_default_table_expire_duration(None::<Duration>);
@@ -11959,48 +11720,44 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [default_encryption][crate::internal_model::audit::big_query_audit_metadata::Dataset::default_encryption].
+        /// Sets the value of [default_encryption][crate::model::big_query_audit_metadata::Dataset::default_encryption].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = Dataset::new().set_default_encryption(EncryptionInfo::default()/* use setters */);
         /// ```
         pub fn set_default_encryption<T>(mut self, v: T) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
         {
             self.default_encryption = std::option::Option::Some(v.into());
             self
         }
 
-        /// Sets or clears the value of [default_encryption][crate::internal_model::audit::big_query_audit_metadata::Dataset::default_encryption].
+        /// Sets or clears the value of [default_encryption][crate::model::big_query_audit_metadata::Dataset::default_encryption].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
+        /// use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = Dataset::new().set_or_clear_default_encryption(Some(EncryptionInfo::default()/* use setters */));
         /// let x = Dataset::new().set_or_clear_default_encryption(None::<EncryptionInfo>);
         /// ```
         pub fn set_or_clear_default_encryption<T>(mut self, v: std::option::Option<T>) -> Self
         where
-            T: std::convert::Into<
-                    crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo,
-                >,
+            T: std::convert::Into<crate::model::big_query_audit_metadata::EncryptionInfo>,
         {
             self.default_encryption = v.map(|x| x.into());
             self
         }
 
-        /// Sets the value of [default_collation][crate::internal_model::audit::big_query_audit_metadata::Dataset::default_collation].
+        /// Sets the value of [default_collation][crate::model::big_query_audit_metadata::Dataset::default_collation].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::Dataset;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::Dataset;
         /// let x = Dataset::new().set_default_collation("example");
         /// ```
         pub fn set_default_collation<T: std::convert::Into<std::string::String>>(
@@ -12039,11 +11796,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [policy][crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl::policy].
+        /// Sets the value of [policy][crate::model::big_query_audit_metadata::BigQueryAcl::policy].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::BigQueryAcl;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::BigQueryAcl;
         /// use google_cloud_iam_v1::model::Policy;
         /// let x = BigQueryAcl::new().set_policy(Policy::default()/* use setters */);
         /// ```
@@ -12055,11 +11812,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets or clears the value of [policy][crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl::policy].
+        /// Sets or clears the value of [policy][crate::model::big_query_audit_metadata::BigQueryAcl::policy].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::BigQueryAcl;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::BigQueryAcl;
         /// use google_cloud_iam_v1::model::Policy;
         /// let x = BigQueryAcl::new().set_or_clear_policy(Some(Policy::default()/* use setters */));
         /// let x = BigQueryAcl::new().set_or_clear_policy(None::<Policy>);
@@ -12072,11 +11829,11 @@ pub mod big_query_audit_metadata {
             self
         }
 
-        /// Sets the value of [authorized_views][crate::internal_model::audit::big_query_audit_metadata::BigQueryAcl::authorized_views].
+        /// Sets the value of [authorized_views][crate::model::big_query_audit_metadata::BigQueryAcl::authorized_views].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::BigQueryAcl;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::BigQueryAcl;
         /// let x = BigQueryAcl::new().set_authorized_views(["a", "b", "c"]);
         /// ```
         pub fn set_authorized_views<T, V>(mut self, v: T) -> Self
@@ -12115,11 +11872,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [kms_key_name][crate::internal_model::audit::big_query_audit_metadata::EncryptionInfo::kms_key_name].
+        /// Sets the value of [kms_key_name][crate::model::big_query_audit_metadata::EncryptionInfo::kms_key_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::EncryptionInfo;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::EncryptionInfo;
         /// let x = EncryptionInfo::new().set_kms_key_name("example");
         /// ```
         pub fn set_kms_key_name<T: std::convert::Into<std::string::String>>(
@@ -12156,11 +11913,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [row_access_policy_name][crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicy::row_access_policy_name].
+        /// Sets the value of [row_access_policy_name][crate::model::big_query_audit_metadata::RowAccessPolicy::row_access_policy_name].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::RowAccessPolicy;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::RowAccessPolicy;
         /// let x = RowAccessPolicy::new().set_row_access_policy_name("example");
         /// ```
         pub fn set_row_access_policy_name<T: std::convert::Into<std::string::String>>(
@@ -12182,9 +11939,10 @@ pub mod big_query_audit_metadata {
     #[derive(Clone, Default, PartialEq)]
     #[non_exhaustive]
     pub struct FirstPartyAppMetadata {
-
         #[allow(missing_docs)]
-        pub metadata: std::option::Option<crate::internal_model::audit::big_query_audit_metadata::first_party_app_metadata::Metadata>,
+        pub metadata: std::option::Option<
+            crate::model::big_query_audit_metadata::first_party_app_metadata::Metadata,
+        >,
 
         pub(crate) _unknown_fields: serde_json::Map<std::string::String, serde_json::Value>,
     }
@@ -12195,42 +11953,48 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [metadata][crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata::metadata].
+        /// Sets the value of [metadata][crate::model::big_query_audit_metadata::FirstPartyAppMetadata::metadata].
         ///
         /// Note that all the setters affecting `metadata` are mutually
         /// exclusive.
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::FirstPartyAppMetadata;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::SheetsMetadata;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::FirstPartyAppMetadata;
+        /// use google_cloud_audit::model::big_query_audit_metadata::SheetsMetadata;
         /// let x = FirstPartyAppMetadata::new().set_metadata(Some(
-        ///     google_cloud_logging_v2::model::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(SheetsMetadata::default().into())));
+        ///     google_cloud_audit::model::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(SheetsMetadata::default().into())));
         /// ```
-        pub fn set_metadata<T: std::convert::Into<std::option::Option<crate::internal_model::audit::big_query_audit_metadata::first_party_app_metadata::Metadata>>>(mut self, v: T) -> Self
-        {
+        pub fn set_metadata<
+            T: std::convert::Into<
+                    std::option::Option<
+                        crate::model::big_query_audit_metadata::first_party_app_metadata::Metadata,
+                    >,
+                >,
+        >(
+            mut self,
+            v: T,
+        ) -> Self {
             self.metadata = v.into();
             self
         }
 
-        /// The value of [metadata][crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata::metadata]
+        /// The value of [metadata][crate::model::big_query_audit_metadata::FirstPartyAppMetadata::metadata]
         /// if it holds a `SheetsMetadata`, `None` if the field is not set or
         /// holds a different branch.
         pub fn sheets_metadata(
             &self,
         ) -> std::option::Option<
-            &std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::SheetsMetadata,
-            >,
+            &std::boxed::Box<crate::model::big_query_audit_metadata::SheetsMetadata>,
         > {
             #[allow(unreachable_patterns)]
             self.metadata.as_ref().and_then(|v| match v {
-                crate::internal_model::audit::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(v) => std::option::Option::Some(v),
+                crate::model::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(v) => std::option::Option::Some(v),
                 _ => std::option::Option::None,
             })
         }
 
-        /// Sets the value of [metadata][crate::internal_model::audit::big_query_audit_metadata::FirstPartyAppMetadata::metadata]
+        /// Sets the value of [metadata][crate::model::big_query_audit_metadata::FirstPartyAppMetadata::metadata]
         /// to hold a `SheetsMetadata`.
         ///
         /// Note that all the setters affecting `metadata` are
@@ -12238,23 +12002,21 @@ pub mod big_query_audit_metadata {
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::FirstPartyAppMetadata;
-        /// use google_cloud_logging_v2::model::big_query_audit_metadata::SheetsMetadata;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::FirstPartyAppMetadata;
+        /// use google_cloud_audit::model::big_query_audit_metadata::SheetsMetadata;
         /// let x = FirstPartyAppMetadata::new().set_sheets_metadata(SheetsMetadata::default()/* use setters */);
         /// assert!(x.sheets_metadata().is_some());
         /// ```
         pub fn set_sheets_metadata<
             T: std::convert::Into<
-                    std::boxed::Box<
-                        crate::internal_model::audit::big_query_audit_metadata::SheetsMetadata,
-                    >,
+                    std::boxed::Box<crate::model::big_query_audit_metadata::SheetsMetadata>,
                 >,
         >(
             mut self,
             v: T,
         ) -> Self {
             self.metadata = std::option::Option::Some(
-                crate::internal_model::audit::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(
+                crate::model::big_query_audit_metadata::first_party_app_metadata::Metadata::SheetsMetadata(
                     v.into()
                 )
             );
@@ -12278,11 +12040,7 @@ pub mod big_query_audit_metadata {
         #[non_exhaustive]
         pub enum Metadata {
             /// Google Sheets metadata.
-            SheetsMetadata(
-                std::boxed::Box<
-                    crate::internal_model::audit::big_query_audit_metadata::SheetsMetadata,
-                >,
-            ),
+            SheetsMetadata(std::boxed::Box<crate::model::big_query_audit_metadata::SheetsMetadata>),
         }
     }
 
@@ -12302,11 +12060,11 @@ pub mod big_query_audit_metadata {
             std::default::Default::default()
         }
 
-        /// Sets the value of [doc_id][crate::internal_model::audit::big_query_audit_metadata::SheetsMetadata::doc_id].
+        /// Sets the value of [doc_id][crate::model::big_query_audit_metadata::SheetsMetadata::doc_id].
         ///
         /// # Example
         /// ```ignore,no_run
-        /// # use google_cloud_logging_v2::model::big_query_audit_metadata::SheetsMetadata;
+        /// # use google_cloud_audit::model::big_query_audit_metadata::SheetsMetadata;
         /// let x = SheetsMetadata::new().set_doc_id("example");
         /// ```
         pub fn set_doc_id<T: std::convert::Into<std::string::String>>(mut self, v: T) -> Self {
@@ -13254,116 +13012,58 @@ pub mod big_query_audit_metadata {
     #[non_exhaustive]
     pub enum Event {
         /// Job insertion event.
-        JobInsertion(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobInsertion>,
-        ),
+        JobInsertion(std::boxed::Box<crate::model::big_query_audit_metadata::JobInsertion>),
         /// Job state change event.
-        JobChange(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobChange>,
-        ),
+        JobChange(std::boxed::Box<crate::model::big_query_audit_metadata::JobChange>),
         /// Job deletion event.
-        JobDeletion(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::JobDeletion>,
-        ),
+        JobDeletion(std::boxed::Box<crate::model::big_query_audit_metadata::JobDeletion>),
         /// Dataset creation event.
-        DatasetCreation(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::DatasetCreation,
-            >,
-        ),
+        DatasetCreation(std::boxed::Box<crate::model::big_query_audit_metadata::DatasetCreation>),
         /// Dataset change event.
-        DatasetChange(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::DatasetChange>,
-        ),
+        DatasetChange(std::boxed::Box<crate::model::big_query_audit_metadata::DatasetChange>),
         /// Dataset deletion event.
-        DatasetDeletion(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::DatasetDeletion,
-            >,
-        ),
+        DatasetDeletion(std::boxed::Box<crate::model::big_query_audit_metadata::DatasetDeletion>),
         /// Table creation event.
-        TableCreation(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableCreation>,
-        ),
+        TableCreation(std::boxed::Box<crate::model::big_query_audit_metadata::TableCreation>),
         /// Table metadata change event.
-        TableChange(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableChange>,
-        ),
+        TableChange(std::boxed::Box<crate::model::big_query_audit_metadata::TableChange>),
         /// Table deletion event.
-        TableDeletion(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDeletion>,
-        ),
+        TableDeletion(std::boxed::Box<crate::model::big_query_audit_metadata::TableDeletion>),
         /// Table data read event.
-        TableDataRead(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::TableDataRead>,
-        ),
+        TableDataRead(std::boxed::Box<crate::model::big_query_audit_metadata::TableDataRead>),
         /// Table data change event.
-        TableDataChange(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::TableDataChange,
-            >,
-        ),
+        TableDataChange(std::boxed::Box<crate::model::big_query_audit_metadata::TableDataChange>),
         /// Model deletion event.
-        ModelDeletion(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDeletion>,
-        ),
+        ModelDeletion(std::boxed::Box<crate::model::big_query_audit_metadata::ModelDeletion>),
         /// Model creation event.
-        ModelCreation(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelCreation>,
-        ),
+        ModelCreation(std::boxed::Box<crate::model::big_query_audit_metadata::ModelCreation>),
         /// Model metadata change event.
         ModelMetadataChange(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::ModelMetadataChange,
-            >,
+            std::boxed::Box<crate::model::big_query_audit_metadata::ModelMetadataChange>,
         ),
         /// Model data change event.
-        ModelDataChange(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::ModelDataChange,
-            >,
-        ),
+        ModelDataChange(std::boxed::Box<crate::model::big_query_audit_metadata::ModelDataChange>),
         /// Model data read event.
-        ModelDataRead(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::ModelDataRead>,
-        ),
+        ModelDataRead(std::boxed::Box<crate::model::big_query_audit_metadata::ModelDataRead>),
         /// Routine creation event.
-        RoutineCreation(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::RoutineCreation,
-            >,
-        ),
+        RoutineCreation(std::boxed::Box<crate::model::big_query_audit_metadata::RoutineCreation>),
         /// Routine change event.
-        RoutineChange(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::RoutineChange>,
-        ),
+        RoutineChange(std::boxed::Box<crate::model::big_query_audit_metadata::RoutineChange>),
         /// Routine deletion event.
-        RoutineDeletion(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::RoutineDeletion,
-            >,
-        ),
+        RoutineDeletion(std::boxed::Box<crate::model::big_query_audit_metadata::RoutineDeletion>),
         /// Row access policy create event.
         RowAccessPolicyCreation(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyCreation,
-            >,
+            std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyCreation>,
         ),
         /// Row access policy change event.
         RowAccessPolicyChange(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyChange,
-            >,
+            std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyChange>,
         ),
         /// Row access policy deletion event.
         RowAccessPolicyDeletion(
-            std::boxed::Box<
-                crate::internal_model::audit::big_query_audit_metadata::RowAccessPolicyDeletion,
-            >,
+            std::boxed::Box<crate::model::big_query_audit_metadata::RowAccessPolicyDeletion>,
         ),
         /// Unlink linked dataset from its source dataset event
-        UnlinkDataset(
-            std::boxed::Box<crate::internal_model::audit::big_query_audit_metadata::UnlinkDataset>,
-        ),
+        UnlinkDataset(std::boxed::Box<crate::model::big_query_audit_metadata::UnlinkDataset>),
     }
 }
