@@ -5706,7 +5706,7 @@ impl super::stub::AppPlatform for AppPlatform {
     }
 }
 
-/// Implements [StreamingService](super::stub::StreamingService) using a [gaxi::http::ReqwestClient].
+/// Implements [StreamingService](super::stub::StreamingService) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct StreamingService {
     inner: gaxi::http::ReqwestClient,
@@ -5715,10 +5715,10 @@ pub struct StreamingService {
 
 impl std::fmt::Debug for StreamingService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("StreamingService");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("StreamingService")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -5731,6 +5731,7 @@ impl StreamingService {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
@@ -9342,7 +9343,7 @@ impl super::stub::StreamsService for StreamsService {
     }
 }
 
-/// Implements [Warehouse](super::stub::Warehouse) using a [gaxi::http::ReqwestClient].
+/// Implements [Warehouse](super::stub::Warehouse) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Warehouse {
     inner: gaxi::http::ReqwestClient,
@@ -9351,10 +9352,10 @@ pub struct Warehouse {
 
 impl std::fmt::Debug for Warehouse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("Warehouse");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("Warehouse")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -9367,6 +9368,7 @@ impl Warehouse {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,

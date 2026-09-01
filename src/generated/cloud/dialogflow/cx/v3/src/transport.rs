@@ -13073,7 +13073,7 @@ impl super::stub::SecuritySettingsService for SecuritySettingsService {
     }
 }
 
-/// Implements [Sessions](super::stub::Sessions) using a [gaxi::http::ReqwestClient].
+/// Implements [Sessions](super::stub::Sessions) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[cfg(feature = "sessions")]
 #[derive(Clone)]
 pub struct Sessions {
@@ -13084,10 +13084,10 @@ pub struct Sessions {
 #[cfg(feature = "sessions")]
 impl std::fmt::Debug for Sessions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("Sessions");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("Sessions")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -13101,6 +13101,7 @@ impl Sessions {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,

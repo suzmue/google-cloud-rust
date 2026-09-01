@@ -19,7 +19,7 @@ use crate::Error;
 #[allow(unused_imports)]
 use crate::Result;
 
-/// Implements [TextToSpeech](super::stub::TextToSpeech) using a [gaxi::http::ReqwestClient].
+/// Implements [TextToSpeech](super::stub::TextToSpeech) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct TextToSpeech {
     inner: gaxi::http::ReqwestClient,
@@ -28,10 +28,10 @@ pub struct TextToSpeech {
 
 impl std::fmt::Debug for TextToSpeech {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("TextToSpeech");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("TextToSpeech")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -44,6 +44,7 @@ impl TextToSpeech {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,

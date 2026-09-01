@@ -1605,7 +1605,7 @@ impl super::stub::Compliance for Compliance {
     }
 }
 
-/// Implements [Echo](super::stub::Echo) using a [gaxi::http::ReqwestClient].
+/// Implements [Echo](super::stub::Echo) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Echo {
     inner: gaxi::http::ReqwestClient,
@@ -1614,10 +1614,10 @@ pub struct Echo {
 
 impl std::fmt::Debug for Echo {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("Echo");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("Echo")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -1630,6 +1630,7 @@ impl Echo {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
@@ -4107,7 +4108,7 @@ impl super::stub::Identity for Identity {
     }
 }
 
-/// Implements [Messaging](super::stub::Messaging) using a [gaxi::http::ReqwestClient].
+/// Implements [Messaging](super::stub::Messaging) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Messaging {
     inner: gaxi::http::ReqwestClient,
@@ -4116,10 +4117,10 @@ pub struct Messaging {
 
 impl std::fmt::Debug for Messaging {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("Messaging");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("Messaging")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -4132,6 +4133,7 @@ impl Messaging {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
@@ -5989,7 +5991,7 @@ impl super::stub::Messaging for Messaging {
     }
 }
 
-/// Implements [SequenceService](super::stub::SequenceService) using a [gaxi::http::ReqwestClient].
+/// Implements [SequenceService](super::stub::SequenceService) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct SequenceService {
     inner: gaxi::http::ReqwestClient,
@@ -5998,10 +6000,10 @@ pub struct SequenceService {
 
 impl std::fmt::Debug for SequenceService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("SequenceService");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("SequenceService")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -6014,6 +6016,7 @@ impl SequenceService {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,

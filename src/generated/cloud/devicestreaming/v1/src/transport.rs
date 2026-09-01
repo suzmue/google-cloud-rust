@@ -19,7 +19,7 @@ use crate::Error;
 #[allow(unused_imports)]
 use crate::Result;
 
-/// Implements [DirectAccessService](super::stub::DirectAccessService) using a [gaxi::http::ReqwestClient].
+/// Implements [DirectAccessService](super::stub::DirectAccessService) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct DirectAccessService {
     inner: gaxi::http::ReqwestClient,
@@ -28,10 +28,10 @@ pub struct DirectAccessService {
 
 impl std::fmt::Debug for DirectAccessService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        let mut builder = f.debug_struct("DirectAccessService");
-        builder.field("inner", &self.inner);
-        builder.field("grpc_inner", &self.grpc_inner);
-        builder.finish()
+        f.debug_struct("DirectAccessService")
+            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
     }
 }
 
@@ -44,6 +44,7 @@ impl DirectAccessService {
         } else {
             inner
         };
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
