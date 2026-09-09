@@ -56,9 +56,54 @@ impl std::default::Default for BatchingOptions {
     }
 }
 
+/// Configure publisher request hedging behavior.
+#[derive(Clone, Debug, PartialEq)]
+#[non_exhaustive]
+pub struct HedgingOptions {
+    pub delay: std::time::Duration,
+    pub max_tokens: u32,
+    pub refill_ratio: f32,
+}
+
+impl HedgingOptions {
+    /// Create a new instance.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the [HedgingOptions][Self::delay] field.
+    pub fn set_delay<V: Into<std::time::Duration>>(mut self, v: V) -> Self {
+        self.delay = v.into();
+        self
+    }
+
+    /// Set the [HedgingOptions][Self::max_tokens] field.
+    pub fn set_max_tokens<V: Into<u32>>(mut self, v: V) -> Self {
+        self.max_tokens = v.into();
+        self
+    }
+
+    /// Set the [HedgingOptions][Self::refill_ratio] field.
+    pub fn set_refill_ratio<V: Into<f32>>(mut self, v: V) -> Self {
+        self.refill_ratio = v.into();
+        self
+    }
+}
+
+impl std::default::Default for HedgingOptions {
+    fn default() -> Self {
+        Self {
+            delay: std::time::Duration::from_secs(1),
+            max_tokens: 50_u32,
+            refill_ratio: 0.1_f32,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::BatchingOptions;
+    use super::{BatchingOptions, HedgingOptions};
+    use std::time::Duration;
 
     #[tokio::test]
     async fn batching_options() -> anyhow::Result<()> {
@@ -73,5 +118,21 @@ mod tests {
             std::time::Duration::from_millis(12)
         );
         Ok(())
+    }
+
+    #[test]
+    fn hedging_options_defaults_and_builder() {
+        let default_opts = HedgingOptions::default();
+        assert_eq!(default_opts.delay, Duration::from_secs(1));
+        assert_eq!(default_opts.max_tokens, 50);
+        assert_eq!(default_opts.refill_ratio, 0.1);
+
+        let custom_opts = HedgingOptions::new()
+            .set_delay(Duration::from_millis(500))
+            .set_max_tokens(100_u32)
+            .set_refill_ratio(0.05_f32);
+        assert_eq!(custom_opts.delay, Duration::from_millis(500));
+        assert_eq!(custom_opts.max_tokens, 100);
+        assert_eq!(custom_opts.refill_ratio, 0.05);
     }
 }
