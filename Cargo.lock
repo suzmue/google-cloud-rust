@@ -4886,6 +4886,7 @@ version = "1.4.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "base64 0.23.1",
  "bytes",
  "futures",
  "google-cloud-auth",
@@ -8533,6 +8534,27 @@ dependencies = [
  "prost",
  "prost-types",
  "serde_json",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tonic-prost",
+]
+
+[[package]]
+name = "pubsub-hedging"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "clap",
+ "google-cloud-auth",
+ "google-cloud-gax",
+ "google-cloud-pubsub",
+ "humantime",
+ "prost",
+ "prost-types",
+ "rand 0.10.2",
  "tokio",
  "tokio-stream",
  "tonic",

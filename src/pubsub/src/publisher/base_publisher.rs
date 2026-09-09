@@ -43,6 +43,8 @@ use crate::publisher::builder::PublisherPartialBuilder;
 #[derive(Clone, Debug)]
 pub struct BasePublisher {
     pub(crate) inner: crate::generated::gapic_dataplane::client::Publisher,
+    pub(crate) retry_policy:
+        Option<std::sync::Arc<dyn google_cloud_gax::retry_policy::RetryPolicy>>,
 }
 
 pub use super::client_builder::BasePublisherBuilder;
@@ -62,9 +64,13 @@ impl BasePublisher {
 
     /// Creates a new Pub/Sub publisher client with the given configuration.
     pub(crate) async fn new(builder: BasePublisherBuilder) -> crate::ClientBuilderResult<Self> {
+        let retry_policy = builder.config.retry_policy.clone();
         let inner =
             crate::generated::gapic_dataplane::client::Publisher::new(builder.config).await?;
-        std::result::Result::Ok(Self { inner })
+        std::result::Result::Ok(Self {
+            inner,
+            retry_policy,
+        })
     }
 
     /// Creates a new `Publisher` for a given topic.
@@ -85,6 +91,7 @@ impl BasePublisher {
         T: Into<String>,
     {
         PublisherPartialBuilder::new(self.inner.clone(), topic.into())
+            .with_retry_policy(self.retry_policy.clone())
     }
 }
 

@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use super::options::BatchingOptions;
+use super::options::{BatchingOptions, HedgingOptions};
+use super::token_bucket::TokenBucket;
 use crate::generated::gapic_dataplane::client::Publisher as GapicPublisher;
 use crate::publisher::batch::Batch;
+use crate::publisher::hedging::{HedgingScheduler, HedgingSchedulerHandle};
 use std::collections::{HashMap, VecDeque};
 use std::pin::Pin;
+use std::sync::Arc;
 use tokio::sync::{mpsc, oneshot};
 use tokio::task::JoinSet;
 use tokio::time::Sleep;
@@ -58,6 +61,8 @@ pub(crate) struct Dispatcher {
     topic_name: String,
     client: GapicPublisher,
     batching_options: BatchingOptions,
+    hedging_options: Option<HedgingOptions>,
+    total_timeout: Option<std::time::Duration>,
     rx: mpsc::UnboundedReceiver<ToDispatcher>,
 }
 
@@ -66,6 +71,8 @@ impl Dispatcher {
         topic_name: String,
         client: GapicPublisher,
         batching_options: BatchingOptions,
+        hedging_options: Option<HedgingOptions>,
+        total_timeout: Option<std::time::Duration>,
         rx: mpsc::UnboundedReceiver<ToDispatcher>,
     ) -> Self {
         Self {
@@ -73,6 +80,8 @@ impl Dispatcher {
             client,
             rx,
             batching_options,
+            hedging_options,
+            total_timeout,
         }
     }
 
@@ -85,6 +94,8 @@ impl Dispatcher {
                     self.topic_name.clone(),
                     self.client.clone(),
                     self.batching_options.clone(),
+                    self.hedging_options.clone(),
+                    self.total_timeout,
                     rx,
                 )
                 .run(),
@@ -222,6 +233,8 @@ impl BatchActorContext {
 #[derive(Debug)]
 struct ConcurrentBatchActor {
     context: BatchActorContext,
+    hedging: Option<HedgingSchedulerHandle>,
+    _scheduler_task: Option<tokio::task::JoinHandle<()>>,
 }
 
 impl ConcurrentBatchActor {
@@ -229,10 +242,22 @@ impl ConcurrentBatchActor {
         topic: String,
         client: GapicPublisher,
         batching_options: BatchingOptions,
+        hedging_options: Option<HedgingOptions>,
+        total_timeout: Option<std::time::Duration>,
         rx: mpsc::UnboundedReceiver<ToBatchActor>,
     ) -> Self {
+        let (hedging, scheduler_task) = match hedging_options {
+            Some(opts) => {
+                let bucket = Arc::new(TokenBucket::new(opts.max_tokens, opts.refill_ratio));
+                let (handle, task) = HedgingScheduler::spawn(bucket, opts.delay, total_timeout);
+                (Some(handle), Some(task))
+            }
+            None => (None, None),
+        };
         ConcurrentBatchActor {
             context: BatchActorContext::new(topic, client, batching_options, rx),
+            hedging,
+            _scheduler_task: scheduler_task,
         }
     }
 
@@ -318,13 +343,12 @@ impl ConcurrentBatchActor {
 
     // Flush the pending batch if it's not empty.
     fn flush(&mut self, inflight: &mut JoinSet<crate::Result<()>>, batch: &mut Batch) {
-        if !batch.is_empty() {
-            batch.flush(
-                self.context.client.clone(),
-                self.context.topic.clone(),
-                inflight,
-            );
-        }
+        batch.flush(
+            &self.context.client,
+            &self.context.topic,
+            inflight,
+            self.hedging.as_ref(),
+        );
     }
 
     // Move message to the pending batch respecting batch thresholds
@@ -486,13 +510,7 @@ impl SequentialBatchActor {
             self.handle_inflight_join(inflight.join_next().await);
         }
         // Flush the pending batch even if it does not fill the batch.
-        if !batch.is_empty() {
-            batch.flush(
-                self.context.client.clone(),
-                self.context.topic.clone(),
-                inflight,
-            );
-        }
+        batch.flush(&self.context.client, &self.context.topic, inflight, None);
         self.handle_inflight_join(inflight.join_next().await);
     }
 
@@ -521,11 +539,7 @@ impl SequentialBatchActor {
         }
 
         if should_flush {
-            batch.flush(
-                self.context.client.clone(),
-                self.context.topic.clone(),
-                inflight,
-            );
+            batch.flush(&self.context.client, &self.context.topic, inflight, None);
         }
     }
 
@@ -743,6 +757,8 @@ mod tests {
             TOPIC.to_string(),
             client.clone(),
             batching_options.clone(),
+            None,
+            None,
             rx,
         );
 
@@ -771,6 +787,8 @@ mod tests {
                 TOPIC.to_string(),
                 GapicPublisher::from_stub(mock),
                 BatchingOptions::default().set_message_count_threshold(2_u32),
+                None,
+                None,
                 actor_rx,
             )
             .run(),
@@ -848,6 +866,8 @@ mod tests {
                 TOPIC.to_string(),
                 GapicPublisher::from_stub(mock),
                 BatchingOptions::default().set_message_count_threshold(2_u32),
+                None,
+                None,
                 actor_rx,
             )
             .run(),
@@ -929,6 +949,8 @@ mod tests {
                 TOPIC.to_string(),
                 GapicPublisher::from_stub(MockGapicPublisher::new()),
                 BatchingOptions::default(),
+                None,
+                None,
                 actor_rx,
             )
             .run(),
@@ -1018,6 +1040,8 @@ mod tests {
                     .set_message_count_threshold(10_u32)
                     .set_byte_threshold(MAX_BYTES)
                     .set_delay_threshold(std::time::Duration::MAX),
+                None,
+                None,
                 actor_rx,
             )
             .run(),
@@ -1077,6 +1101,8 @@ mod tests {
                 BatchingOptions::default()
                     .set_message_count_threshold(MAX_MESSAGES)
                     .set_byte_threshold(25_u32), // The current test generates 24 byte single message batches.
+                None,
+                None,
                 actor_rx,
             )
             .run(),
@@ -1189,11 +1215,407 @@ mod tests {
                 BatchingOptions::default()
                     .set_message_count_threshold(MAX_MESSAGES)
                     .set_byte_threshold(1_u32), // The current test generates 24 byte single message batches.
+                None,
+                None,
                 actor_rx,
             )
             .run(),
         );
         assert_publish_is_ok!(actor_tx, 10);
+
+        Ok(())
+    }
+
+    #[tokio_test_no_panics(start_paused = true)]
+    async fn concurrent_actor_hedging_delay_triggers_hedged_attempt() -> anyhow::Result<()> {
+        use crate::publisher::options::HedgingOptions;
+        use google_cloud_gax::options::internal::RequestOptionsExt;
+        use std::sync::Arc;
+        use std::sync::atomic::{AtomicBool, Ordering};
+
+        let hedged_received = Arc::new(AtomicBool::new(false));
+        let hedged_received_clone = hedged_received.clone();
+
+        let mut mock = MockGapicPublisherWithFuture::new();
+        // 1. Initial 10 fast publishes to fill the token bucket (10 * 0.1 ratio * 1000 = 1000 tokens = 1 whole token).
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .times(10)
+            .returning(|r, o| Box::pin(async move { publish_ok(r, o) }));
+
+        // 2. Slow attempt 0 (takes 2 seconds)
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(2)).await;
+                    publish_ok(r, o)
+                })
+            });
+
+        // 3. Hedged attempt 1 (sent with telemetry header after 500ms delay, completes quickly)
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_some()
+            })
+            .once()
+            .returning(move |r, o| {
+                let flag = hedged_received_clone.clone();
+                Box::pin(async move {
+                    flag.store(true, Ordering::SeqCst);
+                    publish_ok(r, o)
+                })
+            });
+
+        let (actor_tx, actor_rx) = tokio::sync::mpsc::unbounded_channel();
+        let hedging_options = HedgingOptions::new()
+            .set_delay(Duration::from_millis(500))
+            .set_max_tokens(50_u32)
+            .set_refill_ratio(0.1_f32);
+
+        tokio::spawn(
+            ConcurrentBatchActor::new(
+                TOPIC.to_string(),
+                GapicPublisher::from_stub(mock),
+                BatchingOptions::default().set_message_count_threshold(1_u32),
+                Some(hedging_options),
+                Some(Duration::from_secs(60)),
+                actor_rx,
+            )
+            .run(),
+        );
+
+        // Fill token bucket by publishing 10 messages
+        assert_publish_is_ok!(actor_tx, 10);
+
+        // Now send the 11th message which will trigger hedging after 500ms
+        let start = tokio::time::Instant::now();
+        let (publish_tx, publish_rx) = tokio::sync::oneshot::channel();
+        let bundle = BundledMessage {
+            msg: Message::new().set_data("hedged_msg"),
+            tx: publish_tx,
+        };
+        actor_tx.send(ToBatchActor::Publish(bundle))?;
+        let res = publish_rx.await??;
+        assert_eq!(res, "hedged_msg");
+        assert_eq!(start.elapsed(), Duration::from_millis(500));
+        assert!(hedged_received.load(Ordering::SeqCst));
+
+        Ok(())
+    }
+
+    #[tokio_test_no_panics(start_paused = true)]
+    async fn concurrent_actor_hedging_no_tokens_waits_for_attempt0() -> anyhow::Result<()> {
+        use crate::publisher::options::HedgingOptions;
+        use google_cloud_gax::options::internal::RequestOptionsExt;
+
+        let mut mock = MockGapicPublisherWithFuture::new();
+        // Token bucket starts at 0 tokens, so even after 500ms delay, hedging is NOT attempted.
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(2)).await;
+                    publish_ok(r, o)
+                })
+            });
+
+        let (actor_tx, actor_rx) = tokio::sync::mpsc::unbounded_channel();
+        let hedging_options = HedgingOptions::new()
+            .set_delay(Duration::from_millis(500))
+            .set_max_tokens(50_u32)
+            .set_refill_ratio(0.1_f32);
+
+        tokio::spawn(
+            ConcurrentBatchActor::new(
+                TOPIC.to_string(),
+                GapicPublisher::from_stub(mock),
+                BatchingOptions::default().set_message_count_threshold(1_u32),
+                Some(hedging_options),
+                Some(Duration::from_secs(60)),
+                actor_rx,
+            )
+            .run(),
+        );
+
+        let start = tokio::time::Instant::now();
+        let (publish_tx, publish_rx) = tokio::sync::oneshot::channel();
+        let bundle = BundledMessage {
+            msg: Message::new().set_data("no_token_msg"),
+            tx: publish_tx,
+        };
+        actor_tx.send(ToBatchActor::Publish(bundle))?;
+        let res = publish_rx.await??;
+        assert_eq!(res, "no_token_msg");
+        assert_eq!(start.elapsed(), Duration::from_secs(2));
+
+        Ok(())
+    }
+
+    #[tokio_test_no_panics(start_paused = true)]
+    async fn concurrent_actor_hedging_attempt0_fails_fast() -> anyhow::Result<()> {
+        use crate::publisher::options::HedgingOptions;
+        use google_cloud_gax::options::internal::RequestOptionsExt;
+
+        let mut mock = MockGapicPublisherWithFuture::new();
+        // 10 initial publishes to fill token bucket
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .times(10)
+            .returning(|r, o| Box::pin(async move { publish_ok(r, o) }));
+
+        // Attempt 0 fails after 1 second (exhausting all retries)
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(1)).await;
+                    publish_err(r, o)
+                })
+            });
+
+        // Hedged attempt 1 is launched at 500ms, would take 1s to complete (at 1500ms)
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_some()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(1)).await;
+                    publish_ok(r, o)
+                })
+            });
+
+        let (actor_tx, actor_rx) = tokio::sync::mpsc::unbounded_channel();
+        let hedging_options = HedgingOptions::new()
+            .set_delay(Duration::from_millis(500))
+            .set_max_tokens(50_u32)
+            .set_refill_ratio(0.1_f32);
+
+        tokio::spawn(
+            ConcurrentBatchActor::new(
+                TOPIC.to_string(),
+                GapicPublisher::from_stub(mock),
+                BatchingOptions::default().set_message_count_threshold(1_u32),
+                Some(hedging_options),
+                Some(Duration::from_secs(60)),
+                actor_rx,
+            )
+            .run(),
+        );
+
+        assert_publish_is_ok!(actor_tx, 10);
+
+        let start = tokio::time::Instant::now();
+        let (publish_tx, publish_rx) = tokio::sync::oneshot::channel();
+        let bundle = BundledMessage {
+            msg: Message::new().set_data("fails_fast"),
+            tx: publish_tx,
+        };
+        actor_tx.send(ToBatchActor::Publish(bundle))?;
+        let res = publish_rx.await?;
+        assert!(res.is_err());
+        // Initial attempt failure fails fast at 1s without waiting for hedged attempt at 1.5s
+        assert_eq!(start.elapsed(), Duration::from_secs(1));
+
+        Ok(())
+    }
+
+    #[tokio_test_no_panics(start_paused = true)]
+    async fn concurrent_actor_hedging_attempt1_err_attempt0_ok() -> anyhow::Result<()> {
+        use crate::publisher::options::HedgingOptions;
+        use google_cloud_gax::options::internal::RequestOptionsExt;
+
+        let mut mock = MockGapicPublisherWithFuture::new();
+        // 10 initial publishes to fill token bucket
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .times(10)
+            .returning(|r, o| Box::pin(async move { publish_ok(r, o) }));
+
+        // Attempt 0 takes 2 seconds and succeeds
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(2)).await;
+                    publish_ok(r, o)
+                })
+            });
+
+        // Hedged attempt 1 (launched at 500ms) fails with transient error at 1s
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_some()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_millis(500)).await;
+                    publish_err(r, o)
+                })
+            });
+
+        let (actor_tx, actor_rx) = tokio::sync::mpsc::unbounded_channel();
+        let hedging_options = HedgingOptions::new()
+            .set_delay(Duration::from_millis(500))
+            .set_max_tokens(50_u32)
+            .set_refill_ratio(0.1_f32);
+
+        tokio::spawn(
+            ConcurrentBatchActor::new(
+                TOPIC.to_string(),
+                GapicPublisher::from_stub(mock),
+                BatchingOptions::default().set_message_count_threshold(1_u32),
+                Some(hedging_options),
+                Some(Duration::from_secs(60)),
+                actor_rx,
+            )
+            .run(),
+        );
+
+        assert_publish_is_ok!(actor_tx, 10);
+
+        let start = tokio::time::Instant::now();
+        let (publish_tx, publish_rx) = tokio::sync::oneshot::channel();
+        let bundle = BundledMessage {
+            msg: Message::new().set_data("attempt0_wins"),
+            tx: publish_tx,
+        };
+        actor_tx.send(ToBatchActor::Publish(bundle))?;
+        let res = publish_rx.await??;
+        assert_eq!(res, "attempt0_wins");
+        assert_eq!(start.elapsed(), Duration::from_secs(2));
+
+        Ok(())
+    }
+
+    #[tokio_test_no_panics(start_paused = true)]
+    async fn concurrent_actor_hedging_both_fail() -> anyhow::Result<()> {
+        use crate::publisher::options::HedgingOptions;
+        use google_cloud_gax::options::internal::RequestOptionsExt;
+
+        let mut mock = MockGapicPublisherWithFuture::new();
+        // 10 initial publishes to fill token bucket
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .times(10)
+            .returning(|r, o| Box::pin(async move { publish_ok(r, o) }));
+
+        // Attempt 0 fails after 1 second
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_none()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(1)).await;
+                    publish_err(r, o)
+                })
+            });
+
+        // Hedged attempt 1 also fails after 1 second (1.5 seconds total)
+        mock.expect_publish()
+            .withf(|_req, options| {
+                options
+                    .get_extension::<http::HeaderMap>()
+                    .and_then(|h| h.get("x-goog-pubsub-client-telemetry"))
+                    .is_some()
+            })
+            .once()
+            .returning(|r, o| {
+                Box::pin(async move {
+                    tokio::time::sleep(Duration::from_secs(1)).await;
+                    publish_err(r, o)
+                })
+            });
+
+        let (actor_tx, actor_rx) = tokio::sync::mpsc::unbounded_channel();
+        let hedging_options = HedgingOptions::new()
+            .set_delay(Duration::from_millis(500))
+            .set_max_tokens(50_u32)
+            .set_refill_ratio(0.1_f32);
+
+        tokio::spawn(
+            ConcurrentBatchActor::new(
+                TOPIC.to_string(),
+                GapicPublisher::from_stub(mock),
+                BatchingOptions::default().set_message_count_threshold(1_u32),
+                Some(hedging_options),
+                Some(Duration::from_secs(60)),
+                actor_rx,
+            )
+            .run(),
+        );
+
+        assert_publish_is_ok!(actor_tx, 10);
+
+        let (publish_tx, publish_rx) = tokio::sync::oneshot::channel();
+        let bundle = BundledMessage {
+            msg: Message::new().set_data("both_fail"),
+            tx: publish_tx,
+        };
+        actor_tx.send(ToBatchActor::Publish(bundle))?;
+        let res = publish_rx.await;
+        assert!(matches!(res, Ok(Err(_))), "{res:?}");
 
         Ok(())
     }
