@@ -16,7 +16,7 @@ use super::error::{AppendError, AppendResult};
 use super::stream::Stream;
 use super::transport::Transport;
 use crate::Result;
-use crate::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
+use crate::write::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
 use gaxi::grpc::from_status::to_gax_error;
 use gaxi::grpc::tonic::{Status as TonicStatus, Streaming};
 use std::collections::VecDeque;

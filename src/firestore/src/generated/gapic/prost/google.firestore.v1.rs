@@ -374,38 +374,6 @@ impl ::prost::Name for RequestOptions {
         "type.googleapis.com/google.firestore.v1.RequestOptions".into()
     }
 }
-#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-pub struct ExplainStats {
-    #[prost(message, optional, tag = "1")]
-    pub data: ::core::option::Option<::prost_types::Any>,
-}
-impl ::prost::Name for ExplainStats {
-    const NAME: &'static str = "ExplainStats";
-    const PACKAGE: &'static str = "google.firestore.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "google.firestore.v1.ExplainStats".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "type.googleapis.com/google.firestore.v1.ExplainStats".into()
-    }
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct StructuredPipeline {
-    #[prost(message, optional, tag = "1")]
-    pub pipeline: ::core::option::Option<Pipeline>,
-    #[prost(map = "string, message", tag = "2")]
-    pub options: ::std::collections::HashMap<::prost::alloc::string::String, Value>,
-}
-impl ::prost::Name for StructuredPipeline {
-    const NAME: &'static str = "StructuredPipeline";
-    const PACKAGE: &'static str = "google.firestore.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "google.firestore.v1.StructuredPipeline".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "type.googleapis.com/google.firestore.v1.StructuredPipeline".into()
-    }
-}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StructuredQuery {
     #[prost(message, optional, tag = "1")]
@@ -1664,69 +1632,6 @@ impl ::prost::Name for RunQueryResponse {
     }
     fn type_url() -> ::prost::alloc::string::String {
         "type.googleapis.com/google.firestore.v1.RunQueryResponse".into()
-    }
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ExecutePipelineRequest {
-    #[prost(string, tag = "1")]
-    pub database: ::prost::alloc::string::String,
-    #[prost(bool, tag = "9")]
-    pub auto_commit_transaction: bool,
-    #[prost(message, optional, tag = "10")]
-    pub request_options: ::core::option::Option<RequestOptions>,
-    #[prost(oneof = "execute_pipeline_request::PipelineType", tags = "2")]
-    pub pipeline_type: ::core::option::Option<execute_pipeline_request::PipelineType>,
-    #[prost(oneof = "execute_pipeline_request::ConsistencySelector", tags = "5, 6, 7")]
-    pub consistency_selector: ::core::option::Option<
-        execute_pipeline_request::ConsistencySelector,
-    >,
-}
-/// Nested message and enum types in `ExecutePipelineRequest`.
-pub mod execute_pipeline_request {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum PipelineType {
-        #[prost(message, tag = "2")]
-        StructuredPipeline(super::StructuredPipeline),
-    }
-    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
-    pub enum ConsistencySelector {
-        #[prost(bytes, tag = "5")]
-        Transaction(::prost::bytes::Bytes),
-        #[prost(message, tag = "6")]
-        NewTransaction(super::TransactionOptions),
-        #[prost(message, tag = "7")]
-        ReadTime(::prost_types::Timestamp),
-    }
-}
-impl ::prost::Name for ExecutePipelineRequest {
-    const NAME: &'static str = "ExecutePipelineRequest";
-    const PACKAGE: &'static str = "google.firestore.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "google.firestore.v1.ExecutePipelineRequest".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "type.googleapis.com/google.firestore.v1.ExecutePipelineRequest".into()
-    }
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ExecutePipelineResponse {
-    #[prost(bytes = "bytes", tag = "1")]
-    pub transaction: ::prost::bytes::Bytes,
-    #[prost(message, repeated, tag = "2")]
-    pub results: ::prost::alloc::vec::Vec<Document>,
-    #[prost(message, optional, tag = "3")]
-    pub execution_time: ::core::option::Option<::prost_types::Timestamp>,
-    #[prost(message, optional, tag = "4")]
-    pub explain_stats: ::core::option::Option<ExplainStats>,
-}
-impl ::prost::Name for ExecutePipelineResponse {
-    const NAME: &'static str = "ExecutePipelineResponse";
-    const PACKAGE: &'static str = "google.firestore.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "google.firestore.v1.ExecutePipelineResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "type.googleapis.com/google.firestore.v1.ExecutePipelineResponse".into()
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

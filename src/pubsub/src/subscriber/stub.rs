@@ -13,7 +13,9 @@
 // limitations under the License.
 
 use crate::Result;
-use crate::google::pubsub::v1::{StreamingPullRequest, StreamingPullResponse};
+use crate::generated::gapic_dataplane::prost::google::pubsub::v1::{
+    StreamingPullRequest, StreamingPullResponse,
+};
 use gaxi::grpc::tonic::{Response as TonicResponse, Result as TonicResult};
 use tokio::sync::mpsc::Receiver;
 

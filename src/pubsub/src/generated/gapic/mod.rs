@@ -34,3 +34,19 @@ pub(crate) mod tracing;
 
 #[doc(hidden)]
 pub(crate) mod transport;
+
+pub(crate) const DEFAULT_HOST: &str = "https://pubsub.googleapis.com/";
+
+pub(crate) mod info {
+    const NAME: &str = env!("CARGO_PKG_NAME");
+    const VERSION: &str = env!("CARGO_PKG_VERSION");
+    pub(crate) static X_GOOG_API_CLIENT_HEADER: std::sync::LazyLock<String> =
+        std::sync::LazyLock::new(|| {
+            let ac = gaxi::api_header::XGoogApiClient {
+                name: NAME,
+                version: VERSION,
+                library_type: gaxi::api_header::GAPIC,
+            };
+            ac.rest_header_value()
+        });
+}

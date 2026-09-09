@@ -1003,19 +1003,6 @@ pub mod read_rows_request {
             >,
         ),
     }
-
-    impl OutputFormatSerializationOptions {
-        /// Initializes the enum to the [ArrowSerializationOptions](Self::ArrowSerializationOptions) branch.
-        pub fn from_arrow_serialization_options(
-            value: impl std::convert::Into<
-                std::boxed::Box<
-                    crate::write::generated::gapic_storage::model::ArrowSerializationOptions,
-                >,
-            >,
-        ) -> Self {
-            Self::ArrowSerializationOptions(value.into())
-        }
-    }
 }
 
 /// Information on if the current connection is being throttled.
@@ -1495,25 +1482,6 @@ pub mod read_rows_response {
         ),
     }
 
-    impl Rows {
-        /// Initializes the enum to the [AvroRows](Self::AvroRows) branch.
-        pub fn from_avro_rows(
-            value: impl std::convert::Into<
-                std::boxed::Box<crate::write::generated::gapic_storage::model::AvroRows>,
-            >,
-        ) -> Self {
-            Self::AvroRows(value.into())
-        }
-        /// Initializes the enum to the [ArrowRecordBatch](Self::ArrowRecordBatch) branch.
-        pub fn from_arrow_record_batch(
-            value: impl std::convert::Into<
-                std::boxed::Box<crate::write::generated::gapic_storage::model::ArrowRecordBatch>,
-            >,
-        ) -> Self {
-            Self::ArrowRecordBatch(value.into())
-        }
-    }
-
     /// The schema for the read. If read_options.selected_fields is set, the
     /// schema may be different from the table schema as it will only contain
     /// the selected fields. This schema is equivalent to the one returned by
@@ -1526,25 +1494,6 @@ pub mod read_rows_response {
         AvroSchema(std::boxed::Box<crate::write::generated::gapic_storage::model::AvroSchema>),
         /// Output only. Arrow schema.
         ArrowSchema(std::boxed::Box<crate::write::generated::gapic_storage::model::ArrowSchema>),
-    }
-
-    impl Schema {
-        /// Initializes the enum to the [AvroSchema](Self::AvroSchema) branch.
-        pub fn from_avro_schema(
-            value: impl std::convert::Into<
-                std::boxed::Box<crate::write::generated::gapic_storage::model::AvroSchema>,
-            >,
-        ) -> Self {
-            Self::AvroSchema(value.into())
-        }
-        /// Initializes the enum to the [ArrowSchema](Self::ArrowSchema) branch.
-        pub fn from_arrow_schema(
-            value: impl std::convert::Into<
-                std::boxed::Box<crate::write::generated::gapic_storage::model::ArrowSchema>,
-            >,
-        ) -> Self {
-            Self::ArrowSchema(value.into())
-        }
     }
 }
 
@@ -2296,29 +2245,6 @@ pub mod append_rows_request {
             >,
         ),
     }
-
-    impl Rows {
-        /// Initializes the enum to the [ProtoRows](Self::ProtoRows) branch.
-        pub fn from_proto_rows(
-            value: impl std::convert::Into<
-                std::boxed::Box<
-                    crate::write::generated::gapic_storage::model::append_rows_request::ProtoData,
-                >,
-            >,
-        ) -> Self {
-            Self::ProtoRows(value.into())
-        }
-        /// Initializes the enum to the [ArrowRows](Self::ArrowRows) branch.
-        pub fn from_arrow_rows(
-            value: impl std::convert::Into<
-                std::boxed::Box<
-                    crate::write::generated::gapic_storage::model::append_rows_request::ArrowData,
-                >,
-            >,
-        ) -> Self {
-            Self::ArrowRows(value.into())
-        }
-    }
 }
 
 /// Response message for `AppendRows`.
@@ -2551,21 +2477,6 @@ pub mod append_rows_response {
         ///
         /// INTERNAL: Indicates server side error(s) that can be retried.
         Error(std::boxed::Box<google_cloud_rpc::model::Status>),
-    }
-
-    impl Response {
-        /// Initializes the enum to the [AppendResult](Self::AppendResult) branch.
-        pub fn from_append_result(
-            value: impl std::convert::Into<std::boxed::Box<crate::write::generated::gapic_storage::model::append_rows_response::AppendResult>>,
-        ) -> Self {
-            Self::AppendResult(value.into())
-        }
-        /// Initializes the enum to the [Error](Self::Error) branch.
-        pub fn from_error(
-            value: impl std::convert::Into<std::boxed::Box<google_cloud_rpc::model::Status>>,
-        ) -> Self {
-            Self::Error(value.into())
-        }
     }
 }
 
@@ -4432,29 +4343,6 @@ pub mod read_session {
                 >,
             ),
         }
-
-        impl OutputFormatSerializationOptions {
-            /// Initializes the enum to the [ArrowSerializationOptions](Self::ArrowSerializationOptions) branch.
-            pub fn from_arrow_serialization_options(
-                value: impl std::convert::Into<
-                    std::boxed::Box<
-                        crate::write::generated::gapic_storage::model::ArrowSerializationOptions,
-                    >,
-                >,
-            ) -> Self {
-                Self::ArrowSerializationOptions(value.into())
-            }
-            /// Initializes the enum to the [AvroSerializationOptions](Self::AvroSerializationOptions) branch.
-            pub fn from_avro_serialization_options(
-                value: impl std::convert::Into<
-                    std::boxed::Box<
-                        crate::write::generated::gapic_storage::model::AvroSerializationOptions,
-                    >,
-                >,
-            ) -> Self {
-                Self::AvroSerializationOptions(value.into())
-            }
-        }
     }
 
     /// The schema for the read. If read_options.selected_fields is set, the
@@ -4467,25 +4355,6 @@ pub mod read_session {
         AvroSchema(std::boxed::Box<crate::write::generated::gapic_storage::model::AvroSchema>),
         /// Output only. Arrow schema.
         ArrowSchema(std::boxed::Box<crate::write::generated::gapic_storage::model::ArrowSchema>),
-    }
-
-    impl Schema {
-        /// Initializes the enum to the [AvroSchema](Self::AvroSchema) branch.
-        pub fn from_avro_schema(
-            value: impl std::convert::Into<
-                std::boxed::Box<crate::write::generated::gapic_storage::model::AvroSchema>,
-            >,
-        ) -> Self {
-            Self::AvroSchema(value.into())
-        }
-        /// Initializes the enum to the [ArrowSchema](Self::ArrowSchema) branch.
-        pub fn from_arrow_schema(
-            value: impl std::convert::Into<
-                std::boxed::Box<crate::write::generated::gapic_storage::model::ArrowSchema>,
-            >,
-        ) -> Self {
-            Self::ArrowSchema(value.into())
-        }
     }
 }
 

@@ -18,49 +18,34 @@
 use crate::Error;
 use crate::Result;
 
-const DEFAULT_HOST: &str = "https://firestore.googleapis.com";
-
-mod info {
-    const NAME: &str = env!("CARGO_PKG_NAME");
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-    pub(crate) static X_GOOG_API_CLIENT_HEADER: std::sync::LazyLock<String> =
-        std::sync::LazyLock::new(|| {
-            let ac = gaxi::api_header::XGoogApiClient {
-                name: NAME,
-                version: VERSION,
-                library_type: gaxi::api_header::GAPIC,
-            };
-            ac.grpc_header_value()
-        });
-}
-
-/// Implements [Firestore](super::stub::Firestore) using a gRPC client.
+/// Implements [Firestore](super::stub::Firestore) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Firestore {
-    inner: gaxi::grpc::Client,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Firestore {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Firestore")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
 
 impl Firestore {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
-        let inner = if gaxi::options::tracing_enabled(&config) {
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
+        let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
-                DEFAULT_HOST,
+                super::DEFAULT_HOST,
                 &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
             )
             .await?
         } else {
-            gaxi::grpc::Client::new(config, DEFAULT_HOST).await?
+            gaxi::grpc::Client::new(config, super::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -93,19 +78,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::Document;
+        type TR = super::prost::google::firestore::v1::Document;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/GetDocument");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -146,19 +131,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::ListDocumentsResponse;
+        type TR = super::prost::google::firestore::v1::ListDocumentsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/ListDocuments");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -194,19 +179,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::Document;
+        type TR = super::prost::google::firestore::v1::Document;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/UpdateDocument");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -247,13 +232,13 @@ impl super::stub::Firestore for Firestore {
                 .set_rpc_method("google.firestore.v1.Firestore/DeleteDocument");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -266,6 +251,14 @@ impl super::stub::Firestore for Firestore {
         options: crate::RequestOptions,
     ) -> Result<google_cloud_gax::streaming::ResponseStream<crate::model::BatchGetDocumentsResponse>>
     {
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.database)
+            .map(|s| s.as_str())
+            .map(|v| format!("database={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+
         let extensions = {
             let mut e = gaxi::grpc::tonic::Extensions::new();
             e.insert(gaxi::grpc::tonic::GrpcMethod::new(
@@ -277,26 +270,19 @@ impl super::stub::Firestore for Firestore {
         let path = http::uri::PathAndQuery::from_static(
             "/google.firestore.v1.Firestore/BatchGetDocuments",
         );
-        let x_goog_request_params = [Some(&req)
-            .map(|m| &m.database)
-            .map(|s| s.as_str())
-            .map(|v| format!("database={v}"))]
-        .into_iter()
-        .flatten()
-        .fold(String::new(), |b, p| b + "&" + &p);
 
-        self.inner
+        self.grpc_inner
             .execute_server_streaming::<
                 crate::model::BatchGetDocumentsRequest,
                 crate::model::BatchGetDocumentsResponse,
-                crate::google::firestore::v1::BatchGetDocumentsRequest,
-                crate::google::firestore::v1::BatchGetDocumentsResponse,
+                super::prost::google::firestore::v1::BatchGetDocumentsRequest,
+                super::prost::google::firestore::v1::BatchGetDocumentsResponse,
             >(
                 extensions,
                 path,
                 req,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -330,19 +316,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::BeginTransactionResponse;
+        type TR = super::prost::google::firestore::v1::BeginTransactionResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/BeginTransaction");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -373,19 +359,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::CommitResponse;
+        type TR = super::prost::google::firestore::v1::CommitResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/Commit");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -422,13 +408,13 @@ impl super::stub::Firestore for Firestore {
                 .set_rpc_method("google.firestore.v1.Firestore/Rollback");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -440,6 +426,14 @@ impl super::stub::Firestore for Firestore {
         req: crate::model::RunQueryRequest,
         options: crate::RequestOptions,
     ) -> Result<google_cloud_gax::streaming::ResponseStream<crate::model::RunQueryResponse>> {
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.parent)
+            .map(|s| s.as_str())
+            .map(|v| format!("parent={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+
         let extensions = {
             let mut e = gaxi::grpc::tonic::Extensions::new();
             e.insert(gaxi::grpc::tonic::GrpcMethod::new(
@@ -449,26 +443,19 @@ impl super::stub::Firestore for Firestore {
             e
         };
         let path = http::uri::PathAndQuery::from_static("/google.firestore.v1.Firestore/RunQuery");
-        let x_goog_request_params = [Some(&req)
-            .map(|m| &m.parent)
-            .map(|s| s.as_str())
-            .map(|v| format!("parent={v}"))]
-        .into_iter()
-        .flatten()
-        .fold(String::new(), |b, p| b + "&" + &p);
 
-        self.inner
+        self.grpc_inner
             .execute_server_streaming::<
                 crate::model::RunQueryRequest,
                 crate::model::RunQueryResponse,
-                crate::google::firestore::v1::RunQueryRequest,
-                crate::google::firestore::v1::RunQueryResponse,
+                super::prost::google::firestore::v1::RunQueryRequest,
+                super::prost::google::firestore::v1::RunQueryResponse,
             >(
                 extensions,
                 path,
                 req,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -481,6 +468,14 @@ impl super::stub::Firestore for Firestore {
     ) -> Result<
         google_cloud_gax::streaming::ResponseStream<crate::model::RunAggregationQueryResponse>,
     > {
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.parent)
+            .map(|s| s.as_str())
+            .map(|v| format!("parent={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+
         let extensions = {
             let mut e = gaxi::grpc::tonic::Extensions::new();
             e.insert(gaxi::grpc::tonic::GrpcMethod::new(
@@ -492,26 +487,19 @@ impl super::stub::Firestore for Firestore {
         let path = http::uri::PathAndQuery::from_static(
             "/google.firestore.v1.Firestore/RunAggregationQuery",
         );
-        let x_goog_request_params = [Some(&req)
-            .map(|m| &m.parent)
-            .map(|s| s.as_str())
-            .map(|v| format!("parent={v}"))]
-        .into_iter()
-        .flatten()
-        .fold(String::new(), |b, p| b + "&" + &p);
 
-        self.inner
+        self.grpc_inner
             .execute_server_streaming::<
                 crate::model::RunAggregationQueryRequest,
                 crate::model::RunAggregationQueryResponse,
-                crate::google::firestore::v1::RunAggregationQueryRequest,
-                crate::google::firestore::v1::RunAggregationQueryResponse,
+                super::prost::google::firestore::v1::RunAggregationQueryRequest,
+                super::prost::google::firestore::v1::RunAggregationQueryResponse,
             >(
                 extensions,
                 path,
                 req,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -545,19 +533,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::PartitionQueryResponse;
+        type TR = super::prost::google::firestore::v1::PartitionQueryResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/PartitionQuery");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -583,17 +571,17 @@ impl super::stub::Firestore for Firestore {
         };
         let path = http::uri::PathAndQuery::from_static("/google.firestore.v1.Firestore/Write");
 
-        self.inner
+        self.grpc_inner
             .execute_bidi_streaming::<
                 crate::model::WriteRequest,
                 crate::model::WriteResponse,
-                crate::google::firestore::v1::WriteRequest,
-                crate::google::firestore::v1::WriteResponse,
+                super::prost::google::firestore::v1::WriteRequest,
+                super::prost::google::firestore::v1::WriteResponse,
             >(
                 extensions,
                 path,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 x_goog_request_params,
             )
     }
@@ -617,17 +605,17 @@ impl super::stub::Firestore for Firestore {
         };
         let path = http::uri::PathAndQuery::from_static("/google.firestore.v1.Firestore/Listen");
 
-        self.inner
+        self.grpc_inner
             .execute_bidi_streaming::<
                 crate::model::ListenRequest,
                 crate::model::ListenResponse,
-                crate::google::firestore::v1::ListenRequest,
-                crate::google::firestore::v1::ListenResponse,
+                super::prost::google::firestore::v1::ListenRequest,
+                super::prost::google::firestore::v1::ListenResponse,
             >(
                 extensions,
                 path,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 x_goog_request_params,
             )
     }
@@ -661,19 +649,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::ListCollectionIdsResponse;
+        type TR = super::prost::google::firestore::v1::ListCollectionIdsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/ListCollectionIds");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -708,19 +696,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::BatchWriteResponse;
+        type TR = super::prost::google::firestore::v1::BatchWriteResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/BatchWrite");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -761,19 +749,19 @@ impl super::stub::Firestore for Firestore {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::firestore::v1::Document;
+        type TR = super::prost::google::firestore::v1::Document;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.firestore.v1.Firestore/CreateDocument");
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await

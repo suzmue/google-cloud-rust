@@ -14,34 +14,11 @@
 
 //! Status conversions for Firestore.
 
-use crate::google;
-use gaxi::grpc::status::{any_from_prost, any_to_prost};
-use gaxi::prost::{ConvertError, FromProto, ToProto};
-use google_cloud_rpc::model::Status;
-
-impl ToProto<google::rpc::Status> for Status {
-    type Output = google::rpc::Status;
-    fn to_proto(self) -> Result<Self::Output, ConvertError> {
-        Ok(Self::Output {
-            code: self.code.to_proto()?,
-            message: self.message.to_proto()?,
-            details: self.details.into_iter().filter_map(any_to_prost).collect(),
-        })
-    }
-}
-
-impl FromProto<Status> for google::rpc::Status {
-    fn cnv(self) -> Result<Status, ConvertError> {
-        Ok(Status::new()
-            .set_code(self.code)
-            .set_message(self.message)
-            .set_details(self.details.into_iter().filter_map(any_from_prost)))
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::generated::gapic::prost::google;
+    use gaxi::prost::{FromProto, ToProto};
+    use google_cloud_rpc::model::Status;
 
     #[test]
     fn from_proto() -> anyhow::Result<()> {

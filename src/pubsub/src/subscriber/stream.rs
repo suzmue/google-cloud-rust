@@ -16,7 +16,9 @@ use super::keepalive;
 use super::retry_policy::StreamRetryPolicy;
 use super::stub::{Stub, TonicStreaming};
 use crate::RequestOptions;
-use crate::google::pubsub::v1::{StreamingPullRequest, StreamingPullResponse};
+use crate::generated::gapic_dataplane::prost::google::pubsub::v1::{
+    StreamingPullRequest, StreamingPullResponse,
+};
 use crate::{Error, Result};
 use gaxi::grpc::tonic::Result as TonicResult;
 use google_cloud_gax::backoff_policy::BackoffPolicy;
@@ -158,7 +160,9 @@ mod tests {
     use super::super::lease_state::tests::test_ids;
     use super::super::stub::tests::MockStub;
     use super::*;
-    use crate::google::pubsub::v1::{ReceivedMessage, StreamingPullResponse};
+    use crate::generated::gapic_dataplane::prost::google::pubsub::v1::{
+        ReceivedMessage, StreamingPullResponse,
+    };
     use gaxi::grpc::tonic::Response as TonicResponse;
     use google_cloud_gax::backoff_policy::BackoffPolicy;
     use google_cloud_gax::error::rpc::{Code, Status};

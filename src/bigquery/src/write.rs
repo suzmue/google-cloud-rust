@@ -40,5 +40,7 @@ mod status;
 #[allow(dead_code)]
 pub(crate) mod generated;
 
+pub(crate) use generated::gapic_storage::prost::google;
+
 #[cfg(test)]
 mod test;

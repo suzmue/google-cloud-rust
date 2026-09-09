@@ -75,11 +75,11 @@ impl Append {
 mod tests {
     use super::*;
     use crate::error::AppendError;
-    use crate::google::cloud::bigquery::storage::v1;
-    use crate::google::cloud::bigquery::storage::v1::append_rows_response::{
+    use crate::model::TableSchema;
+    use crate::write::google::cloud::bigquery::storage::v1;
+    use crate::write::google::cloud::bigquery::storage::v1::append_rows_response::{
         AppendResult, Response,
     };
-    use crate::model::TableSchema;
     use crate::write::test::*;
     use tokio::sync::mpsc;
 

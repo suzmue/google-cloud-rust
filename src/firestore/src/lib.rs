@@ -44,25 +44,6 @@ pub use generated::gapic::client;
 pub use generated::gapic::model;
 pub use generated::gapic::stub;
 
-#[allow(dead_code)]
-pub(crate) mod google {
-    pub mod firestore {
-        #[allow(clippy::enum_variant_names)]
-        #[allow(clippy::large_enum_variant)]
-        pub mod v1 {
-            include!("generated/protos/firestore/google.firestore.v1.rs");
-            include!("generated/convert/firestore/convert.rs");
-        }
-    }
-    pub mod r#type {
-        // TODO(#1414) - decide if we want to generate this as its own directory.
-        include!("generated/protos/firestore/google.r#type.rs");
-        include!("generated/convert/type/convert.rs");
-    }
-    pub mod rpc {
-        include!("generated/protos/firestore/google.rpc.rs");
-    }
-}
-
 mod convert;
 pub mod status;
+

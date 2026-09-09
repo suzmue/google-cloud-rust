@@ -22,7 +22,9 @@ use super::shutdown_token::ShutdownToken;
 use super::stream::Stream;
 use super::stub::TonicStreaming as _;
 use super::transport::Transport;
-use crate::google::pubsub::v1::{StreamingPullRequest, StreamingPullResponse};
+use crate::generated::gapic_dataplane::prost::google::pubsub::v1::{
+    StreamingPullRequest, StreamingPullResponse,
+};
 use crate::model::Message;
 use crate::{Error, Result};
 use futures::FutureExt;

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use super::transport::Transport;
-use crate::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
+use crate::write::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
 use crate::{Error, Result};
 use gaxi::grpc::tonic::Streaming;
 use google_cloud_gax::options::RequestOptions;
@@ -53,7 +53,7 @@ async fn open_stream(inner: Arc<Transport>, initial_req: AppendRowsRequest) -> R
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::google::cloud::bigquery::storage::v1::append_rows_response::{
+    use crate::write::google::cloud::bigquery::storage::v1::append_rows_response::{
         AppendResult, Response,
     };
     use crate::write::test::*;

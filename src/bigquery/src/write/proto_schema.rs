@@ -12,29 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::google::cloud::bigquery::storage::v1;
-use crate::model::ProtoSchema;
-use gaxi::prost::{ConvertError, FromProto, ToProto};
-
-impl ToProto<v1::ProtoSchema> for ProtoSchema {
-    type Output = v1::ProtoSchema;
-    fn to_proto(self) -> Result<v1::ProtoSchema, ConvertError> {
-        Ok(v1::ProtoSchema {
-            proto_descriptor: self.proto_descriptor.map(|v| v.to_proto()).transpose()?,
-        })
-    }
-}
-
-impl FromProto<ProtoSchema> for v1::ProtoSchema {
-    fn cnv(self) -> Result<ProtoSchema, ConvertError> {
-        Ok(ProtoSchema::new()
-            .set_or_clear_proto_descriptor(self.proto_descriptor.map(|v| v.cnv()).transpose()?))
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::model::ProtoSchema;
+    use crate::write::generated::gapic_storage::prost::google::cloud::bigquery::storage::v1;
     use gaxi::prost::{FromProto, ToProto};
     use wkt;
 

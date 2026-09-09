@@ -14,7 +14,7 @@
 
 pub(super) use super::generated::gapic_storage::transport::BigQueryWrite as Transport;
 use crate::Result;
-use crate::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
+use crate::write::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
 use gaxi::grpc::tonic::{Response as TonicResponse, Streaming};
 use tokio::sync::mpsc::Receiver;
 use tokio_stream::wrappers::ReceiverStream;
@@ -54,7 +54,7 @@ impl Transport {
         let path = http::uri::PathAndQuery::from_static(
             "/google.cloud.bigquery.storage.v1.BigQueryWrite/AppendRows",
         );
-        self.inner
+        self.grpc_inner
             .bidi_stream(
                 extensions,
                 path,
@@ -70,7 +70,7 @@ impl Transport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::google::cloud::bigquery::storage::v1::append_rows_response::{
+    use crate::write::google::cloud::bigquery::storage::v1::append_rows_response::{
         AppendResult, Response,
     };
     use crate::write::test::*;

@@ -18,49 +18,34 @@
 use crate::Error;
 use crate::Result;
 
-const DEFAULT_HOST: &str = "https://bigquerystorage.googleapis.com";
-
-mod info {
-    const NAME: &str = env!("CARGO_PKG_NAME");
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-    pub(crate) static X_GOOG_API_CLIENT_HEADER: std::sync::LazyLock<String> =
-        std::sync::LazyLock::new(|| {
-            let ac = gaxi::api_header::XGoogApiClient {
-                name: NAME,
-                version: VERSION,
-                library_type: gaxi::api_header::GAPIC,
-            };
-            ac.grpc_header_value()
-        });
-}
-
-/// Implements [BigQueryWrite](super::stub::BigQueryWrite) using a gRPC client.
+/// Implements [BigQueryWrite](super::stub::BigQueryWrite) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct BigQueryWrite {
-    pub(crate) inner: gaxi::grpc::Client,
+    pub(crate) grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for BigQueryWrite {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("BigQueryWrite")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
 
 impl BigQueryWrite {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
-        let inner = if gaxi::options::tracing_enabled(&config) {
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
+        let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
-                DEFAULT_HOST,
+                super::DEFAULT_HOST,
                 &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
             )
             .await?
         } else {
-            gaxi::grpc::Client::new(config, DEFAULT_HOST).await?
+            gaxi::grpc::Client::new(config, super::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -94,7 +79,7 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::cloud::bigquery::storage::v1::WriteStream;
+        type TR = super::prost::google::cloud::bigquery::storage::v1::WriteStream;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.cloud.bigquery.storage.v1.BigQueryWrite/CreateWriteStream");
@@ -111,13 +96,13 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -154,17 +139,17 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
             "/google.cloud.bigquery.storage.v1.BigQueryWrite/AppendRows",
         );
 
-        self.inner
+        self.grpc_inner
             .execute_bidi_streaming::<
                 crate::write::generated::gapic_storage::model::AppendRowsRequest,
                 crate::write::generated::gapic_storage::model::AppendRowsResponse,
-                crate::google::cloud::bigquery::storage::v1::AppendRowsRequest,
-                crate::google::cloud::bigquery::storage::v1::AppendRowsResponse,
+                super::prost::google::cloud::bigquery::storage::v1::AppendRowsRequest,
+                super::prost::google::cloud::bigquery::storage::v1::AppendRowsResponse,
             >(
                 extensions,
                 path,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 x_goog_request_params,
             )
     }
@@ -198,7 +183,7 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::cloud::bigquery::storage::v1::WriteStream;
+        type TR = super::prost::google::cloud::bigquery::storage::v1::WriteStream;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.cloud.bigquery.storage.v1.BigQueryWrite/GetWriteStream");
@@ -215,13 +200,13 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -264,7 +249,7 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::cloud::bigquery::storage::v1::FinalizeWriteStreamResponse;
+        type TR = super::prost::google::cloud::bigquery::storage::v1::FinalizeWriteStreamResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method(
@@ -283,13 +268,13 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -334,7 +319,8 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::cloud::bigquery::storage::v1::BatchCommitWriteStreamsResponse;
+        type TR =
+            super::prost::google::cloud::bigquery::storage::v1::BatchCommitWriteStreamsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method(
@@ -353,13 +339,13 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -401,7 +387,7 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::cloud::bigquery::storage::v1::FlushRowsResponse;
+        type TR = super::prost::google::cloud::bigquery::storage::v1::FlushRowsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.cloud.bigquery.storage.v1.BigQueryWrite/FlushRows");
@@ -418,13 +404,13 @@ impl super::stub::BigQueryWrite for BigQueryWrite {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await

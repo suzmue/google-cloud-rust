@@ -112,8 +112,8 @@ impl AppendWithOffset {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::google::cloud::bigquery::storage::v1;
-    use crate::google::cloud::bigquery::storage::v1::append_rows_response::{
+    use crate::write::google::cloud::bigquery::storage::v1;
+    use crate::write::google::cloud::bigquery::storage::v1::append_rows_response::{
         AppendResult, Response,
     };
     use crate::write::test::*;

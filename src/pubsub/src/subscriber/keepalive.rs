@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::google::pubsub::v1::StreamingPullRequest;
+use crate::generated::gapic_dataplane::prost::google::pubsub::v1::StreamingPullRequest;
 use tokio::sync::mpsc::Sender;
 use tokio::task::JoinHandle;
 use tokio::time::{Duration, Instant, interval_at};

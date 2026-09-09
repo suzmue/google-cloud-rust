@@ -511,13 +511,6 @@ libraries:
     output: src/bigquery
     rust:
       modules:
-        - module_path: crate::write::generated::gapic_storage::model
-          output: src/bigquery/src/write/generated/convert/storage
-          skipped_ids:
-            - .google.cloud.bigquery.storage.v1.BigQueryRead
-            - .google.cloud.bigquery.storage.v1.ProtoSchema
-          api_path: google/cloud/bigquery/storage/v1
-          template: convert-prost
         - extend_grpc_transport: true
           generate_setter_samples: "false"
           generate_rpc_samples: "false"
@@ -529,10 +522,8 @@ libraries:
           skipped_ids:
             - .google.cloud.bigquery.storage.v1.BigQueryRead
           api_path: google/cloud/bigquery/storage/v1
-          template: grpc-client
-        - output: src/bigquery/src/write/generated/protos/storage
-          api_path: google/cloud/bigquery/storage/v1
-          template: prost
+          template: http-client
+          default_transport: grpc
         - module_path: google_cloud_bigquery_v2::model
           output: src/bigquery/src/generated
           skipped_ids:
@@ -920,21 +911,6 @@ libraries:
     skip_release: true
     rust:
       modules:
-        - module_path: crate::generated::gapic::model
-          output: src/firestore/src/generated/convert/firestore
-          skipped_ids:
-            - .google.firestore.v1.Firestore.ExecutePipeline
-            - .google.firestore.v1.ExecutePipelineRequest
-            - .google.firestore.v1.ExecutePipelineResponse
-            - .google.firestore.v1.ExplainStats
-          api_path: google/firestore/v1
-          template: convert-prost
-        - include_list:
-            - latlng.proto
-          module_path: google_cloud_type::model
-          output: src/firestore/src/generated/convert/type
-          api_path: google/type
-          template: convert-prost
         - output: src/firestore/src/generated/gapic
           skipped_ids:
             - .google.firestore.v1.Firestore.ExecutePipeline
@@ -942,10 +918,8 @@ libraries:
             - .google.firestore.v1.ExecutePipelineResponse
             - .google.firestore.v1.ExplainStats
           api_path: google/firestore/v1
-          template: grpc-client
-        - output: src/firestore/src/generated/protos/firestore
-          api_path: google/firestore/v1
-          template: prost
+          template: http-client
+          default_transport: grpc
   - name: google-cloud-firestore-admin-v1
     version: 1.14.0
     apis:
@@ -1314,15 +1288,6 @@ libraries:
     output: src/pubsub
     rust:
       modules:
-        - included_ids:
-            - .google.pubsub.v1.Publisher.Publish
-            - .google.pubsub.v1.Subscriber.StreamingPull
-            - .google.pubsub.v1.Subscriber.Acknowledge
-            - .google.pubsub.v1.Subscriber.ModifyAckDeadline
-          module_path: crate::generated::gapic_dataplane::model
-          output: src/pubsub/src/generated/convert/pubsub
-          api_path: google/pubsub/v1
-          template: convert-prost
         - documentation_overrides:
             - id: .google.pubsub.v1.Publisher
               match: |-
@@ -1375,12 +1340,8 @@ libraries:
           output: src/pubsub/src/generated/gapic_dataplane
           service_config: google/pubsub/v1/pubsub_v1.yaml
           api_path: google/pubsub/v1
-          template: grpc-client
-        - included_ids:
-            - .google.pubsub.v1.Publisher.Publish
-          output: src/pubsub/src/generated/protos/pubsub
-          api_path: google/pubsub/v1
-          template: prost
+          template: http-client
+          default_transport: grpc
       pagination_overrides:
         - id: .google.pubsub.v1.Publisher.ListTopicSubscriptions
           item_field: subscriptions

@@ -14,9 +14,11 @@
 
 use super::stub::{Stub, TonicStreaming};
 use crate::Result;
+use crate::generated::gapic_dataplane::prost::google::pubsub::v1::{
+    StreamingPullRequest, StreamingPullResponse,
+};
 use crate::generated::gapic_dataplane::stub::dynamic::Subscriber as GapicStub;
 pub(super) use crate::generated::gapic_dataplane::transport::Subscriber as Transport;
-use crate::google::pubsub::v1::{StreamingPullRequest, StreamingPullResponse};
 use gaxi::grpc::tonic::{Response as TonicResponse, Result as TonicResult, Streaming};
 use tokio::sync::mpsc::Receiver;
 use tokio_stream::wrappers::ReceiverStream;
@@ -63,7 +65,7 @@ impl Stub for Transport {
         };
         let path =
             http::uri::PathAndQuery::from_static("/google.pubsub.v1.Subscriber/StreamingPull");
-        self.inner
+        self.grpc_inner
             .bidi_stream(
                 extensions,
                 path,
@@ -95,7 +97,7 @@ impl Stub for Transport {
 #[cfg(test)]
 pub(super) mod tests {
     use super::*;
-    use crate::google::pubsub::v1::ReceivedMessage;
+    use crate::generated::gapic_dataplane::prost::google::pubsub::v1::ReceivedMessage;
     use google_cloud_auth::credentials::anonymous::Builder as Anonymous;
     use pubsub_grpc_mock::google::pubsub::v1;
     use pubsub_grpc_mock::{MockSubscriber, start};

@@ -14,7 +14,7 @@
 
 use super::error::{AppendError, AppendResult};
 use super::runner::WriteRequest;
-use crate::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
+use crate::write::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
 use prost::Message;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};

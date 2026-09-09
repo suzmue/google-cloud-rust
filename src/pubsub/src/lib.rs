@@ -170,30 +170,3 @@ pub mod stub {
     pub use crate::generated::gapic::stub::*;
 }
 
-const DEFAULT_HOST: &str = "https://pubsub.googleapis.com";
-
-mod info {
-    use std::sync::LazyLock;
-
-    const NAME: &str = env!("CARGO_PKG_NAME");
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-    pub(crate) static X_GOOG_API_CLIENT_HEADER: LazyLock<String> = LazyLock::new(|| {
-        let ac = gaxi::api_header::XGoogApiClient {
-            name: NAME,
-            version: VERSION,
-            library_type: gaxi::api_header::GAPIC,
-        };
-        ac.grpc_header_value()
-    });
-}
-
-#[allow(dead_code)]
-pub(crate) mod google {
-    pub mod pubsub {
-        #[allow(clippy::enum_variant_names)]
-        pub mod v1 {
-            include!("generated/protos/pubsub/google.pubsub.v1.rs");
-            include!("generated/convert/pubsub/convert.rs");
-        }
-    }
-}

@@ -18,49 +18,34 @@
 use crate::Error;
 use crate::Result;
 
-const DEFAULT_HOST: &str = "https://pubsub.googleapis.com";
-
-mod info {
-    const NAME: &str = env!("CARGO_PKG_NAME");
-    const VERSION: &str = env!("CARGO_PKG_VERSION");
-    pub(crate) static X_GOOG_API_CLIENT_HEADER: std::sync::LazyLock<String> =
-        std::sync::LazyLock::new(|| {
-            let ac = gaxi::api_header::XGoogApiClient {
-                name: NAME,
-                version: VERSION,
-                library_type: gaxi::api_header::GAPIC,
-            };
-            ac.grpc_header_value()
-        });
-}
-
-/// Implements [Publisher](super::stub::Publisher) using a gRPC client.
+/// Implements [Publisher](super::stub::Publisher) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Publisher {
-    pub(crate) inner: gaxi::grpc::Client,
+    pub(crate) grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Publisher {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Publisher")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
 
 impl Publisher {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
-        let inner = if gaxi::options::tracing_enabled(&config) {
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
+        let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
-                DEFAULT_HOST,
+                super::DEFAULT_HOST,
                 &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
             )
             .await?
         } else {
-            gaxi::grpc::Client::new(config, DEFAULT_HOST).await?
+            gaxi::grpc::Client::new(config, super::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -89,7 +74,7 @@ impl super::stub::Publisher for Publisher {
         .flatten()
         .fold(String::new(), |b, p| b + "&" + &p);
 
-        type TR = crate::google::pubsub::v1::PublishResponse;
+        type TR = super::prost::google::pubsub::v1::PublishResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
             let attributes = gaxi::observability::ClientRequestAttributes::default()
                 .set_rpc_method("google.pubsub.v1.Publisher/Publish");
@@ -106,13 +91,13 @@ impl super::stub::Publisher for Publisher {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -120,33 +105,34 @@ impl super::stub::Publisher for Publisher {
     }
 }
 
-/// Implements [Subscriber](super::stub::Subscriber) using a gRPC client.
+/// Implements [Subscriber](super::stub::Subscriber) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Subscriber {
-    pub(crate) inner: gaxi::grpc::Client,
+    pub(crate) grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Subscriber {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Subscriber")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
 
 impl Subscriber {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
-        let inner = if gaxi::options::tracing_enabled(&config) {
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
+        let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
-                DEFAULT_HOST,
+                super::DEFAULT_HOST,
                 &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
             )
             .await?
         } else {
-            gaxi::grpc::Client::new(config, DEFAULT_HOST).await?
+            gaxi::grpc::Client::new(config, super::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -196,13 +182,13 @@ impl super::stub::Subscriber for Subscriber {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -253,13 +239,13 @@ impl super::stub::Subscriber for Subscriber {
             };
             recorder.on_client_request(attributes);
         }
-        self.inner
+        self.grpc_inner
             .execute(
                 extensions,
                 path,
                 req.to_proto().map_err(Error::deser)?,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 &x_goog_request_params,
             )
             .await
@@ -286,17 +272,17 @@ impl super::stub::Subscriber for Subscriber {
         let path =
             http::uri::PathAndQuery::from_static("/google.pubsub.v1.Subscriber/StreamingPull");
 
-        self.inner
+        self.grpc_inner
             .execute_bidi_streaming::<
                 crate::model::StreamingPullRequest,
                 crate::model::StreamingPullResponse,
-                crate::google::pubsub::v1::StreamingPullRequest,
-                crate::google::pubsub::v1::StreamingPullResponse,
+                super::prost::google::pubsub::v1::StreamingPullRequest,
+                super::prost::google::pubsub::v1::StreamingPullResponse,
             >(
                 extensions,
                 path,
                 options,
-                &info::X_GOOG_API_CLIENT_HEADER,
+                &super::info::X_GOOG_API_CLIENT_GRPC_HEADER,
                 x_goog_request_params,
             )
     }

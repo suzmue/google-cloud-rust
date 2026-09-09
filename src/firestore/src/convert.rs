@@ -38,7 +38,7 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::google;
+    use crate::generated::gapic::prost::google;
     use crate::model;
     use gaxi::prost::FromProto;
     use gaxi::prost::ToProto;

@@ -17,9 +17,11 @@
 use super::entry::StreamEntry;
 use super::runner::WriteRequest;
 use super::transport::Transport;
-use crate::google::cloud::bigquery::storage::v1::append_rows_response::{AppendResult, Response};
-use crate::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
 use crate::model::ArrowSchema;
+use crate::write::google::cloud::bigquery::storage::v1::append_rows_response::{
+    AppendResult, Response,
+};
+use crate::write::google::cloud::bigquery::storage::v1::{AppendRowsRequest, AppendRowsResponse};
 use bigquery_grpc_mock::google::cloud::bigquery::storage::v1;
 use google_cloud_auth::credentials::anonymous::Builder as Anonymous;
 use std::sync::Arc;
