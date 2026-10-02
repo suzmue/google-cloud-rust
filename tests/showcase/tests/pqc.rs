@@ -23,4 +23,15 @@ mod pqc {
             .await
             .inspect_err(anydump)
     }
+
+    // This test binary does not install a custom `rustls::crypto::CryptoProvider`,
+    // so the clients use the default key exchange groups. Verify those do not
+    // include `MLKEM1024`.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn mlkem1024_not_default() -> anyhow::Result<()> {
+        integration_tests_showcase::pqc::run_mlkem1024_not_default()
+            .await
+            .inspect_err(anydump)
+    }
 }

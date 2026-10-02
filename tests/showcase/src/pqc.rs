@@ -15,26 +15,41 @@
 //! Post-Quantum Cryptography (PQC) Transport Verification Tests.
 //!
 //! This module verifies that `google-cloud-rust` transports support and negotiate
-//! post-quantum hybrid key exchange algorithms (specifically `X25519MLKEM768`,
-//! IANA group ID `0x11ec` / 4588) when connecting over TLS 1.3.
+//! post-quantum key exchange algorithms when connecting over TLS 1.3:
+//!
+//! * `X25519MLKEM768` (hybrid, IANA group ID `0x11ec` / 4588): offered by the
+//!   default `rustls` + `aws-lc-rs` configuration. See [run].
+//! * `MLKEM1024` (pure ML-KEM, IANA group ID `0x0202` / 514): **not** offered
+//!   by default. Applications opt in by installing a process-default
+//!   `rustls::crypto::CryptoProvider` that includes
+//!   `rustls::crypto::aws_lc_rs::kx_group::MLKEM1024` before building any
+//!   clients. See [run_mlkem1024] and [run_mlkem1024_not_default].
 //!
 //! # Verification Mechanism
 //!
 //! An isolated instance of `gapic-showcase` is spawned with:
 //! * `--tls`: Enables Auto-TLS, generating in-memory CA and server certificates.
 //! * `--ca-cert-output-file <path>`: Exports the self-signed CA certificate PEM.
-//! * `--tls-groups 0x11ec`: Strictly restricts server-accepted key exchange groups
-//!   to `X25519MLKEM768`.
+//! * `--tls-groups <group>`: Strictly restricts server-accepted key exchange
+//!   groups to a single group (e.g. `0x11ec` or `0x0202`).
 //!
 //! If the client's TLS stack (`aws-lc-rs` via `rustls`) does not offer and negotiate
-//! `X25519MLKEM768` during the TLS 1.3 `ClientHello`, the server rejects the handshake
-//! with a TLS `HandshakeFailure` alert.
+//! the pinned group during the TLS 1.3 `ClientHello`, the server rejects the
+//! handshake with a TLS `HandshakeFailure` alert.
+//!
+//! # Requirements
+//!
+//! The `MLKEM1024` tests require `gapic-showcase` to be built with Go >= 1.27.
+//! Earlier Go versions do not support pure `MLKEM1024` (`0x0202`) in
+//! `crypto/tls`, and the server would fail to negotiate any group.
 //!
 //! # Scope of Tests
 //!
 //! 1. **HTTP/REST Unary (`reqwest`)**: Verifies HTTPS unary RPC execution.
 //! 2. **gRPC Streaming (`tonic`)**: Verifies bidirectional streaming RPC execution
 //!    over HTTP/2 TLS.
+//! 3. **Default rejection**: Verifies that, without opting in, the default client
+//!    configuration cannot connect to a server pinned to `MLKEM1024`.
 
 use super::{Anonymous, NeverRetry};
 use crate::Result;
@@ -49,25 +64,153 @@ use std::time::Duration;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 
-/// Dedicated port for the PQC Showcase server to prevent collisions with the standard
-/// showcase test suite (running concurrently on port `:7469`).
-const PQC_PORT: &str = ":7471";
-/// Dedicated fallback port to prevent port collisions with the default `:1337`.
-const PQC_FALLBACK_PORT: &str = ":1339";
-const PQC_ENDPOINT: &str = "https://localhost:7471";
+/// Configuration for an isolated, PQC-pinned showcase server.
+struct ServerConfig {
+    /// The value passed to `--tls-groups`, e.g. `0x11ec`.
+    tls_group: &'static str,
+    /// A human-readable name for the TLS group, used in logs and messages.
+    group_name: &'static str,
+    /// The `--port` value. Each server uses a dedicated port to prevent collisions
+    /// with the standard showcase test suite (running concurrently on `:7469`).
+    port: &'static str,
+    /// The `--fallback-port` value, distinct from the default `:1337`.
+    fallback_port: &'static str,
+    /// The endpoint used by the clients.
+    endpoint: &'static str,
+}
 
-/// Main entry point for the PQC integration test suite.
+/// Pinned to `X25519MLKEM768`, offered by the default client configuration.
+const X25519MLKEM768: ServerConfig = ServerConfig {
+    tls_group: "0x11ec",
+    group_name: "X25519MLKEM768",
+    port: ":7471",
+    fallback_port: ":1339",
+    endpoint: "https://localhost:7471",
+};
+
+/// Pinned to `MLKEM1024`, which requires an application opt-in.
+const MLKEM1024: ServerConfig = ServerConfig {
+    tls_group: "0x0202",
+    group_name: "MLKEM1024",
+    port: ":7472",
+    fallback_port: ":1340",
+    endpoint: "https://localhost:7472",
+};
+
+/// Pinned to `MLKEM1024`, used to verify the default configuration is rejected.
+///
+/// Uses separate ports from [MLKEM1024] so it never collides with that server.
+const MLKEM1024_NOT_DEFAULT: ServerConfig = ServerConfig {
+    tls_group: "0x0202",
+    group_name: "MLKEM1024",
+    port: ":7473",
+    fallback_port: ":1341",
+    endpoint: "https://localhost:7473",
+};
+
+/// Main entry point for the `X25519MLKEM768` PQC integration test suite.
 ///
 /// Spawns an isolated `gapic-showcase` server configured with Auto-TLS and pinned to
 /// `0x11ec` (`X25519MLKEM768`), configures CA trust, and runs transport verifications.
 pub async fn run() -> Result<()> {
-    let _guard = google_cloud_test_utils::tracing::enable_tracing();
+    run_with(&X25519MLKEM768).await
+}
 
+/// Entry point for the `MLKEM1024` PQC integration test suite.
+///
+/// Spawns an isolated `gapic-showcase` server pinned to `0x0202` (`MLKEM1024`),
+/// and runs the transport verifications.
+///
+/// The caller must install a process-default `rustls::crypto::CryptoProvider` that
+/// includes `MLKEM1024` before calling this function, as an application would.
+/// Requires `gapic-showcase` built with Go >= 1.27.
+pub async fn run_mlkem1024() -> Result<()> {
+    run_with(&MLKEM1024).await
+}
+
+/// Verifies that `MLKEM1024` is **not** offered by the default client configuration.
+///
+/// Spawns an isolated `gapic-showcase` server pinned to `0x0202` (`MLKEM1024`) and
+/// asserts that an HTTP unary RPC fails, because the server rejects the TLS
+/// handshake. The CA certificate is trusted, so the failure can only be caused
+/// by the key exchange negotiation.
+///
+/// The caller must **not** install a custom `rustls::crypto::CryptoProvider`.
+/// Requires `gapic-showcase` built with Go >= 1.27.
+pub async fn run_mlkem1024_not_default() -> Result<()> {
+    let _guard = google_cloud_test_utils::tracing::enable_tracing();
+    let config = &MLKEM1024_NOT_DEFAULT;
+    let _server = start_server(config).await?;
+
+    // The usual readiness check performs an RPC, which is expected to fail.
+    // Wait until the server accepts TCP connections instead.
+    wait_until_listening(config).await?;
+
+    let client = Echo::builder()
+        .with_endpoint(config.endpoint)
+        .with_credentials(Anonymous::new().build())
+        .with_retry_policy(NeverRetry)
+        .with_tracing()
+        .build()
+        .await?;
+
+    let result = client
+        .echo()
+        .set_content("this request should not reach the server")
+        .send()
+        .await;
+    let Err(e) = result else {
+        return Err(Error::msg(format!(
+            "expected the TLS handshake to fail with a server pinned to {}, got {result:?}",
+            config.group_name
+        )));
+    };
+    tracing::info!(
+        "Verified the default configuration does not negotiate {}: {e:?}",
+        config.group_name
+    );
+    Ok(())
+}
+
+async fn run_with(config: &ServerConfig) -> Result<()> {
+    let _guard = google_cloud_test_utils::tracing::enable_tracing();
+    let _server = start_server(config).await?;
+
+    // Wait until the server is ready.
+    if let Err(e) = wait_until_ready(config).await {
+        return Err(Error::msg(format!(
+            "showcase PQC server ({}) is not ready: {e:?}",
+            config.group_name
+        )));
+    }
+
+    tracing::info!("testing PQC transport (HTTP unary)");
+    test_pqc_http(config).await?;
+
+    tracing::info!("testing PQC transport (gRPC streaming)");
+    test_pqc_grpc(config).await?;
+
+    Ok(())
+}
+
+/// A running showcase server, and the environment configured to trust its CA.
+///
+/// Dropping this value kills the server and restores `SSL_CERT_FILE`.
+struct Server {
+    _child: tokio::process::Child,
+    _env: scoped_env::ScopedEnv<String>,
+}
+
+async fn start_server(config: &ServerConfig) -> Result<Server> {
     let path = super::install().await?;
     let showcase: PathBuf = [path.as_str(), "bin", "gapic-showcase"].iter().collect();
 
-    let ca_cert_path =
-        std::env::temp_dir().join(format!("showcase_pqc_ca_{}.pem", std::process::id()));
+    // Use a distinct file per server, in case multiple servers share a process.
+    let ca_cert_path = std::env::temp_dir().join(format!(
+        "showcase_pqc_ca_{}_{}.pem",
+        config.tls_group,
+        std::process::id()
+    ));
     if ca_cert_path.exists() {
         let _ = std::fs::remove_file(&ca_cert_path);
     }
@@ -76,19 +219,23 @@ pub async fn run() -> Result<()> {
         .to_str()
         .ok_or_else(|| Error::msg("temp dir path is not valid UTF-8"))?;
 
-    tracing::info!("starting {showcase:?} with Auto-TLS (PQC enabled and pinned to 0x11ec)");
+    tracing::info!(
+        "starting {showcase:?} with Auto-TLS (PQC enabled and pinned to {} / {})",
+        config.tls_group,
+        config.group_name
+    );
     let mut child = Command::new(&showcase)
         .args([
             "run",
             "--port",
-            PQC_PORT,
+            config.port,
             "--fallback-port",
-            PQC_FALLBACK_PORT,
+            config.fallback_port,
             "--tls",
             "--ca-cert-output-file",
             ca_cert_path_str,
             "--tls-groups",
-            "0x11ec", // X25519MLKEM768
+            config.tls_group,
         ])
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
@@ -99,22 +246,12 @@ pub async fn run() -> Result<()> {
 
     // Wait for Showcase to write the autogenerated CA certificate.
     wait_for_ca_cert(&mut child).await?;
-    let _env = scoped_env::ScopedEnv::set("SSL_CERT_FILE", ca_cert_path_str);
+    let env = scoped_env::ScopedEnv::set("SSL_CERT_FILE".to_string(), ca_cert_path_str.to_string());
 
-    // Wait until the server is ready.
-    if let Err(e) = wait_until_ready().await {
-        return Err(Error::msg(format!(
-            "showcase PQC server is not ready ({child:?}): {e:?}"
-        )));
-    }
-
-    tracing::info!("testing PQC transport (HTTP unary)");
-    test_pqc_http().await?;
-
-    tracing::info!("testing PQC transport (gRPC streaming)");
-    test_pqc_grpc().await?;
-
-    Ok(())
+    Ok(Server {
+        _child: child,
+        _env: env,
+    })
 }
 
 async fn wait_for_ca_cert(child: &mut tokio::process::Child) -> Result<()> {
@@ -148,9 +285,9 @@ async fn wait_for_ca_cert(child: &mut tokio::process::Child) -> Result<()> {
     }
 }
 
-async fn wait_until_ready() -> Result<()> {
+async fn wait_until_ready(config: &ServerConfig) -> Result<()> {
     let client = Testing::builder()
-        .with_endpoint(PQC_ENDPOINT)
+        .with_endpoint(config.endpoint)
         .with_credentials(Anonymous::new().build())
         .with_tracing()
         .build()
@@ -165,10 +302,25 @@ async fn wait_until_ready() -> Result<()> {
     Ok(())
 }
 
-/// Verifies that HTTP unary RPCs (`reqwest`) succeed over a TLS channel requiring `X25519MLKEM768`.
-async fn test_pqc_http() -> Result<()> {
+/// Waits until the server accepts TCP connections, without performing a TLS handshake.
+async fn wait_until_listening(config: &ServerConfig) -> Result<()> {
+    let address = format!("localhost{}", config.port);
+    for _ in 0..10 {
+        if tokio::net::TcpStream::connect(&address).await.is_ok() {
+            return Ok(());
+        }
+        tokio::time::sleep(Duration::from_secs(1)).await;
+    }
+    Err(Error::msg(format!(
+        "showcase PQC server ({}) is not listening on {address}",
+        config.group_name
+    )))
+}
+
+/// Verifies that HTTP unary RPCs (`reqwest`) succeed over a TLS channel requiring the pinned group.
+async fn test_pqc_http(config: &ServerConfig) -> Result<()> {
     let client = Echo::builder()
-        .with_endpoint(PQC_ENDPOINT)
+        .with_endpoint(config.endpoint)
         .with_credentials(Anonymous::new().build())
         .with_retry_policy(NeverRetry)
         .with_tracing()
@@ -179,14 +331,17 @@ async fn test_pqc_http() -> Result<()> {
     let response = client.echo().set_content(TEXT).send().await?;
     assert_eq!(response.content, TEXT);
 
-    tracing::info!("Verified HTTP unary RPC over PQC TLS channel");
+    tracing::info!(
+        "Verified HTTP unary RPC over PQC TLS channel ({})",
+        config.tls_group
+    );
     Ok(())
 }
 
-/// Verifies that gRPC bidirectional streaming RPCs (`tonic`) succeed over a TLS channel requiring `X25519MLKEM768`.
-async fn test_pqc_grpc() -> Result<()> {
+/// Verifies that gRPC bidirectional streaming RPCs (`tonic`) succeed over a TLS channel requiring the pinned group.
+async fn test_pqc_grpc(config: &ServerConfig) -> Result<()> {
     let client = Echo::builder()
-        .with_endpoint(PQC_ENDPOINT)
+        .with_endpoint(config.endpoint)
         .with_credentials(Anonymous::new().build())
         .with_retry_policy(NeverRetry)
         .with_tracing()
@@ -216,6 +371,9 @@ async fn test_pqc_grpc() -> Result<()> {
         "gRPC streaming message exchange over PQC TLS channel must match"
     );
 
-    tracing::info!("Verified gRPC streaming over PQC TLS channel (0x11ec)");
+    tracing::info!(
+        "Verified gRPC streaming over PQC TLS channel ({})",
+        config.tls_group
+    );
     Ok(())
 }
