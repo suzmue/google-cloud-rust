@@ -18,3 +18,5 @@ pub mod create_subscription_exactly_once;
 pub mod delete_subscription;
 pub mod enable_subscription_ordering;
 pub mod list_subscriptions;
+pub mod remove_dead_letter_policy;
+pub mod update_dead_letter_policy;

@@ -116,16 +116,23 @@ pub async fn run_subscription_samples(
         .ok_or_else(|| anyhow::anyhow!("invalid topic name: {}", dead_letter_topic.name))?;
     let id = random_subscription_id();
     subscription_names.push(format!("projects/{project_id}/subscriptions/{id}"));
-    let result = subscription::create_dead_letter_subscription::sample(
+    subscription::create_dead_letter_subscription::sample(
         &client,
         &project_id,
         topic_id,
         &id,
         dead_letter_topic_id,
     )
-    .await;
+    .await?;
+    subscription::update_dead_letter_policy::sample(
+        &client,
+        &project_id,
+        &id,
+        dead_letter_topic_id,
+    )
+    .await?;
+    subscription::remove_dead_letter_policy::sample(&client, &project_id, &id).await?;
     let _ = cleanup_test_topic(&topic_admin, &dead_letter_topic.name).await;
-    result?;
 
     // Await the result of the slow subscriber examples.
     while let Some(task) = slow_tasks.join_next().await {
