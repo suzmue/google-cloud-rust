@@ -42,6 +42,13 @@ resource "google_storage_bucket_iam_member" "sa-can-use-build-cache" {
   member = "serviceAccount:${data.google_service_account.integration-test-runner.email}"
 }
 
+# The integration tests call Vertex AI publisher models (e.g. RawPredict).
+resource "google_project_iam_member" "sa-can-use-vertex-ai" {
+  project = var.project
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${data.google_service_account.integration-test-runner.email}"
+}
+
 output "runner" {
   value = data.google_service_account.integration-test-runner.id
 }
