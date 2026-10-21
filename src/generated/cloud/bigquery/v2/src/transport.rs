@@ -18,16 +18,16 @@
 use crate::Error;
 use crate::Result;
 
-/// Implements [DatasetService](super::stub::DatasetService) using a [gaxi::http::ReqwestClient].
+/// Implements [DatasetService](super::stub::DatasetService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct DatasetService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for DatasetService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("DatasetService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -35,13 +35,17 @@ impl std::fmt::Debug for DatasetService {
 impl DatasetService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -51,70 +55,52 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::GetDatasetRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Dataset>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("datasetView", &req.dataset_view)]);
-                let builder = builder.query(&[("accessPolicyVersion", &req.access_policy_version)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "GetDataset",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/GetDataset",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Dataset;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/GetDataset")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/GetDataset");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Dataset>)
     }
 
     async fn insert_dataset(
@@ -122,56 +108,46 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::InsertDatasetRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Dataset>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!("/bigquery/v2/projects/{}/datasets", var_project_id,);
-                let path_template = "/bigquery/v2/projects/{project_id}/datasets";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = builder.query(&[("accessPolicyVersion", &req.access_policy_version)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "InsertDataset",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/InsertDataset",
+        );
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.project_id)
+            .map(|s| s.as_str())
+            .map(|v| format!("project_id={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Dataset;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/InsertDataset")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/InsertDataset");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.dataset, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Dataset>)
     }
 
     async fn patch_dataset(
@@ -179,70 +155,52 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::UpdateOrPatchDatasetRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Dataset>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = builder.query(&[("updateMode", &req.update_mode)]);
-                let builder = builder.query(&[("accessPolicyVersion", &req.access_policy_version)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "PatchDataset",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/PatchDataset",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Dataset;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/PatchDataset")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/PatchDataset");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.dataset, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Dataset>)
     }
 
     async fn update_dataset(
@@ -250,70 +208,52 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::UpdateOrPatchDatasetRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Dataset>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}";
-
-                let builder = self.inner.builder(Method::PUT, path);
-                let builder = builder.query(&[("updateMode", &req.update_mode)]);
-                let builder = builder.query(&[("accessPolicyVersion", &req.access_policy_version)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PUT, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "UpdateDataset",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/UpdateDataset",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Dataset;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/UpdateDataset")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/UpdateDataset");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.dataset, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Dataset>)
     }
 
     async fn delete_dataset(
@@ -321,75 +261,52 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::DeleteDatasetRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = builder.query(&[("deleteContents", &req.delete_contents)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "DeleteDataset",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/DeleteDataset",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/DeleteDataset")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/DeleteDataset");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn list_datasets(
@@ -397,70 +314,46 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::ListDatasetsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::DatasetList>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!("/bigquery/v2/projects/{}/datasets", var_project_id,);
-                let path_template = "/bigquery/v2/projects/{project_id}/datasets";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .max_results
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxResults")
-                        });
-                    let builder = builder.query(&[("pageToken", &req.page_token)]);
-                    let builder = builder.query(&[("all", &req.all)]);
-                    let builder = builder.query(&[("filter", &req.filter)]);
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "ListDatasets",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/ListDatasets",
+        );
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.project_id)
+            .map(|s| s.as_str())
+            .map(|v| format!("project_id={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::DatasetList;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/ListDatasets")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/ListDatasets");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::DatasetList>)
     }
 
     async fn undelete_dataset(
@@ -468,85 +361,65 @@ impl super::stub::DatasetService for DatasetService {
         req: crate::model::UndeleteDatasetRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Dataset>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}:undelete",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}:undelete";
-
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.project_id));
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.dataset_id));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.DatasetService",
+                "UndeleteDataset",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.DatasetService/UndeleteDataset",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Dataset;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.DatasetService/UndeleteDataset")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.DatasetService/UndeleteDataset");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Dataset>)
     }
 }
 
-/// Implements [JobService](super::stub::JobService) using a [gaxi::http::ReqwestClient].
+/// Implements [JobService](super::stub::JobService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct JobService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for JobService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("JobService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -554,13 +427,17 @@ impl std::fmt::Debug for JobService {
 impl JobService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -570,69 +447,51 @@ impl super::stub::JobService for JobService {
         req: crate::model::CancelJobRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::JobCancelResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_job_id = try_match(
-                    Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/jobs/{}/cancel",
-                    var_project_id, var_job_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/jobs/{job_id}/cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = builder.query(&[("location", &req.location)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "job_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "CancelJob",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.JobService/CancelJob");
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.job_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("job_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::JobCancelResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/CancelJob")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/CancelJob");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::JobCancelResponse>)
     }
 
     async fn get_job(
@@ -640,69 +499,51 @@ impl super::stub::JobService for JobService {
         req: crate::model::GetJobRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Job>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_job_id = try_match(
-                    Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/jobs/{}",
-                    var_project_id, var_job_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/jobs/{job_id}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("location", &req.location)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "job_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "GetJob",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.JobService/GetJob");
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.job_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("job_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Job;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/GetJob")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/GetJob");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Job>)
     }
 
     async fn insert_job(
@@ -710,55 +551,45 @@ impl super::stub::JobService for JobService {
         req: crate::model::InsertJobRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Job>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!("/bigquery/v2/projects/{}/jobs", var_project_id,);
-                let path_template = "/bigquery/v2/projects/{project_id}/jobs";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "InsertJob",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.JobService/InsertJob");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.project_id)
+            .map(|s| s.as_str())
+            .map(|v| format!("project_id={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Job;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/InsertJob")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/InsertJob");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.job, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Job>)
     }
 
     async fn delete_job(
@@ -766,75 +597,51 @@ impl super::stub::JobService for JobService {
         req: crate::model::DeleteJobRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_job_id = try_match(
-                    Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/jobs/{}/delete",
-                    var_project_id, var_job_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/jobs/{job_id}/delete";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = builder.query(&[("location", &req.location)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "job_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "DeleteJob",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.JobService/DeleteJob");
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.job_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("job_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/DeleteJob")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/DeleteJob");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn list_jobs(
@@ -842,86 +649,45 @@ impl super::stub::JobService for JobService {
         req: crate::model::ListJobsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::JobList>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!("/bigquery/v2/projects/{}/jobs", var_project_id,);
-                let path_template = "/bigquery/v2/projects/{project_id}/jobs";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = builder.query(&[("allUsers", &req.all_users)]);
-                    let builder = req
-                        .max_results
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxResults")
-                        });
-                    let builder = builder.query(&[("minCreationTime", &req.min_creation_time)]);
-                    let builder = req
-                        .max_creation_time
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxCreationTime")
-                        });
-                    let builder = builder.query(&[("pageToken", &req.page_token)]);
-                    let builder = builder.query(&[("projection", &req.projection)]);
-                    let builder = req
-                        .state_filter
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("stateFilter", p)]));
-                    let builder = builder.query(&[("parentJobId", &req.parent_job_id)]);
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "ListJobs",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.JobService/ListJobs");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.project_id)
+            .map(|s| s.as_str())
+            .map(|v| format!("project_id={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::JobList;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/ListJobs")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/ListJobs");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::JobList>)
     }
 
     async fn get_query_results(
@@ -929,112 +695,52 @@ impl super::stub::JobService for JobService {
         req: crate::model::GetQueryResultsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::GetQueryResultsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_job_id = try_match(
-                    Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/queries/{}",
-                    var_project_id, var_job_id,
-                );
-                let path_template = "/bigquery/v2/projects/{project_id}/queries/{job_id}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .start_index
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "startIndex")
-                        });
-                    let builder = builder.query(&[("pageToken", &req.page_token)]);
-                    let builder = req
-                        .max_results
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxResults")
-                        });
-                    let builder = req
-                        .timeout_ms
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "timeoutMs")
-                        });
-                    let builder = builder.query(&[("location", &req.location)]);
-                    let builder = req
-                        .format_options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "formatOptions")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.job_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "job_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "GetQueryResults",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.JobService/GetQueryResults",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.job_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("job_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::GetQueryResultsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/GetQueryResults")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/GetQueryResults");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::GetQueryResultsResponse>)
     }
 
     async fn query(
@@ -1042,68 +748,58 @@ impl super::stub::JobService for JobService {
         req: crate::model::PostQueryRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::QueryResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!("/bigquery/v2/projects/{}/queries", var_project_id,);
-                let path_template = "/bigquery/v2/projects/{project_id}/queries";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.JobService",
+                "Query",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.JobService/Query");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.project_id)
+            .map(|s| s.as_str())
+            .map(|v| format!("project_id={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::QueryResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.JobService/Query")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.JobService/Query");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.query_request, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::QueryResponse>)
     }
 }
 
-/// Implements [ModelService](super::stub::ModelService) using a [gaxi::http::ReqwestClient].
+/// Implements [ModelService](super::stub::ModelService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct ModelService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for ModelService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("ModelService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -1111,13 +807,17 @@ impl std::fmt::Debug for ModelService {
 impl ModelService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -1127,79 +827,55 @@ impl super::stub::ModelService for ModelService {
         req: crate::model::GetModelRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Model>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_model_id = try_match(
-                    Some(&req).map(|m| &m.model_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/models/{}",
-                    var_project_id, var_dataset_id, var_model_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/models/{model_id}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.model_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "model_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.ModelService",
+                "GetModel",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.ModelService/GetModel");
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.model_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("model_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Model;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.ModelService/GetModel")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.ModelService/GetModel");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Model>)
     }
 
     async fn list_models(
@@ -1207,82 +883,52 @@ impl super::stub::ModelService for ModelService {
         req: crate::model::ListModelsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListModelsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/models",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/models";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .max_results
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxResults")
-                        });
-                    let builder = builder.query(&[("pageToken", &req.page_token)]);
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.ModelService",
+                "ListModels",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.ModelService/ListModels",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::ListModelsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.ModelService/ListModels")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.ModelService/ListModels");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListModelsResponse>)
     }
 
     async fn patch_model(
@@ -1290,79 +936,56 @@ impl super::stub::ModelService for ModelService {
         req: crate::model::PatchModelRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Model>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_model_id = try_match(
-                    Some(&req).map(|m| &m.model_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/models/{}",
-                    var_project_id, var_dataset_id, var_model_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/models/{model_id}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.model_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "model_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.ModelService",
+                "PatchModel",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.ModelService/PatchModel",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.model_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("model_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Model;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.ModelService/PatchModel")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.ModelService/PatchModel");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.model, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Model>)
     }
 
     async fn delete_model(
@@ -1370,98 +993,69 @@ impl super::stub::ModelService for ModelService {
         req: crate::model::DeleteModelRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_model_id = try_match(
-                    Some(&req).map(|m| &m.model_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/models/{}",
-                    var_project_id, var_dataset_id, var_model_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/models/{model_id}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.model_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "model_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.ModelService",
+                "DeleteModel",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.ModelService/DeleteModel",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.model_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("model_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.ModelService/DeleteModel")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.ModelService/DeleteModel");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 }
 
-/// Implements [ProjectService](super::stub::ProjectService) using a [gaxi::http::ReqwestClient].
+/// Implements [ProjectService](super::stub::ProjectService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct ProjectService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for ProjectService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("ProjectService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -1469,13 +1063,17 @@ impl std::fmt::Debug for ProjectService {
 impl ProjectService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -1485,68 +1083,59 @@ impl super::stub::ProjectService for ProjectService {
         req: crate::model::GetServiceAccountRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::GetServiceAccountResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!("/bigquery/v2/projects/{}/serviceAccount", var_project_id,);
-                let path_template = "/bigquery/v2/projects/{project_id}/serviceAccount";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.ProjectService",
+                "GetServiceAccount",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.ProjectService/GetServiceAccount",
+        );
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.project_id)
+            .map(|s| s.as_str())
+            .map(|v| format!("project_id={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::GetServiceAccountResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.ProjectService/GetServiceAccount")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.ProjectService/GetServiceAccount");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::GetServiceAccountResponse>)
     }
 }
 
-/// Implements [RoutineService](super::stub::RoutineService) using a [gaxi::http::ReqwestClient].
+/// Implements [RoutineService](super::stub::RoutineService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct RoutineService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for RoutineService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("RoutineService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -1554,13 +1143,17 @@ impl std::fmt::Debug for RoutineService {
 impl RoutineService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -1570,68 +1163,56 @@ impl super::stub::RoutineService for RoutineService {
         req: crate::model::GetRoutineRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Routine>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_routine_id = try_match(Some(&req).map(|m| &m.routine_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/routines/{}",
-                var_project_id,
-                var_dataset_id,
-                var_routine_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/routines/{routine_id}";
-
-            let builder = self.inner.builder(Method::GET, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::GET, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.routine_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "routine_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RoutineService",
+                "GetRoutine",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RoutineService/GetRoutine",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.routine_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("routine_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Routine;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.RoutineService/GetRoutine")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.RoutineService/GetRoutine");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Routine>)
     }
 
     async fn insert_routine(
@@ -1639,69 +1220,52 @@ impl super::stub::RoutineService for RoutineService {
         req: crate::model::InsertRoutineRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Routine>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/routines",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/routines";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RoutineService",
+                "InsertRoutine",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RoutineService/InsertRoutine",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Routine;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.RoutineService/InsertRoutine")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.RoutineService/InsertRoutine");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.routine, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Routine>)
     }
 
     async fn update_routine(
@@ -1709,68 +1273,56 @@ impl super::stub::RoutineService for RoutineService {
         req: crate::model::UpdateRoutineRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Routine>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_routine_id = try_match(Some(&req).map(|m| &m.routine_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/routines/{}",
-                var_project_id,
-                var_dataset_id,
-                var_routine_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/routines/{routine_id}";
-
-            let builder = self.inner.builder(Method::PUT, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::PUT, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.routine_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "routine_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RoutineService",
+                "UpdateRoutine",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RoutineService/UpdateRoutine",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.routine_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("routine_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Routine;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.RoutineService/UpdateRoutine")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.RoutineService/UpdateRoutine");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.routine, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Routine>)
     }
 
     async fn delete_routine(
@@ -1778,74 +1330,56 @@ impl super::stub::RoutineService for RoutineService {
         req: crate::model::DeleteRoutineRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_routine_id = try_match(Some(&req).map(|m| &m.routine_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/routines/{}",
-                var_project_id,
-                var_dataset_id,
-                var_routine_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/routines/{routine_id}";
-
-            let builder = self.inner.builder(Method::DELETE, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::DELETE, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.routine_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "routine_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RoutineService",
+                "DeleteRoutine",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RoutineService/DeleteRoutine",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.routine_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("routine_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.RoutineService/DeleteRoutine")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.RoutineService/DeleteRoutine");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn list_routines(
@@ -1853,96 +1387,65 @@ impl super::stub::RoutineService for RoutineService {
         req: crate::model::ListRoutinesRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListRoutinesResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/routines",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/routines";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .max_results
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxResults")
-                        });
-                    let builder = builder.query(&[("pageToken", &req.page_token)]);
-                    let builder = builder.query(&[("filter", &req.filter)]);
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RoutineService",
+                "ListRoutines",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RoutineService/ListRoutines",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::ListRoutinesResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.RoutineService/ListRoutines")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.RoutineService/ListRoutines");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListRoutinesResponse>)
     }
 }
 
-/// Implements [RowAccessPolicyService](super::stub::RowAccessPolicyService) using a [gaxi::http::ReqwestClient].
+/// Implements [RowAccessPolicyService](super::stub::RowAccessPolicyService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct RowAccessPolicyService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for RowAccessPolicyService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("RowAccessPolicyService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -1950,13 +1453,17 @@ impl std::fmt::Debug for RowAccessPolicyService {
 impl RowAccessPolicyService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -1966,72 +1473,60 @@ impl super::stub::RowAccessPolicyService for RowAccessPolicyService {
         req: crate::model::ListRowAccessPoliciesRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListRowAccessPoliciesResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_table_id = try_match(Some(&req).map(|m| &m.table_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/tables/{}/rowAccessPolicies",
-                var_project_id,
-                var_dataset_id,
-                var_table_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}/rowAccessPolicies";
-
-            let builder = self.inner.builder(Method::GET, path);
-            let builder = builder.query(&[("pageToken", &req.page_token)]);
-            let builder = builder.query(&[("pageSize", &req.page_size)]);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::GET, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "table_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RowAccessPolicyService",
+                "ListRowAccessPolicies",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RowAccessPolicyService/ListRowAccessPolicies",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::ListRowAccessPoliciesResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.cloud.bigquery.v2.RowAccessPolicyService/ListRowAccessPolicies",
-                    )
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.cloud.bigquery.v2.RowAccessPolicyService/ListRowAccessPolicies",
+                );
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<TR, crate::model::ListRowAccessPoliciesResponse>,
+            )
     }
 
     async fn get_row_access_policy(
@@ -2039,77 +1534,62 @@ impl super::stub::RowAccessPolicyService for RowAccessPolicyService {
         req: crate::model::GetRowAccessPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::RowAccessPolicy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_table_id = try_match(Some(&req).map(|m| &m.table_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_policy_id = try_match(Some(&req).map(|m| &m.policy_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/tables/{}/rowAccessPolicies/{}",
-                var_project_id,
-                var_dataset_id,
-                var_table_id,
-                var_policy_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}/rowAccessPolicies/{policy_id}";
-
-            let builder = self.inner.builder(Method::GET, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::GET, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "table_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.policy_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "policy_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RowAccessPolicyService",
+                "GetRowAccessPolicy",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RowAccessPolicyService/GetRowAccessPolicy",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+            Some(&req)
+                .map(|m| &m.policy_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("policy_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::RowAccessPolicy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.cloud.bigquery.v2.RowAccessPolicyService/GetRowAccessPolicy",
-                    )
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.cloud.bigquery.v2.RowAccessPolicyService/GetRowAccessPolicy",
+                );
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RowAccessPolicy>)
     }
 
     async fn create_row_access_policy(
@@ -2117,70 +1597,58 @@ impl super::stub::RowAccessPolicyService for RowAccessPolicyService {
         req: crate::model::CreateRowAccessPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::RowAccessPolicy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_table_id = try_match(Some(&req).map(|m| &m.table_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/tables/{}/rowAccessPolicies",
-                var_project_id,
-                var_dataset_id,
-                var_table_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}/rowAccessPolicies";
-
-            let builder = self.inner.builder(Method::POST, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::POST, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "table_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RowAccessPolicyService",
+                "CreateRowAccessPolicy",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RowAccessPolicyService/CreateRowAccessPolicy",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::RowAccessPolicy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.cloud.bigquery.v2.RowAccessPolicyService/CreateRowAccessPolicy",
-                    )
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.cloud.bigquery.v2.RowAccessPolicyService/CreateRowAccessPolicy",
+                );
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.row_access_policy, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RowAccessPolicy>)
     }
 
     async fn update_row_access_policy(
@@ -2188,77 +1656,62 @@ impl super::stub::RowAccessPolicyService for RowAccessPolicyService {
         req: crate::model::UpdateRowAccessPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::RowAccessPolicy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_table_id = try_match(Some(&req).map(|m| &m.table_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_policy_id = try_match(Some(&req).map(|m| &m.policy_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/tables/{}/rowAccessPolicies/{}",
-                var_project_id,
-                var_dataset_id,
-                var_table_id,
-                var_policy_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}/rowAccessPolicies/{policy_id}";
-
-            let builder = self.inner.builder(Method::PUT, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::PUT, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "table_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.policy_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "policy_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RowAccessPolicyService",
+                "UpdateRowAccessPolicy",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RowAccessPolicyService/UpdateRowAccessPolicy",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+            Some(&req)
+                .map(|m| &m.policy_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("policy_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::RowAccessPolicy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.cloud.bigquery.v2.RowAccessPolicyService/UpdateRowAccessPolicy",
-                    )
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.cloud.bigquery.v2.RowAccessPolicyService/UpdateRowAccessPolicy",
+                );
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.row_access_policy, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RowAccessPolicy>)
     }
 
     async fn delete_row_access_policy(
@@ -2266,84 +1719,62 @@ impl super::stub::RowAccessPolicyService for RowAccessPolicyService {
         req: crate::model::DeleteRowAccessPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_table_id = try_match(Some(&req).map(|m| &m.table_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_policy_id = try_match(Some(&req).map(|m| &m.policy_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/tables/{}/rowAccessPolicies/{}",
-                var_project_id,
-                var_dataset_id,
-                var_table_id,
-                var_policy_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}/rowAccessPolicies/{policy_id}";
-
-            let builder = self.inner.builder(Method::DELETE, path);
-            let builder = req.force.iter().fold(builder, |builder, p| builder.query(&[("force", p)]));
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::DELETE, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "table_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.policy_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "policy_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RowAccessPolicyService",
+                "DeleteRowAccessPolicy",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RowAccessPolicyService/DeleteRowAccessPolicy",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+            Some(&req)
+                .map(|m| &m.policy_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("policy_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.cloud.bigquery.v2.RowAccessPolicyService/DeleteRowAccessPolicy",
-                    )
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.cloud.bigquery.v2.RowAccessPolicyService/DeleteRowAccessPolicy",
+                );
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn batch_delete_row_access_policies(
@@ -2351,91 +1782,71 @@ impl super::stub::RowAccessPolicyService for RowAccessPolicyService {
         req: crate::model::BatchDeleteRowAccessPoliciesRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_project_id = try_match(Some(&req).map(|m| &m.project_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_dataset_id = try_match(Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_table_id = try_match(Some(&req).map(|m| &m.table_id).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/bigquery/v2/projects/{}/datasets/{}/tables/{}/rowAccessPolicies:batchDelete",
-                var_project_id,
-                var_dataset_id,
-                var_table_id,
-            );
-            let path_template = "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}/rowAccessPolicies:batchDelete";
-
-            let _ = Some(&mut req).map(|m| std::mem::take(&mut m.project_id));
-            let _ = Some(&mut req).map(|m| std::mem::take(&mut m.dataset_id));
-            let _ = Some(&mut req).map(|m| std::mem::take(&mut m.table_id));
-            let builder = self.inner.builder(Method::POST, path);
-            let builder = Ok(builder);
-            Some(builder.map(|b| (b, Method::POST, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "project_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "dataset_id",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "table_id",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.RowAccessPolicyService",
+                "BatchDeleteRowAccessPolicies",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.RowAccessPolicyService/BatchDeleteRowAccessPolicies",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.RowAccessPolicyService/BatchDeleteRowAccessPolicies")
-                    .set_url_template(_path_template)
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.cloud.bigquery.v2.RowAccessPolicyService/BatchDeleteRowAccessPolicies",
+                );
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 }
 
-/// Implements [TableService](super::stub::TableService) using a [gaxi::http::ReqwestClient].
+/// Implements [TableService](super::stub::TableService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct TableService {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for TableService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("TableService")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -2443,13 +1854,17 @@ impl std::fmt::Debug for TableService {
 impl TableService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -2459,81 +1874,55 @@ impl super::stub::TableService for TableService {
         req: crate::model::GetTableRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Table>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_table_id = try_match(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/tables/{}",
-                    var_project_id, var_dataset_id, var_table_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("selectedFields", &req.selected_fields)]);
-                let builder = builder.query(&[("view", &req.view)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "table_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.TableService",
+                "GetTable",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.bigquery.v2.TableService/GetTable");
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Table;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.TableService/GetTable")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.TableService/GetTable");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Table>)
     }
 
     async fn insert_table(
@@ -2541,69 +1930,52 @@ impl super::stub::TableService for TableService {
         req: crate::model::InsertTableRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Table>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/tables",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.TableService",
+                "InsertTable",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.TableService/InsertTable",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Table;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.TableService/InsertTable")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.TableService/InsertTable");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.table, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Table>)
     }
 
     async fn patch_table(
@@ -2611,80 +1983,56 @@ impl super::stub::TableService for TableService {
         req: crate::model::UpdateOrPatchTableRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Table>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_table_id = try_match(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/tables/{}",
-                    var_project_id, var_dataset_id, var_table_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = builder.query(&[("autodetectSchema", &req.autodetect_schema)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "table_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.TableService",
+                "PatchTable",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.TableService/PatchTable",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Table;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.TableService/PatchTable")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.TableService/PatchTable");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.table, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Table>)
     }
 
     async fn update_table(
@@ -2692,80 +2040,56 @@ impl super::stub::TableService for TableService {
         req: crate::model::UpdateOrPatchTableRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Table>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_table_id = try_match(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/tables/{}",
-                    var_project_id, var_dataset_id, var_table_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}";
-
-                let builder = self.inner.builder(Method::PUT, path);
-                let builder = builder.query(&[("autodetectSchema", &req.autodetect_schema)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PUT, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "table_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.TableService",
+                "UpdateTable",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.TableService/UpdateTable",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::Table;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.TableService/UpdateTable")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.TableService/UpdateTable");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.table, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Table>)
     }
 
     async fn delete_table(
@@ -2773,85 +2097,56 @@ impl super::stub::TableService for TableService {
         req: crate::model::DeleteTableRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_table_id = try_match(
-                    Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/tables/{}",
-                    var_project_id, var_dataset_id, var_table_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables/{table_id}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.table_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "table_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.TableService",
+                "DeleteTable",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.TableService/DeleteTable",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+            Some(&req)
+                .map(|m| &m.table_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("table_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.TableService/DeleteTable")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.TableService/DeleteTable");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn list_tables(
@@ -2859,81 +2154,51 @@ impl super::stub::TableService for TableService {
         req: crate::model::ListTablesRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::TableList>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_project_id = try_match(
-                    Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let var_dataset_id = try_match(
-                    Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                )?;
-                let path = format!(
-                    "/bigquery/v2/projects/{}/datasets/{}/tables",
-                    var_project_id, var_dataset_id,
-                );
-                let path_template =
-                    "/bigquery/v2/projects/{project_id}/datasets/{dataset_id}/tables";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .max_results
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "maxResults")
-                        });
-                    let builder = builder.query(&[("pageToken", &req.page_token)]);
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.project_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "project_id",
-                        "*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.dataset_id).map(|s| s.as_str()),
-                        &[Segment::SingleWildcard],
-                        "dataset_id",
-                        "*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.bigquery.v2.TableService",
+                "ListTables",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.cloud.bigquery.v2.TableService/ListTables",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .map(|m| &m.project_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("project_id={v}")),
+            Some(&req)
+                .map(|m| &m.dataset_id)
+                .map(|s| s.as_str())
+                .map(|v| format!("dataset_id={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::bigquery::v2::TableList;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.bigquery.v2.TableService/ListTables")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.bigquery.v2.TableService/ListTables");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::TableList>)
     }
 }
