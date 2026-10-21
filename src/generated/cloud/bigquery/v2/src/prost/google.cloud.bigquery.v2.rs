@@ -1705,7 +1705,7 @@ impl ::prost::Name for BigtableProtoConfig {
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct BigtableColumn {
     #[prost(message, optional, tag = "1")]
-    pub qualifier_encoded: ::core::option::Option<::prost::alloc::vec::Vec<u8>>,
+    pub qualifier_encoded: ::core::option::Option<::prost::bytes::Bytes>,
     #[prost(message, optional, tag = "2")]
     pub qualifier_string: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, tag = "3")]
