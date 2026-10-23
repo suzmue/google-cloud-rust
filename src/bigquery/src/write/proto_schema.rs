@@ -20,7 +20,10 @@ impl ToProto<v1::ProtoSchema> for ProtoSchema {
     type Output = v1::ProtoSchema;
     fn to_proto(self) -> Result<v1::ProtoSchema, ConvertError> {
         Ok(v1::ProtoSchema {
-            proto_descriptor: self.proto_descriptor.map(|v| v.to_proto()).transpose()?,
+            proto_descriptor: self
+                .proto_descriptor
+                .map(ToProto::<prost_types::DescriptorProto>::to_proto)
+                .transpose()?,
         })
     }
 }

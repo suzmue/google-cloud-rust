@@ -52,7 +52,7 @@ mod tests {
             longitude: 34.5,
         };
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::r#type::LatLng>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.cnv()?;

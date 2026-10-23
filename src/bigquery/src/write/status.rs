@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn to_proto() -> anyhow::Result<()> {
         let input = Status::new().set_code(12).set_message("test-message");
-        let got: google::rpc::Status = input.to_proto()?;
+        let got = ToProto::<google::rpc::Status>::to_proto(input)?;
         let want = google::rpc::Status {
             code: 12,
             message: "test-message".into(),

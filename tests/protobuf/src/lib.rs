@@ -516,3 +516,94 @@ async fn cleanup_stale_secrets(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod toproto_canary {
+    use gaxi::prost::{ConvertError, ToProto};
+
+    struct LocalProst;
+
+    // Verifies that none of the external model types converted on `main` today
+    // have an upstream `gaxi::prost::ToProto` implementation. If an upstream
+    // crate (such as `gaxi`) adds a `ToProto<OtherProst>` implementation for one
+    // of these types, the unqualified `.to_proto()` call below will fail to
+    // compile with `E0284: type annotations needed`, alerting us to qualify
+    // any `.to_proto()` calls for that type on `main` before publishing.
+    macro_rules! assert_no_upstream_toproto {
+        (
+            types: [ $( $ty:ty ),* $(,)? ],
+            exprs: [ $( $ety:ty => $expr:expr ),* $(,)? ] $(,)?
+        ) => {
+            $(
+                impl ToProto<LocalProst> for $ty {
+                    type Output = LocalProst;
+                    fn to_proto(self) -> std::result::Result<LocalProst, ConvertError> {
+                        Ok(LocalProst)
+                    }
+                }
+            )*
+            $(
+                impl ToProto<LocalProst> for $ety {
+                    type Output = LocalProst;
+                    fn to_proto(self) -> std::result::Result<LocalProst, ConvertError> {
+                        Ok(LocalProst)
+                    }
+                }
+            )*
+
+            #[test]
+            fn no_upstream_toproto_ambiguity() -> std::result::Result<(), ConvertError> {
+                $(
+                    let _: LocalProst = <$ty>::default().to_proto()?;
+                )*
+                $(
+                    let _: LocalProst = ($expr).to_proto()?;
+                )*
+                Ok(())
+            }
+        };
+    }
+
+    assert_no_upstream_toproto!(
+        types: [
+            google_cloud_rpc::model::Status,
+            google_cloud_type::model::Date,
+            google_cloud_type::model::Expr,
+            google_cloud_type::model::Interval,
+            google_cloud_type::model::LatLng,
+            google_cloud_type::model::LocalizedText,
+            google_cloud_type::model::Money,
+            google_cloud_api::model::HttpBody,
+            google_cloud_api::model::MonitoredResource,
+            google_cloud_logging_type::model::HttpRequest,
+            google_cloud_logging_type::model::LogSeverity,
+            google_cloud_iam_v1::model::AuditConfig,
+            google_cloud_iam_v1::model::AuditConfigDelta,
+            google_cloud_iam_v1::model::AuditLogConfig,
+            google_cloud_iam_v1::model::Binding,
+            google_cloud_iam_v1::model::BindingDelta,
+            google_cloud_iam_v1::model::GetIamPolicyRequest,
+            google_cloud_iam_v1::model::GetPolicyOptions,
+            google_cloud_iam_v1::model::Policy,
+            google_cloud_iam_v1::model::PolicyDelta,
+            google_cloud_iam_v1::model::SetIamPolicyRequest,
+            google_cloud_iam_v1::model::TestIamPermissionsRequest,
+            google_cloud_iam_v1::model::TestIamPermissionsResponse,
+            google_cloud_iam_v1::model::audit_config_delta::Action,
+            google_cloud_iam_v1::model::audit_log_config::LogType,
+            google_cloud_iam_v1::model::binding_delta::Action,
+            google_cloud_longrunning::model::CancelOperationRequest,
+            google_cloud_longrunning::model::DeleteOperationRequest,
+            google_cloud_longrunning::model::GetOperationRequest,
+            google_cloud_longrunning::model::ListOperationsRequest,
+            google_cloud_longrunning::model::ListOperationsResponse,
+            google_cloud_longrunning::model::Operation,
+            google_cloud_longrunning::model::OperationInfo,
+            google_cloud_longrunning::model::WaitOperationRequest,
+        ],
+        exprs: [
+            google_cloud_longrunning::model::operation::Result =>
+                google_cloud_longrunning::model::operation::Result::Error(Default::default()),
+        ],
+    );
+}
