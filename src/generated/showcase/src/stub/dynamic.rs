@@ -928,12 +928,6 @@ pub trait Messaging: std::fmt::Debug + Send + Sync {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::ListBlurbsResponse>>;
 
-    async fn search_blurbs(
-        &self,
-        req: crate::model::SearchBlurbsRequest,
-        options: crate::RequestOptions,
-    ) -> crate::Result<crate::Response<google_cloud_longrunning::model::Operation>>;
-
     async fn stream_blurbs(
         &self,
         req: crate::model::StreamBlurbsRequest,
@@ -1003,21 +997,6 @@ pub trait Messaging: std::fmt::Debug + Send + Sync {
         req: google_cloud_longrunning::model::CancelOperationRequest,
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<()>>;
-
-    fn get_polling_error_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_error_policy::PollingErrorPolicy>;
-
-    fn get_polling_backoff_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_backoff_policy::PollingBackoffPolicy>;
-
-    fn get_poller_options(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> google_cloud_lro::PollerOptions;
 }
 
 /// All implementations of [super::Messaging] also implement [Messaging].
@@ -1111,15 +1090,6 @@ impl<T: super::Messaging> Messaging for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<crate::model::ListBlurbsResponse>> {
         T::list_blurbs(self, req, options).await
-    }
-
-    /// Forwards the call to the implementation provided by `T`.
-    async fn search_blurbs(
-        &self,
-        req: crate::model::SearchBlurbsRequest,
-        options: crate::RequestOptions,
-    ) -> crate::Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        T::search_blurbs(self, req, options).await
     }
 
     /// Forwards the call to the implementation provided by `T`.
@@ -1225,27 +1195,6 @@ impl<T: super::Messaging> Messaging for T {
         options: crate::RequestOptions,
     ) -> crate::Result<crate::Response<()>> {
         T::cancel_operation(self, req, options).await
-    }
-
-    fn get_polling_error_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_error_policy::PollingErrorPolicy> {
-        T::get_polling_error_policy(self, options)
-    }
-
-    fn get_polling_backoff_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_backoff_policy::PollingBackoffPolicy> {
-        T::get_polling_backoff_policy(self, options)
-    }
-
-    fn get_poller_options(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> google_cloud_lro::PollerOptions {
-        T::get_poller_options(self, options)
     }
 }
 

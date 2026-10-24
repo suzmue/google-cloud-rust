@@ -50,6 +50,94 @@ impl gaxi::prost::FromProto<google_cloud_rpc::model::Status> for crate::prost::g
     }
 }
 
+/// Converts a `wkt::Any` with an LRO metadata or response payload to a `prost_types::Any`.
+///
+/// Returns an error if the payload type is not an LRO metadata or response type
+/// in this crate.
+pub(crate) fn lro_any_to_prost(
+    value: wkt::Any,
+) -> std::result::Result<prost_types::Any, gaxi::prost::ConvertError> {
+    use gaxi::prost::{ConvertError, ToProto};
+    match value.type_url().unwrap_or_default() {
+        "" => Ok(prost_types::Any::default()),
+        "type.googleapis.com/google.showcase.v1beta1.WaitMetadata" => value
+            .to_msg::<crate::model::WaitMetadata>()
+            .map_err(ConvertError::other)?
+            .to_proto()
+            .and_then(|prost_msg| {
+                prost_types::Any::from_msg(&prost_msg).map_err(ConvertError::other)
+            }),
+        "type.googleapis.com/google.showcase.v1beta1.WaitResponse" => value
+            .to_msg::<crate::model::WaitResponse>()
+            .map_err(ConvertError::other)?
+            .to_proto()
+            .and_then(|prost_msg| {
+                prost_types::Any::from_msg(&prost_msg).map_err(ConvertError::other)
+            }),
+        type_url => Err(ConvertError::UnexpectedTypeUrl(type_url.to_string())),
+    }
+}
+
+/// Converts a `prost_types::Any` with an LRO metadata or response payload to a `wkt::Any`.
+///
+/// Returns an error if the payload type is not an LRO metadata or response type
+/// in this crate.
+pub(crate) fn lro_any_from_prost(
+    value: prost_types::Any,
+) -> std::result::Result<wkt::Any, gaxi::prost::ConvertError> {
+    use gaxi::prost::{ConvertError, FromProto};
+    match value.type_url.as_str() {
+        "" => Ok(wkt::Any::default()),
+        "type.googleapis.com/google.showcase.v1beta1.WaitMetadata" => value
+            .to_msg::<super::prost::google::showcase::v1beta1::WaitMetadata>()
+            .map_err(ConvertError::other)?
+            .cnv()
+            .and_then(|our_msg| wkt::Any::from_msg(&our_msg).map_err(ConvertError::other)),
+        "type.googleapis.com/google.showcase.v1beta1.WaitResponse" => value
+            .to_msg::<super::prost::google::showcase::v1beta1::WaitResponse>()
+            .map_err(ConvertError::other)?
+            .cnv()
+            .and_then(|our_msg| wkt::Any::from_msg(&our_msg).map_err(ConvertError::other)),
+        type_url => Err(ConvertError::UnexpectedTypeUrl(type_url.to_string())),
+    }
+}
+
+/// Converts the LRO metadata to prost.
+///
+/// Metadata with a payload type that is not an LRO metadata or response type
+/// in this crate is dropped.
+pub(crate) fn lro_metadata_to_prost(
+    value: Option<wkt::Any>,
+) -> std::result::Result<Option<prost_types::Any>, gaxi::prost::ConvertError> {
+    match value.map(lro_any_to_prost).transpose() {
+        Err(gaxi::prost::ConvertError::UnexpectedTypeUrl(_)) => Ok(None),
+        result => result,
+    }
+}
+
+/// Converts the LRO metadata from prost.
+///
+/// Metadata with a payload type that is not an LRO metadata or response type
+/// in this crate is dropped.
+pub(crate) fn lro_metadata_from_prost(
+    value: Option<prost_types::Any>,
+) -> std::result::Result<Option<wkt::Any>, gaxi::prost::ConvertError> {
+    match value.map(lro_any_from_prost).transpose() {
+        Err(gaxi::prost::ConvertError::UnexpectedTypeUrl(_)) => Ok(None),
+        result => result,
+    }
+}
+
+impl gaxi::prost::ToProto<Continent> for crate::model::Continent {
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::Continent",
+            ))
+    }
+}
+
 impl gaxi::prost::ToProto<Severity> for crate::model::Severity {
     type Output = i32;
     fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
@@ -57,6 +145,251 @@ impl gaxi::prost::ToProto<Severity> for crate::model::Severity {
             .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
                 "crate::model::Severity",
             ))
+    }
+}
+
+impl gaxi::prost::ToProto<RepeatRequest> for crate::model::RepeatRequest {
+    type Output = RepeatRequest;
+    fn to_proto(self) -> std::result::Result<RepeatRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            info: self.info.map(|v| v.to_proto()).transpose()?,
+            server_verify: self.server_verify.to_proto()?,
+            intended_binding_uri: self
+                .intended_binding_uri
+                .map(|v| v.to_proto())
+                .transpose()?,
+            f_int32: self.f_int32.to_proto()?,
+            f_int64: self.f_int64.to_proto()?,
+            f_double: self.f_double.to_proto()?,
+            p_int32: self.p_int32.map(|v| v.to_proto()).transpose()?,
+            p_int64: self.p_int64.map(|v| v.to_proto()).transpose()?,
+            p_double: self.p_double.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::RepeatRequest> for RepeatRequest {
+    fn cnv(self) -> std::result::Result<crate::model::RepeatRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::RepeatRequest::new()
+            .set_name(self.name)
+            .set_or_clear_info(self.info.map(|v| v.cnv()).transpose()?)
+            .set_server_verify(self.server_verify)
+            .set_or_clear_intended_binding_uri(
+                self.intended_binding_uri.map(|v| v.cnv()).transpose()?,
+            )
+            .set_f_int32(self.f_int32)
+            .set_f_int64(self.f_int64)
+            .set_f_double(self.f_double)
+            .set_or_clear_p_int32(self.p_int32.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_int64(self.p_int64.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_double(self.p_double.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<RepeatResponse> for crate::model::RepeatResponse {
+    type Output = RepeatResponse;
+    fn to_proto(self) -> std::result::Result<RepeatResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            request: self.request.map(|v| v.to_proto()).transpose()?,
+            binding_uri: self.binding_uri.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::RepeatResponse> for RepeatResponse {
+    fn cnv(self) -> std::result::Result<crate::model::RepeatResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::RepeatResponse::new()
+            .set_or_clear_request(self.request.map(|v| v.cnv()).transpose()?)
+            .set_binding_uri(self.binding_uri))
+    }
+}
+
+impl gaxi::prost::ToProto<compliance_data::LifeKingdom>
+    for crate::model::compliance_data::LifeKingdom
+{
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::compliance_data::LifeKingdom",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<ComplianceData> for crate::model::ComplianceData {
+    type Output = ComplianceData;
+    fn to_proto(self) -> std::result::Result<ComplianceData, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            f_string: self.f_string.to_proto()?,
+            f_int32: self.f_int32.to_proto()?,
+            f_sint32: self.f_sint32.to_proto()?,
+            f_sfixed32: self.f_sfixed32.to_proto()?,
+            f_uint32: self.f_uint32.to_proto()?,
+            f_fixed32: self.f_fixed32.to_proto()?,
+            f_int64: self.f_int64.to_proto()?,
+            f_sint64: self.f_sint64.to_proto()?,
+            f_sfixed64: self.f_sfixed64.to_proto()?,
+            f_uint64: self.f_uint64.to_proto()?,
+            f_fixed64: self.f_fixed64.to_proto()?,
+            f_double: self.f_double.to_proto()?,
+            f_float: self.f_float.to_proto()?,
+            f_bool: self.f_bool.to_proto()?,
+            f_bytes: self.f_bytes.to_proto()?,
+            f_kingdom: self.f_kingdom.to_proto()?,
+            f_child: self.f_child.map(|v| v.to_proto()).transpose()?,
+            p_string: self.p_string.map(|v| v.to_proto()).transpose()?,
+            p_int32: self.p_int32.map(|v| v.to_proto()).transpose()?,
+            p_sint32: self.p_sint32.map(|v| v.to_proto()).transpose()?,
+            p_sfixed32: self.p_sfixed32.map(|v| v.to_proto()).transpose()?,
+            p_uint32: self.p_uint32.map(|v| v.to_proto()).transpose()?,
+            p_fixed32: self.p_fixed32.map(|v| v.to_proto()).transpose()?,
+            p_int64: self.p_int64.map(|v| v.to_proto()).transpose()?,
+            p_sint64: self.p_sint64.map(|v| v.to_proto()).transpose()?,
+            p_sfixed64: self.p_sfixed64.map(|v| v.to_proto()).transpose()?,
+            p_uint64: self.p_uint64.map(|v| v.to_proto()).transpose()?,
+            p_fixed64: self.p_fixed64.map(|v| v.to_proto()).transpose()?,
+            p_float: self.p_float.map(|v| v.to_proto()).transpose()?,
+            p_double: self.p_double.map(|v| v.to_proto()).transpose()?,
+            p_bool: self.p_bool.map(|v| v.to_proto()).transpose()?,
+            p_kingdom: self.p_kingdom.map(|v| v.to_proto()).transpose()?,
+            p_child: self.p_child.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ComplianceData> for ComplianceData {
+    fn cnv(self) -> std::result::Result<crate::model::ComplianceData, gaxi::prost::ConvertError> {
+        Ok(crate::model::ComplianceData::new()
+            .set_f_string(self.f_string)
+            .set_f_int32(self.f_int32)
+            .set_f_sint32(self.f_sint32)
+            .set_f_sfixed32(self.f_sfixed32)
+            .set_f_uint32(self.f_uint32)
+            .set_f_fixed32(self.f_fixed32)
+            .set_f_int64(self.f_int64)
+            .set_f_sint64(self.f_sint64)
+            .set_f_sfixed64(self.f_sfixed64)
+            .set_f_uint64(self.f_uint64)
+            .set_f_fixed64(self.f_fixed64)
+            .set_f_double(self.f_double)
+            .set_f_float(self.f_float)
+            .set_f_bool(self.f_bool)
+            .set_f_bytes(self.f_bytes)
+            .set_f_kingdom(self.f_kingdom)
+            .set_or_clear_f_child(self.f_child.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_string(self.p_string.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_int32(self.p_int32.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_sint32(self.p_sint32.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_sfixed32(self.p_sfixed32.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_uint32(self.p_uint32.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_fixed32(self.p_fixed32.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_int64(self.p_int64.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_sint64(self.p_sint64.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_sfixed64(self.p_sfixed64.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_uint64(self.p_uint64.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_fixed64(self.p_fixed64.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_float(self.p_float.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_double(self.p_double.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_bool(self.p_bool.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_kingdom(self.p_kingdom.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_child(self.p_child.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<ComplianceDataChild> for crate::model::ComplianceDataChild {
+    type Output = ComplianceDataChild;
+    fn to_proto(self) -> std::result::Result<ComplianceDataChild, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            f_string: self.f_string.to_proto()?,
+            f_float: self.f_float.to_proto()?,
+            f_double: self.f_double.to_proto()?,
+            f_bool: self.f_bool.to_proto()?,
+            f_continent: self.f_continent.to_proto()?,
+            f_child: self.f_child.map(|v| v.to_proto()).transpose()?,
+            p_string: self.p_string.map(|v| v.to_proto()).transpose()?,
+            p_float: self.p_float.map(|v| v.to_proto()).transpose()?,
+            p_double: self.p_double.map(|v| v.to_proto()).transpose()?,
+            p_bool: self.p_bool.map(|v| v.to_proto()).transpose()?,
+            p_continent: self.p_continent.to_proto()?,
+            p_child: self.p_child.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ComplianceDataChild> for ComplianceDataChild {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ComplianceDataChild, gaxi::prost::ConvertError> {
+        Ok(crate::model::ComplianceDataChild::new()
+            .set_f_string(self.f_string)
+            .set_f_float(self.f_float)
+            .set_f_double(self.f_double)
+            .set_f_bool(self.f_bool)
+            .set_f_continent(self.f_continent)
+            .set_or_clear_f_child(self.f_child.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_string(self.p_string.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_float(self.p_float.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_double(self.p_double.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_p_bool(self.p_bool.map(|v| v.cnv()).transpose()?)
+            .set_p_continent(self.p_continent)
+            .set_or_clear_p_child(self.p_child.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<ComplianceDataGrandchild> for crate::model::ComplianceDataGrandchild {
+    type Output = ComplianceDataGrandchild;
+    fn to_proto(self) -> std::result::Result<ComplianceDataGrandchild, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            f_string: self.f_string.to_proto()?,
+            f_double: self.f_double.to_proto()?,
+            f_bool: self.f_bool.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ComplianceDataGrandchild> for ComplianceDataGrandchild {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ComplianceDataGrandchild, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::ComplianceDataGrandchild::new()
+            .set_f_string(self.f_string)
+            .set_f_double(self.f_double)
+            .set_f_bool(self.f_bool))
+    }
+}
+
+impl gaxi::prost::ToProto<EnumRequest> for crate::model::EnumRequest {
+    type Output = EnumRequest;
+    fn to_proto(self) -> std::result::Result<EnumRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            unknown_enum: self.unknown_enum.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::EnumRequest> for EnumRequest {
+    fn cnv(self) -> std::result::Result<crate::model::EnumRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::EnumRequest::new().set_unknown_enum(self.unknown_enum))
+    }
+}
+
+impl gaxi::prost::ToProto<EnumResponse> for crate::model::EnumResponse {
+    type Output = EnumResponse;
+    fn to_proto(self) -> std::result::Result<EnumResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            request: self.request.map(|v| v.to_proto()).transpose()?,
+            continent: self.continent.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::EnumResponse> for EnumResponse {
+    fn cnv(self) -> std::result::Result<crate::model::EnumResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::EnumResponse::new()
+            .set_or_clear_request(self.request.map(|v| v.cnv()).transpose()?)
+            .set_continent(self.continent))
     }
 }
 
@@ -130,6 +463,195 @@ impl gaxi::prost::FromProto<crate::model::EchoResponse> for EchoResponse {
     }
 }
 
+impl gaxi::prost::ToProto<EchoErrorDetailsRequest> for crate::model::EchoErrorDetailsRequest {
+    type Output = EchoErrorDetailsRequest;
+    fn to_proto(self) -> std::result::Result<EchoErrorDetailsRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            single_detail_text: self.single_detail_text.to_proto()?,
+            multi_detail_text: self
+                .multi_detail_text
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::EchoErrorDetailsRequest> for EchoErrorDetailsRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::EchoErrorDetailsRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::EchoErrorDetailsRequest::new()
+            .set_single_detail_text(self.single_detail_text)
+            .set_multi_detail_text(
+                self.multi_detail_text
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<echo_error_details_response::SingleDetail>
+    for crate::model::echo_error_details_response::SingleDetail
+{
+    type Output = echo_error_details_response::SingleDetail;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<echo_error_details_response::SingleDetail, gaxi::prost::ConvertError>
+    {
+        Ok(Self::Output {
+            error: self.error.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::echo_error_details_response::SingleDetail>
+    for echo_error_details_response::SingleDetail
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        crate::model::echo_error_details_response::SingleDetail,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(
+            crate::model::echo_error_details_response::SingleDetail::new()
+                .set_or_clear_error(self.error.map(|v| v.cnv()).transpose()?),
+        )
+    }
+}
+
+impl gaxi::prost::ToProto<echo_error_details_response::MultipleDetails>
+    for crate::model::echo_error_details_response::MultipleDetails
+{
+    type Output = echo_error_details_response::MultipleDetails;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<echo_error_details_response::MultipleDetails, gaxi::prost::ConvertError>
+    {
+        Ok(Self::Output {
+            error: self.error.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::echo_error_details_response::MultipleDetails>
+    for echo_error_details_response::MultipleDetails
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        crate::model::echo_error_details_response::MultipleDetails,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(
+            crate::model::echo_error_details_response::MultipleDetails::new()
+                .set_or_clear_error(self.error.map(|v| v.cnv()).transpose()?),
+        )
+    }
+}
+
+impl gaxi::prost::ToProto<EchoErrorDetailsResponse> for crate::model::EchoErrorDetailsResponse {
+    type Output = EchoErrorDetailsResponse;
+    fn to_proto(self) -> std::result::Result<EchoErrorDetailsResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            single_detail: self.single_detail.map(|v| v.to_proto()).transpose()?,
+            multiple_details: self.multiple_details.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::EchoErrorDetailsResponse> for EchoErrorDetailsResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::EchoErrorDetailsResponse, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::EchoErrorDetailsResponse::new()
+            .set_or_clear_single_detail(self.single_detail.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_multiple_details(self.multiple_details.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<ErrorWithSingleDetail> for crate::model::ErrorWithSingleDetail {
+    type Output = ErrorWithSingleDetail;
+    fn to_proto(self) -> std::result::Result<ErrorWithSingleDetail, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            ..Self::Output::default()
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ErrorWithSingleDetail> for ErrorWithSingleDetail {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ErrorWithSingleDetail, gaxi::prost::ConvertError> {
+        Ok(crate::model::ErrorWithSingleDetail::new())
+    }
+}
+
+impl gaxi::prost::ToProto<ErrorWithMultipleDetails> for crate::model::ErrorWithMultipleDetails {
+    type Output = ErrorWithMultipleDetails;
+    fn to_proto(self) -> std::result::Result<ErrorWithMultipleDetails, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            ..Self::Output::default()
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ErrorWithMultipleDetails> for ErrorWithMultipleDetails {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ErrorWithMultipleDetails, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::ErrorWithMultipleDetails::new())
+    }
+}
+
+impl gaxi::prost::ToProto<FailEchoWithDetailsRequest> for crate::model::FailEchoWithDetailsRequest {
+    type Output = FailEchoWithDetailsRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<FailEchoWithDetailsRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            message: self.message.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::FailEchoWithDetailsRequest>
+    for FailEchoWithDetailsRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::FailEchoWithDetailsRequest, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::FailEchoWithDetailsRequest::new().set_message(self.message))
+    }
+}
+
+impl gaxi::prost::ToProto<FailEchoWithDetailsResponse>
+    for crate::model::FailEchoWithDetailsResponse
+{
+    type Output = FailEchoWithDetailsResponse;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<FailEchoWithDetailsResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {})
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::FailEchoWithDetailsResponse>
+    for FailEchoWithDetailsResponse
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::FailEchoWithDetailsResponse, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::FailEchoWithDetailsResponse::new())
+    }
+}
+
 impl gaxi::prost::ToProto<ExpandRequest> for crate::model::ExpandRequest {
     type Output = ExpandRequest;
     fn to_proto(self) -> std::result::Result<ExpandRequest, gaxi::prost::ConvertError> {
@@ -147,6 +669,585 @@ impl gaxi::prost::FromProto<crate::model::ExpandRequest> for ExpandRequest {
             .set_content(self.content)
             .set_or_clear_error(self.error.map(|v| v.cnv()).transpose()?)
             .set_or_clear_stream_wait_time(self.stream_wait_time.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<PagedExpandRequest> for crate::model::PagedExpandRequest {
+    type Output = PagedExpandRequest;
+    fn to_proto(self) -> std::result::Result<PagedExpandRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            content: self.content.to_proto()?,
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::PagedExpandRequest> for PagedExpandRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::PagedExpandRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::PagedExpandRequest::new()
+            .set_content(self.content)
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<PagedExpandLegacyRequest> for crate::model::PagedExpandLegacyRequest {
+    type Output = PagedExpandLegacyRequest;
+    fn to_proto(self) -> std::result::Result<PagedExpandLegacyRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            content: self.content.to_proto()?,
+            max_results: self.max_results.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::PagedExpandLegacyRequest> for PagedExpandLegacyRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::PagedExpandLegacyRequest, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::PagedExpandLegacyRequest::new()
+            .set_content(self.content)
+            .set_max_results(self.max_results)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<PagedExpandResponse> for crate::model::PagedExpandResponse {
+    type Output = PagedExpandResponse;
+    fn to_proto(self) -> std::result::Result<PagedExpandResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            responses: self
+                .responses
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::PagedExpandResponse> for PagedExpandResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::PagedExpandResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::PagedExpandResponse::new()
+            .set_responses(
+                self.responses
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<PagedExpandResponseList> for crate::model::PagedExpandResponseList {
+    type Output = PagedExpandResponseList;
+    fn to_proto(self) -> std::result::Result<PagedExpandResponseList, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            words: self
+                .words
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::PagedExpandResponseList> for PagedExpandResponseList {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::PagedExpandResponseList, gaxi::prost::ConvertError> {
+        Ok(crate::model::PagedExpandResponseList::new().set_words(
+            self.words
+                .into_iter()
+                .map(|v| v.cnv())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        ))
+    }
+}
+
+impl gaxi::prost::ToProto<PagedExpandLegacyMappedResponse>
+    for crate::model::PagedExpandLegacyMappedResponse
+{
+    type Output = PagedExpandLegacyMappedResponse;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<PagedExpandLegacyMappedResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            alphabetized: self
+                .alphabetized
+                .into_iter()
+                .map(|(k, v)| gaxi::prost::pair_transpose(k.to_proto(), v.to_proto()))
+                .collect::<std::result::Result<std::collections::HashMap<_, _>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::PagedExpandLegacyMappedResponse>
+    for PagedExpandLegacyMappedResponse
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::PagedExpandLegacyMappedResponse, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::PagedExpandLegacyMappedResponse::new()
+            .set_alphabetized(
+                self.alphabetized
+                    .into_iter()
+                    .map(|(k, v)| gaxi::prost::pair_transpose(k.cnv(), v.cnv()))
+                    .collect::<std::result::Result<std::collections::HashMap<_, _>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<wait_request::End> for crate::model::wait_request::End {
+    type Output = wait_request::End;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        match self {
+            Self::EndTime(v) => Ok(Self::Output::EndTime((*v).to_proto()?)),
+            Self::Ttl(v) => Ok(Self::Output::Ttl((*v).to_proto()?)),
+        }
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::wait_request::End> for wait_request::End {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::wait_request::End, gaxi::prost::ConvertError> {
+        use crate::model::wait_request::End as T;
+        match self {
+            Self::EndTime(v) => Ok(T::EndTime(std::boxed::Box::new(v.cnv()?))),
+            Self::Ttl(v) => Ok(T::Ttl(std::boxed::Box::new(v.cnv()?))),
+        }
+    }
+}
+
+impl gaxi::prost::ToProto<wait_request::Response> for crate::model::wait_request::Response {
+    type Output = wait_request::Response;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        match self {
+            Self::Error(v) => Ok(Self::Output::Error((*v).to_proto()?)),
+            Self::Success(v) => Ok(Self::Output::Success((*v).to_proto()?)),
+        }
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::wait_request::Response> for wait_request::Response {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::wait_request::Response, gaxi::prost::ConvertError> {
+        use crate::model::wait_request::Response as T;
+        match self {
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
+            Self::Success(v) => Ok(T::Success(std::boxed::Box::new(v.cnv()?))),
+        }
+    }
+}
+
+impl gaxi::prost::ToProto<WaitRequest> for crate::model::WaitRequest {
+    type Output = WaitRequest;
+    fn to_proto(self) -> std::result::Result<WaitRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            end: self.end.map(|v| v.to_proto()).transpose()?,
+            response: self.response.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::WaitRequest> for WaitRequest {
+    fn cnv(self) -> std::result::Result<crate::model::WaitRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::WaitRequest::new()
+            .set_end(self.end.map(|v| v.cnv()).transpose()?)
+            .set_response(self.response.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<WaitResponse> for crate::model::WaitResponse {
+    type Output = WaitResponse;
+    fn to_proto(self) -> std::result::Result<WaitResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            content: self.content.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::WaitResponse> for WaitResponse {
+    fn cnv(self) -> std::result::Result<crate::model::WaitResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::WaitResponse::new().set_content(self.content))
+    }
+}
+
+impl gaxi::prost::ToProto<WaitMetadata> for crate::model::WaitMetadata {
+    type Output = WaitMetadata;
+    fn to_proto(self) -> std::result::Result<WaitMetadata, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            end_time: self.end_time.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::WaitMetadata> for WaitMetadata {
+    fn cnv(self) -> std::result::Result<crate::model::WaitMetadata, gaxi::prost::ConvertError> {
+        Ok(crate::model::WaitMetadata::new()
+            .set_or_clear_end_time(self.end_time.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<block_request::Response> for crate::model::block_request::Response {
+    type Output = block_request::Response;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        match self {
+            Self::Error(v) => Ok(Self::Output::Error((*v).to_proto()?)),
+            Self::Success(v) => Ok(Self::Output::Success((*v).to_proto()?)),
+        }
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::block_request::Response> for block_request::Response {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::block_request::Response, gaxi::prost::ConvertError> {
+        use crate::model::block_request::Response as T;
+        match self {
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
+            Self::Success(v) => Ok(T::Success(std::boxed::Box::new(v.cnv()?))),
+        }
+    }
+}
+
+impl gaxi::prost::ToProto<BlockRequest> for crate::model::BlockRequest {
+    type Output = BlockRequest;
+    fn to_proto(self) -> std::result::Result<BlockRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            response_delay: self.response_delay.map(|v| v.to_proto()).transpose()?,
+            response: self.response.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::BlockRequest> for BlockRequest {
+    fn cnv(self) -> std::result::Result<crate::model::BlockRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::BlockRequest::new()
+            .set_or_clear_response_delay(self.response_delay.map(|v| v.cnv()).transpose()?)
+            .set_response(self.response.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<BlockResponse> for crate::model::BlockResponse {
+    type Output = BlockResponse;
+    fn to_proto(self) -> std::result::Result<BlockResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            content: self.content.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::BlockResponse> for BlockResponse {
+    fn cnv(self) -> std::result::Result<crate::model::BlockResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::BlockResponse::new().set_content(self.content))
+    }
+}
+
+impl gaxi::prost::ToProto<User> for crate::model::User {
+    type Output = User;
+    fn to_proto(self) -> std::result::Result<User, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            display_name: self.display_name.to_proto()?,
+            email: self.email.to_proto()?,
+            create_time: self.create_time.map(|v| v.to_proto()).transpose()?,
+            update_time: self.update_time.map(|v| v.to_proto()).transpose()?,
+            age: self.age.map(|v| v.to_proto()).transpose()?,
+            height_feet: self.height_feet.map(|v| v.to_proto()).transpose()?,
+            nickname: self.nickname.map(|v| v.to_proto()).transpose()?,
+            enable_notifications: self
+                .enable_notifications
+                .map(|v| v.to_proto())
+                .transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::User> for User {
+    fn cnv(self) -> std::result::Result<crate::model::User, gaxi::prost::ConvertError> {
+        Ok(crate::model::User::new()
+            .set_name(self.name)
+            .set_display_name(self.display_name)
+            .set_email(self.email)
+            .set_or_clear_create_time(self.create_time.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_update_time(self.update_time.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_age(self.age.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_height_feet(self.height_feet.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_nickname(self.nickname.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_enable_notifications(
+                self.enable_notifications.map(|v| v.cnv()).transpose()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<CreateUserRequest> for crate::model::CreateUserRequest {
+    type Output = CreateUserRequest;
+    fn to_proto(self) -> std::result::Result<CreateUserRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            user: self.user.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::CreateUserRequest> for CreateUserRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::CreateUserRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::CreateUserRequest::new()
+            .set_or_clear_user(self.user.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<GetUserRequest> for crate::model::GetUserRequest {
+    type Output = GetUserRequest;
+    fn to_proto(self) -> std::result::Result<GetUserRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::GetUserRequest> for GetUserRequest {
+    fn cnv(self) -> std::result::Result<crate::model::GetUserRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::GetUserRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<UpdateUserRequest> for crate::model::UpdateUserRequest {
+    type Output = UpdateUserRequest;
+    fn to_proto(self) -> std::result::Result<UpdateUserRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            user: self.user.map(|v| v.to_proto()).transpose()?,
+            update_mask: self.update_mask.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::UpdateUserRequest> for UpdateUserRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::UpdateUserRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::UpdateUserRequest::new()
+            .set_or_clear_user(self.user.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_update_mask(self.update_mask.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<DeleteUserRequest> for crate::model::DeleteUserRequest {
+    type Output = DeleteUserRequest;
+    fn to_proto(self) -> std::result::Result<DeleteUserRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::DeleteUserRequest> for DeleteUserRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::DeleteUserRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::DeleteUserRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<ListUsersRequest> for crate::model::ListUsersRequest {
+    type Output = ListUsersRequest;
+    fn to_proto(self) -> std::result::Result<ListUsersRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListUsersRequest> for ListUsersRequest {
+    fn cnv(self) -> std::result::Result<crate::model::ListUsersRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListUsersRequest::new()
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<ListUsersResponse> for crate::model::ListUsersResponse {
+    type Output = ListUsersResponse;
+    fn to_proto(self) -> std::result::Result<ListUsersResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            users: self
+                .users
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListUsersResponse> for ListUsersResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListUsersResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListUsersResponse::new()
+            .set_users(
+                self.users
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<Room> for crate::model::Room {
+    type Output = Room;
+    fn to_proto(self) -> std::result::Result<Room, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            display_name: self.display_name.to_proto()?,
+            description: self.description.to_proto()?,
+            create_time: self.create_time.map(|v| v.to_proto()).transpose()?,
+            update_time: self.update_time.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::Room> for Room {
+    fn cnv(self) -> std::result::Result<crate::model::Room, gaxi::prost::ConvertError> {
+        Ok(crate::model::Room::new()
+            .set_name(self.name)
+            .set_display_name(self.display_name)
+            .set_description(self.description)
+            .set_or_clear_create_time(self.create_time.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_update_time(self.update_time.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<CreateRoomRequest> for crate::model::CreateRoomRequest {
+    type Output = CreateRoomRequest;
+    fn to_proto(self) -> std::result::Result<CreateRoomRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            room: self.room.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::CreateRoomRequest> for CreateRoomRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::CreateRoomRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::CreateRoomRequest::new()
+            .set_or_clear_room(self.room.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<GetRoomRequest> for crate::model::GetRoomRequest {
+    type Output = GetRoomRequest;
+    fn to_proto(self) -> std::result::Result<GetRoomRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::GetRoomRequest> for GetRoomRequest {
+    fn cnv(self) -> std::result::Result<crate::model::GetRoomRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::GetRoomRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<UpdateRoomRequest> for crate::model::UpdateRoomRequest {
+    type Output = UpdateRoomRequest;
+    fn to_proto(self) -> std::result::Result<UpdateRoomRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            room: self.room.map(|v| v.to_proto()).transpose()?,
+            update_mask: self.update_mask.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::UpdateRoomRequest> for UpdateRoomRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::UpdateRoomRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::UpdateRoomRequest::new()
+            .set_or_clear_room(self.room.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_update_mask(self.update_mask.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<DeleteRoomRequest> for crate::model::DeleteRoomRequest {
+    type Output = DeleteRoomRequest;
+    fn to_proto(self) -> std::result::Result<DeleteRoomRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::DeleteRoomRequest> for DeleteRoomRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::DeleteRoomRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::DeleteRoomRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<ListRoomsRequest> for crate::model::ListRoomsRequest {
+    type Output = ListRoomsRequest;
+    fn to_proto(self) -> std::result::Result<ListRoomsRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListRoomsRequest> for ListRoomsRequest {
+    fn cnv(self) -> std::result::Result<crate::model::ListRoomsRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListRoomsRequest::new()
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<ListRoomsResponse> for crate::model::ListRoomsResponse {
+    type Output = ListRoomsResponse;
+    fn to_proto(self) -> std::result::Result<ListRoomsResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            rooms: self
+                .rooms
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListRoomsResponse> for ListRoomsResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListRoomsResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListRoomsResponse::new()
+            .set_rooms(
+                self.rooms
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
     }
 }
 
@@ -213,6 +1314,129 @@ impl gaxi::prost::FromProto<crate::model::Blurb> for Blurb {
             .set_or_clear_update_time(self.update_time.map(|v| v.cnv()).transpose()?)
             .set_content(self.content.map(|v| v.cnv()).transpose()?)
             .set_legacy_id(self.legacy_id.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<CreateBlurbRequest> for crate::model::CreateBlurbRequest {
+    type Output = CreateBlurbRequest;
+    fn to_proto(self) -> std::result::Result<CreateBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            parent: self.parent.to_proto()?,
+            blurb: self.blurb.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::CreateBlurbRequest> for CreateBlurbRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::CreateBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::CreateBlurbRequest::new()
+            .set_parent(self.parent)
+            .set_or_clear_blurb(self.blurb.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<GetBlurbRequest> for crate::model::GetBlurbRequest {
+    type Output = GetBlurbRequest;
+    fn to_proto(self) -> std::result::Result<GetBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::GetBlurbRequest> for GetBlurbRequest {
+    fn cnv(self) -> std::result::Result<crate::model::GetBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::GetBlurbRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<UpdateBlurbRequest> for crate::model::UpdateBlurbRequest {
+    type Output = UpdateBlurbRequest;
+    fn to_proto(self) -> std::result::Result<UpdateBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            blurb: self.blurb.map(|v| v.to_proto()).transpose()?,
+            update_mask: self.update_mask.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::UpdateBlurbRequest> for UpdateBlurbRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::UpdateBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::UpdateBlurbRequest::new()
+            .set_or_clear_blurb(self.blurb.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_update_mask(self.update_mask.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<DeleteBlurbRequest> for crate::model::DeleteBlurbRequest {
+    type Output = DeleteBlurbRequest;
+    fn to_proto(self) -> std::result::Result<DeleteBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::DeleteBlurbRequest> for DeleteBlurbRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::DeleteBlurbRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::DeleteBlurbRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<ListBlurbsRequest> for crate::model::ListBlurbsRequest {
+    type Output = ListBlurbsRequest;
+    fn to_proto(self) -> std::result::Result<ListBlurbsRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            parent: self.parent.to_proto()?,
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListBlurbsRequest> for ListBlurbsRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListBlurbsRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListBlurbsRequest::new()
+            .set_parent(self.parent)
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<ListBlurbsResponse> for crate::model::ListBlurbsResponse {
+    type Output = ListBlurbsResponse;
+    fn to_proto(self) -> std::result::Result<ListBlurbsResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            blurbs: self
+                .blurbs
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListBlurbsResponse> for ListBlurbsResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListBlurbsResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListBlurbsResponse::new()
+            .set_blurbs(
+                self.blurbs
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
     }
 }
 
@@ -331,6 +1555,291 @@ impl gaxi::prost::FromProto<crate::model::ConnectRequest> for ConnectRequest {
     }
 }
 
+impl gaxi::prost::ToProto<sequence::Response> for crate::model::sequence::Response {
+    type Output = sequence::Response;
+    fn to_proto(self) -> std::result::Result<sequence::Response, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            status: self.status.map(|v| v.to_proto()).transpose()?,
+            delay: self.delay.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::sequence::Response> for sequence::Response {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::sequence::Response, gaxi::prost::ConvertError> {
+        Ok(crate::model::sequence::Response::new()
+            .set_or_clear_status(self.status.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_delay(self.delay.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<Sequence> for crate::model::Sequence {
+    type Output = Sequence;
+    fn to_proto(self) -> std::result::Result<Sequence, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            responses: self
+                .responses
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::Sequence> for Sequence {
+    fn cnv(self) -> std::result::Result<crate::model::Sequence, gaxi::prost::ConvertError> {
+        Ok(crate::model::Sequence::new()
+            .set_name(self.name)
+            .set_responses(
+                self.responses
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<streaming_sequence::Response>
+    for crate::model::streaming_sequence::Response
+{
+    type Output = streaming_sequence::Response;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<streaming_sequence::Response, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            status: self.status.map(|v| v.to_proto()).transpose()?,
+            delay: self.delay.map(|v| v.to_proto()).transpose()?,
+            response_index: self.response_index.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::streaming_sequence::Response>
+    for streaming_sequence::Response
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::streaming_sequence::Response, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::streaming_sequence::Response::new()
+            .set_or_clear_status(self.status.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_delay(self.delay.map(|v| v.cnv()).transpose()?)
+            .set_response_index(self.response_index))
+    }
+}
+
+impl gaxi::prost::ToProto<StreamingSequence> for crate::model::StreamingSequence {
+    type Output = StreamingSequence;
+    fn to_proto(self) -> std::result::Result<StreamingSequence, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            content: self.content.to_proto()?,
+            responses: self
+                .responses
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::StreamingSequence> for StreamingSequence {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::StreamingSequence, gaxi::prost::ConvertError> {
+        Ok(crate::model::StreamingSequence::new()
+            .set_name(self.name)
+            .set_content(self.content)
+            .set_responses(
+                self.responses
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<streaming_sequence_report::Attempt>
+    for crate::model::streaming_sequence_report::Attempt
+{
+    type Output = streaming_sequence_report::Attempt;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<streaming_sequence_report::Attempt, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            attempt_number: self.attempt_number.to_proto()?,
+            attempt_deadline: self.attempt_deadline.map(|v| v.to_proto()).transpose()?,
+            response_time: self.response_time.map(|v| v.to_proto()).transpose()?,
+            attempt_delay: self.attempt_delay.map(|v| v.to_proto()).transpose()?,
+            status: self.status.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::streaming_sequence_report::Attempt>
+    for streaming_sequence_report::Attempt
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        crate::model::streaming_sequence_report::Attempt,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(crate::model::streaming_sequence_report::Attempt::new()
+            .set_attempt_number(self.attempt_number)
+            .set_or_clear_attempt_deadline(self.attempt_deadline.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_response_time(self.response_time.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_attempt_delay(self.attempt_delay.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_status(self.status.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<StreamingSequenceReport> for crate::model::StreamingSequenceReport {
+    type Output = StreamingSequenceReport;
+    fn to_proto(self) -> std::result::Result<StreamingSequenceReport, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            attempts: self
+                .attempts
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::StreamingSequenceReport> for StreamingSequenceReport {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::StreamingSequenceReport, gaxi::prost::ConvertError> {
+        Ok(crate::model::StreamingSequenceReport::new()
+            .set_name(self.name)
+            .set_attempts(
+                self.attempts
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<sequence_report::Attempt> for crate::model::sequence_report::Attempt {
+    type Output = sequence_report::Attempt;
+    fn to_proto(self) -> std::result::Result<sequence_report::Attempt, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            attempt_number: self.attempt_number.to_proto()?,
+            attempt_deadline: self.attempt_deadline.map(|v| v.to_proto()).transpose()?,
+            response_time: self.response_time.map(|v| v.to_proto()).transpose()?,
+            attempt_delay: self.attempt_delay.map(|v| v.to_proto()).transpose()?,
+            status: self.status.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::sequence_report::Attempt> for sequence_report::Attempt {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::sequence_report::Attempt, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::sequence_report::Attempt::new()
+            .set_attempt_number(self.attempt_number)
+            .set_or_clear_attempt_deadline(self.attempt_deadline.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_response_time(self.response_time.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_attempt_delay(self.attempt_delay.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_status(self.status.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<SequenceReport> for crate::model::SequenceReport {
+    type Output = SequenceReport;
+    fn to_proto(self) -> std::result::Result<SequenceReport, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            attempts: self
+                .attempts
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::SequenceReport> for SequenceReport {
+    fn cnv(self) -> std::result::Result<crate::model::SequenceReport, gaxi::prost::ConvertError> {
+        Ok(crate::model::SequenceReport::new()
+            .set_name(self.name)
+            .set_attempts(
+                self.attempts
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<CreateSequenceRequest> for crate::model::CreateSequenceRequest {
+    type Output = CreateSequenceRequest;
+    fn to_proto(self) -> std::result::Result<CreateSequenceRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            sequence: self.sequence.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::CreateSequenceRequest> for CreateSequenceRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::CreateSequenceRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::CreateSequenceRequest::new()
+            .set_or_clear_sequence(self.sequence.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<CreateStreamingSequenceRequest>
+    for crate::model::CreateStreamingSequenceRequest
+{
+    type Output = CreateStreamingSequenceRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<CreateStreamingSequenceRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            streaming_sequence: self.streaming_sequence.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::CreateStreamingSequenceRequest>
+    for CreateStreamingSequenceRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::CreateStreamingSequenceRequest, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::CreateStreamingSequenceRequest::new()
+            .set_or_clear_streaming_sequence(self.streaming_sequence.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<AttemptSequenceRequest> for crate::model::AttemptSequenceRequest {
+    type Output = AttemptSequenceRequest;
+    fn to_proto(self) -> std::result::Result<AttemptSequenceRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::AttemptSequenceRequest> for AttemptSequenceRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::AttemptSequenceRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::AttemptSequenceRequest::new().set_name(self.name))
+    }
+}
+
 impl gaxi::prost::ToProto<AttemptStreamingSequenceRequest>
     for crate::model::AttemptStreamingSequenceRequest
 {
@@ -381,5 +1890,1272 @@ impl gaxi::prost::FromProto<crate::model::AttemptStreamingSequenceResponse>
         gaxi::prost::ConvertError,
     > {
         Ok(crate::model::AttemptStreamingSequenceResponse::new().set_content(self.content))
+    }
+}
+
+impl gaxi::prost::ToProto<GetSequenceReportRequest> for crate::model::GetSequenceReportRequest {
+    type Output = GetSequenceReportRequest;
+    fn to_proto(self) -> std::result::Result<GetSequenceReportRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::GetSequenceReportRequest> for GetSequenceReportRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::GetSequenceReportRequest, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::GetSequenceReportRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<GetStreamingSequenceReportRequest>
+    for crate::model::GetStreamingSequenceReportRequest
+{
+    type Output = GetStreamingSequenceReportRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<GetStreamingSequenceReportRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::GetStreamingSequenceReportRequest>
+    for GetStreamingSequenceReportRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        crate::model::GetStreamingSequenceReportRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(crate::model::GetStreamingSequenceReportRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<session::Version> for crate::model::session::Version {
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::session::Version",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<Session> for crate::model::Session {
+    type Output = Session;
+    fn to_proto(self) -> std::result::Result<Session, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            version: self.version.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::Session> for Session {
+    fn cnv(self) -> std::result::Result<crate::model::Session, gaxi::prost::ConvertError> {
+        Ok(crate::model::Session::new()
+            .set_name(self.name)
+            .set_version(self.version))
+    }
+}
+
+impl gaxi::prost::ToProto<CreateSessionRequest> for crate::model::CreateSessionRequest {
+    type Output = CreateSessionRequest;
+    fn to_proto(self) -> std::result::Result<CreateSessionRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            session: self.session.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::CreateSessionRequest> for CreateSessionRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::CreateSessionRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::CreateSessionRequest::new()
+            .set_or_clear_session(self.session.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<GetSessionRequest> for crate::model::GetSessionRequest {
+    type Output = GetSessionRequest;
+    fn to_proto(self) -> std::result::Result<GetSessionRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::GetSessionRequest> for GetSessionRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::GetSessionRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::GetSessionRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<ListSessionsRequest> for crate::model::ListSessionsRequest {
+    type Output = ListSessionsRequest;
+    fn to_proto(self) -> std::result::Result<ListSessionsRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListSessionsRequest> for ListSessionsRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListSessionsRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListSessionsRequest::new()
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<ListSessionsResponse> for crate::model::ListSessionsResponse {
+    type Output = ListSessionsResponse;
+    fn to_proto(self) -> std::result::Result<ListSessionsResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            sessions: self
+                .sessions
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListSessionsResponse> for ListSessionsResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListSessionsResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListSessionsResponse::new()
+            .set_sessions(
+                self.sessions
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<DeleteSessionRequest> for crate::model::DeleteSessionRequest {
+    type Output = DeleteSessionRequest;
+    fn to_proto(self) -> std::result::Result<DeleteSessionRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::DeleteSessionRequest> for DeleteSessionRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::DeleteSessionRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::DeleteSessionRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<ReportSessionRequest> for crate::model::ReportSessionRequest {
+    type Output = ReportSessionRequest;
+    fn to_proto(self) -> std::result::Result<ReportSessionRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ReportSessionRequest> for ReportSessionRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ReportSessionRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::ReportSessionRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<report_session_response::Result>
+    for crate::model::report_session_response::Result
+{
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::report_session_response::Result",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<ReportSessionResponse> for crate::model::ReportSessionResponse {
+    type Output = ReportSessionResponse;
+    fn to_proto(self) -> std::result::Result<ReportSessionResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            result: self.result.to_proto()?,
+            test_runs: self
+                .test_runs
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ReportSessionResponse> for ReportSessionResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ReportSessionResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::ReportSessionResponse::new()
+            .set_result(self.result)
+            .set_test_runs(
+                self.test_runs
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<test::blueprint::Invocation>
+    for crate::model::test::blueprint::Invocation
+{
+    type Output = test::blueprint::Invocation;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<test::blueprint::Invocation, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            method: self.method.to_proto()?,
+            serialized_request: self.serialized_request.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::test::blueprint::Invocation>
+    for test::blueprint::Invocation
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::test::blueprint::Invocation, gaxi::prost::ConvertError>
+    {
+        Ok(crate::model::test::blueprint::Invocation::new()
+            .set_method(self.method)
+            .set_serialized_request(self.serialized_request))
+    }
+}
+
+impl gaxi::prost::ToProto<test::Blueprint> for crate::model::test::Blueprint {
+    type Output = test::Blueprint;
+    fn to_proto(self) -> std::result::Result<test::Blueprint, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            description: self.description.to_proto()?,
+            request: self.request.map(|v| v.to_proto()).transpose()?,
+            additional_requests: self
+                .additional_requests
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::test::Blueprint> for test::Blueprint {
+    fn cnv(self) -> std::result::Result<crate::model::test::Blueprint, gaxi::prost::ConvertError> {
+        Ok(crate::model::test::Blueprint::new()
+            .set_name(self.name)
+            .set_description(self.description)
+            .set_or_clear_request(self.request.map(|v| v.cnv()).transpose()?)
+            .set_additional_requests(
+                self.additional_requests
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<test::ExpectationLevel> for crate::model::test::ExpectationLevel {
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::test::ExpectationLevel",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<Test> for crate::model::Test {
+    type Output = Test;
+    fn to_proto(self) -> std::result::Result<Test, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            expectation_level: self.expectation_level.to_proto()?,
+            description: self.description.to_proto()?,
+            blueprints: self
+                .blueprints
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::Test> for Test {
+    fn cnv(self) -> std::result::Result<crate::model::Test, gaxi::prost::ConvertError> {
+        Ok(crate::model::Test::new()
+            .set_name(self.name)
+            .set_expectation_level(self.expectation_level)
+            .set_description(self.description)
+            .set_blueprints(
+                self.blueprints
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<issue::Type> for crate::model::issue::Type {
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::issue::Type",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<issue::Severity> for crate::model::issue::Severity {
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "crate::model::issue::Severity",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<Issue> for crate::model::Issue {
+    type Output = Issue;
+    fn to_proto(self) -> std::result::Result<Issue, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            r#type: self.r#type.to_proto()?,
+            severity: self.severity.to_proto()?,
+            description: self.description.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::Issue> for Issue {
+    fn cnv(self) -> std::result::Result<crate::model::Issue, gaxi::prost::ConvertError> {
+        Ok(crate::model::Issue::new()
+            .set_type(self.r#type)
+            .set_severity(self.severity)
+            .set_description(self.description))
+    }
+}
+
+impl gaxi::prost::ToProto<ListTestsRequest> for crate::model::ListTestsRequest {
+    type Output = ListTestsRequest;
+    fn to_proto(self) -> std::result::Result<ListTestsRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            parent: self.parent.to_proto()?,
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListTestsRequest> for ListTestsRequest {
+    fn cnv(self) -> std::result::Result<crate::model::ListTestsRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListTestsRequest::new()
+            .set_parent(self.parent)
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<ListTestsResponse> for crate::model::ListTestsResponse {
+    type Output = ListTestsResponse;
+    fn to_proto(self) -> std::result::Result<ListTestsResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            tests: self
+                .tests
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::ListTestsResponse> for ListTestsResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::ListTestsResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::ListTestsResponse::new()
+            .set_tests(
+                self.tests
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<TestRun> for crate::model::TestRun {
+    type Output = TestRun;
+    fn to_proto(self) -> std::result::Result<TestRun, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            test: self.test.to_proto()?,
+            issue: self.issue.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::TestRun> for TestRun {
+    fn cnv(self) -> std::result::Result<crate::model::TestRun, gaxi::prost::ConvertError> {
+        Ok(crate::model::TestRun::new()
+            .set_test(self.test)
+            .set_or_clear_issue(self.issue.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<DeleteTestRequest> for crate::model::DeleteTestRequest {
+    type Output = DeleteTestRequest;
+    fn to_proto(self) -> std::result::Result<DeleteTestRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::DeleteTestRequest> for DeleteTestRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::DeleteTestRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::DeleteTestRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<VerifyTestRequest> for crate::model::VerifyTestRequest {
+    type Output = VerifyTestRequest;
+    fn to_proto(self) -> std::result::Result<VerifyTestRequest, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            answer: self.answer.to_proto()?,
+            answers: self
+                .answers
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::VerifyTestRequest> for VerifyTestRequest {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::VerifyTestRequest, gaxi::prost::ConvertError> {
+        Ok(crate::model::VerifyTestRequest::new()
+            .set_name(self.name)
+            .set_answer(self.answer)
+            .set_answers(
+                self.answers
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<VerifyTestResponse> for crate::model::VerifyTestResponse {
+    type Output = VerifyTestResponse;
+    fn to_proto(self) -> std::result::Result<VerifyTestResponse, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            issue: self.issue.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<crate::model::VerifyTestResponse> for VerifyTestResponse {
+    fn cnv(
+        self,
+    ) -> std::result::Result<crate::model::VerifyTestResponse, gaxi::prost::ConvertError> {
+        Ok(crate::model::VerifyTestResponse::new()
+            .set_or_clear_issue(self.issue.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::cloud::location::GetLocationRequest>
+    for google_cloud_location::model::GetLocationRequest
+{
+    type Output = super::prost::google::cloud::location::GetLocationRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::cloud::location::GetLocationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_location::model::GetLocationRequest>
+    for super::prost::google::cloud::location::GetLocationRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_location::model::GetLocationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_location::model::GetLocationRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::cloud::location::ListLocationsRequest>
+    for google_cloud_location::model::ListLocationsRequest
+{
+    type Output = super::prost::google::cloud::location::ListLocationsRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::cloud::location::ListLocationsRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            filter: self.filter.to_proto()?,
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_location::model::ListLocationsRequest>
+    for super::prost::google::cloud::location::ListLocationsRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_location::model::ListLocationsRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_location::model::ListLocationsRequest::new()
+            .set_name(self.name)
+            .set_filter(self.filter)
+            .set_page_size(self.page_size)
+            .set_page_token(self.page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::cloud::location::ListLocationsResponse>
+    for google_cloud_location::model::ListLocationsResponse
+{
+    type Output = super::prost::google::cloud::location::ListLocationsResponse;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::cloud::location::ListLocationsResponse,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            locations: self
+                .locations
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_location::model::ListLocationsResponse>
+    for super::prost::google::cloud::location::ListLocationsResponse
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_location::model::ListLocationsResponse,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_location::model::ListLocationsResponse::new()
+            .set_locations(
+                self.locations
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_next_page_token(self.next_page_token))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::cloud::location::Location>
+    for google_cloud_location::model::Location
+{
+    type Output = super::prost::google::cloud::location::Location;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::cloud::location::Location,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            location_id: self.location_id.to_proto()?,
+            display_name: self.display_name.to_proto()?,
+            labels: self
+                .labels
+                .into_iter()
+                .map(|(k, v)| gaxi::prost::pair_transpose(k.to_proto(), v.to_proto()))
+                .collect::<std::result::Result<std::collections::HashMap<_, _>, _>>()?,
+            ..Self::Output::default()
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_location::model::Location>
+    for super::prost::google::cloud::location::Location
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_location::model::Location, gaxi::prost::ConvertError>
+    {
+        Ok(google_cloud_location::model::Location::new()
+            .set_name(self.name)
+            .set_location_id(self.location_id)
+            .set_display_name(self.display_name)
+            .set_labels(
+                self.labels
+                    .into_iter()
+                    .map(|(k, v)| gaxi::prost::pair_transpose(k.cnv(), v.cnv()))
+                    .collect::<std::result::Result<std::collections::HashMap<_, _>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::AuditConfig>
+    for google_cloud_iam_v1::model::AuditConfig
+{
+    type Output = super::prost::google::iam::v1::AuditConfig;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<super::prost::google::iam::v1::AuditConfig, gaxi::prost::ConvertError>
+    {
+        Ok(Self::Output {
+            service: self.service.to_proto()?,
+            audit_log_configs: self
+                .audit_log_configs
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::AuditConfig>
+    for super::prost::google::iam::v1::AuditConfig
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_iam_v1::model::AuditConfig, gaxi::prost::ConvertError>
+    {
+        Ok(google_cloud_iam_v1::model::AuditConfig::new()
+            .set_service(self.service)
+            .set_audit_log_configs(
+                self.audit_log_configs
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::audit_log_config::LogType>
+    for google_cloud_iam_v1::model::audit_log_config::LogType
+{
+    type Output = i32;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        self.value()
+            .ok_or(gaxi::prost::ConvertError::EnumNoIntegerValue(
+                "google_cloud_iam_v1::model::audit_log_config::LogType",
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::AuditLogConfig>
+    for google_cloud_iam_v1::model::AuditLogConfig
+{
+    type Output = super::prost::google::iam::v1::AuditLogConfig;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<super::prost::google::iam::v1::AuditLogConfig, gaxi::prost::ConvertError>
+    {
+        Ok(Self::Output {
+            log_type: self.log_type.to_proto()?,
+            exempted_members: self
+                .exempted_members
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::AuditLogConfig>
+    for super::prost::google::iam::v1::AuditLogConfig
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_iam_v1::model::AuditLogConfig, gaxi::prost::ConvertError>
+    {
+        Ok(google_cloud_iam_v1::model::AuditLogConfig::new()
+            .set_log_type(self.log_type)
+            .set_exempted_members(
+                self.exempted_members
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::Binding>
+    for google_cloud_iam_v1::model::Binding
+{
+    type Output = super::prost::google::iam::v1::Binding;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<super::prost::google::iam::v1::Binding, gaxi::prost::ConvertError>
+    {
+        Ok(Self::Output {
+            role: self.role.to_proto()?,
+            members: self
+                .members
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            condition: self.condition.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::Binding>
+    for super::prost::google::iam::v1::Binding
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_iam_v1::model::Binding, gaxi::prost::ConvertError> {
+        Ok(google_cloud_iam_v1::model::Binding::new()
+            .set_role(self.role)
+            .set_members(
+                self.members
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_or_clear_condition(self.condition.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::GetIamPolicyRequest>
+    for google_cloud_iam_v1::model::GetIamPolicyRequest
+{
+    type Output = super::prost::google::iam::v1::GetIamPolicyRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::iam::v1::GetIamPolicyRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            resource: self.resource.to_proto()?,
+            options: self.options.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::GetIamPolicyRequest>
+    for super::prost::google::iam::v1::GetIamPolicyRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_iam_v1::model::GetIamPolicyRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_iam_v1::model::GetIamPolicyRequest::new()
+            .set_resource(self.resource)
+            .set_or_clear_options(self.options.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::GetPolicyOptions>
+    for google_cloud_iam_v1::model::GetPolicyOptions
+{
+    type Output = super::prost::google::iam::v1::GetPolicyOptions;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::iam::v1::GetPolicyOptions,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            requested_policy_version: self.requested_policy_version.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::GetPolicyOptions>
+    for super::prost::google::iam::v1::GetPolicyOptions
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_iam_v1::model::GetPolicyOptions, gaxi::prost::ConvertError>
+    {
+        Ok(google_cloud_iam_v1::model::GetPolicyOptions::new()
+            .set_requested_policy_version(self.requested_policy_version))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::Policy>
+    for google_cloud_iam_v1::model::Policy
+{
+    type Output = super::prost::google::iam::v1::Policy;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<super::prost::google::iam::v1::Policy, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            version: self.version.to_proto()?,
+            bindings: self
+                .bindings
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            audit_configs: self
+                .audit_configs
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            etag: self.etag.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::Policy>
+    for super::prost::google::iam::v1::Policy
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_iam_v1::model::Policy, gaxi::prost::ConvertError> {
+        Ok(google_cloud_iam_v1::model::Policy::new()
+            .set_version(self.version)
+            .set_bindings(
+                self.bindings
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_audit_configs(
+                self.audit_configs
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            )
+            .set_etag(self.etag))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::SetIamPolicyRequest>
+    for google_cloud_iam_v1::model::SetIamPolicyRequest
+{
+    type Output = super::prost::google::iam::v1::SetIamPolicyRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::iam::v1::SetIamPolicyRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            resource: self.resource.to_proto()?,
+            policy: self.policy.map(|v| v.to_proto()).transpose()?,
+            update_mask: self.update_mask.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::SetIamPolicyRequest>
+    for super::prost::google::iam::v1::SetIamPolicyRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_iam_v1::model::SetIamPolicyRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_iam_v1::model::SetIamPolicyRequest::new()
+            .set_resource(self.resource)
+            .set_or_clear_policy(self.policy.map(|v| v.cnv()).transpose()?)
+            .set_or_clear_update_mask(self.update_mask.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::TestIamPermissionsRequest>
+    for google_cloud_iam_v1::model::TestIamPermissionsRequest
+{
+    type Output = super::prost::google::iam::v1::TestIamPermissionsRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::iam::v1::TestIamPermissionsRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            resource: self.resource.to_proto()?,
+            permissions: self
+                .permissions
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::TestIamPermissionsRequest>
+    for super::prost::google::iam::v1::TestIamPermissionsRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_iam_v1::model::TestIamPermissionsRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_iam_v1::model::TestIamPermissionsRequest::new()
+            .set_resource(self.resource)
+            .set_permissions(
+                self.permissions
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::iam::v1::TestIamPermissionsResponse>
+    for google_cloud_iam_v1::model::TestIamPermissionsResponse
+{
+    type Output = super::prost::google::iam::v1::TestIamPermissionsResponse;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::iam::v1::TestIamPermissionsResponse,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            permissions: self
+                .permissions
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_iam_v1::model::TestIamPermissionsResponse>
+    for super::prost::google::iam::v1::TestIamPermissionsResponse
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_iam_v1::model::TestIamPermissionsResponse,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(
+            google_cloud_iam_v1::model::TestIamPermissionsResponse::new().set_permissions(
+                self.permissions
+                    .into_iter()
+                    .map(|v| v.cnv())
+                    .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            ),
+        )
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::CancelOperationRequest>
+    for google_cloud_longrunning::model::CancelOperationRequest
+{
+    type Output = super::prost::google::longrunning::CancelOperationRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::longrunning::CancelOperationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::CancelOperationRequest>
+    for super::prost::google::longrunning::CancelOperationRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_longrunning::model::CancelOperationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_longrunning::model::CancelOperationRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::DeleteOperationRequest>
+    for google_cloud_longrunning::model::DeleteOperationRequest
+{
+    type Output = super::prost::google::longrunning::DeleteOperationRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::longrunning::DeleteOperationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::DeleteOperationRequest>
+    for super::prost::google::longrunning::DeleteOperationRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_longrunning::model::DeleteOperationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_longrunning::model::DeleteOperationRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::GetOperationRequest>
+    for google_cloud_longrunning::model::GetOperationRequest
+{
+    type Output = super::prost::google::longrunning::GetOperationRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::longrunning::GetOperationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::GetOperationRequest>
+    for super::prost::google::longrunning::GetOperationRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_longrunning::model::GetOperationRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(google_cloud_longrunning::model::GetOperationRequest::new().set_name(self.name))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::ListOperationsRequest>
+    for google_cloud_longrunning::model::ListOperationsRequest
+{
+    type Output = super::prost::google::longrunning::ListOperationsRequest;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::longrunning::ListOperationsRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            filter: self.filter.to_proto()?,
+            page_size: self.page_size.to_proto()?,
+            page_token: self.page_token.to_proto()?,
+            return_partial_success: self.return_partial_success.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::ListOperationsRequest>
+    for super::prost::google::longrunning::ListOperationsRequest
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_longrunning::model::ListOperationsRequest,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(
+            google_cloud_longrunning::model::ListOperationsRequest::new()
+                .set_name(self.name)
+                .set_filter(self.filter)
+                .set_page_size(self.page_size)
+                .set_page_token(self.page_token)
+                .set_return_partial_success(self.return_partial_success),
+        )
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::ListOperationsResponse>
+    for google_cloud_longrunning::model::ListOperationsResponse
+{
+    type Output = super::prost::google::longrunning::ListOperationsResponse;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<
+        super::prost::google::longrunning::ListOperationsResponse,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(Self::Output {
+            operations: self
+                .operations
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+            next_page_token: self.next_page_token.to_proto()?,
+            unreachable: self
+                .unreachable
+                .into_iter()
+                .map(|v| v.to_proto())
+                .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::ListOperationsResponse>
+    for super::prost::google::longrunning::ListOperationsResponse
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_longrunning::model::ListOperationsResponse,
+        gaxi::prost::ConvertError,
+    > {
+        Ok(
+            google_cloud_longrunning::model::ListOperationsResponse::new()
+                .set_operations(
+                    self.operations
+                        .into_iter()
+                        .map(|v| v.cnv())
+                        .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+                )
+                .set_next_page_token(self.next_page_token)
+                .set_unreachable(
+                    self.unreachable
+                        .into_iter()
+                        .map(|v| v.cnv())
+                        .collect::<std::result::Result<std::vec::Vec<_>, _>>()?,
+                ),
+        )
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::operation::Result>
+    for google_cloud_longrunning::model::operation::Result
+{
+    type Output = super::prost::google::longrunning::operation::Result;
+    fn to_proto(self) -> std::result::Result<Self::Output, gaxi::prost::ConvertError> {
+        match self {
+            Self::Error(v) => Ok(Self::Output::Error((*v).to_proto()?)),
+            Self::Response(v) => Ok(Self::Output::Response(lro_any_to_prost(*v)?)),
+            _ => Err(gaxi::prost::ConvertError::Unimplemented),
+        }
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::operation::Result>
+    for super::prost::google::longrunning::operation::Result
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<
+        google_cloud_longrunning::model::operation::Result,
+        gaxi::prost::ConvertError,
+    > {
+        use google_cloud_longrunning::model::operation::Result as T;
+        match self {
+            Self::Error(v) => Ok(T::Error(std::boxed::Box::new(v.cnv()?))),
+            Self::Response(v) => Ok(T::Response(std::boxed::Box::new(lro_any_from_prost(v)?))),
+        }
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::longrunning::Operation>
+    for google_cloud_longrunning::model::Operation
+{
+    type Output = super::prost::google::longrunning::Operation;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<super::prost::google::longrunning::Operation, gaxi::prost::ConvertError>
+    {
+        Ok(Self::Output {
+            name: self.name.to_proto()?,
+            metadata: lro_metadata_to_prost(self.metadata)?,
+            done: self.done.to_proto()?,
+            result: self.result.map(|v| v.to_proto()).transpose()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_longrunning::model::Operation>
+    for super::prost::google::longrunning::Operation
+{
+    fn cnv(
+        self,
+    ) -> std::result::Result<google_cloud_longrunning::model::Operation, gaxi::prost::ConvertError>
+    {
+        Ok(google_cloud_longrunning::model::Operation::new()
+            .set_name(self.name)
+            .set_or_clear_metadata(lro_metadata_from_prost(self.metadata)?)
+            .set_done(self.done)
+            .set_result(self.result.map(|v| v.cnv()).transpose()?))
+    }
+}
+
+impl gaxi::prost::ToProto<super::prost::google::r#type::Expr> for google_cloud_type::model::Expr {
+    type Output = super::prost::google::r#type::Expr;
+    fn to_proto(
+        self,
+    ) -> std::result::Result<super::prost::google::r#type::Expr, gaxi::prost::ConvertError> {
+        Ok(Self::Output {
+            expression: self.expression.to_proto()?,
+            title: self.title.to_proto()?,
+            description: self.description.to_proto()?,
+            location: self.location.to_proto()?,
+        })
+    }
+}
+
+impl gaxi::prost::FromProto<google_cloud_type::model::Expr> for super::prost::google::r#type::Expr {
+    fn cnv(self) -> std::result::Result<google_cloud_type::model::Expr, gaxi::prost::ConvertError> {
+        Ok(google_cloud_type::model::Expr::new()
+            .set_expression(self.expression)
+            .set_title(self.title)
+            .set_description(self.description)
+            .set_location(self.location))
     }
 }

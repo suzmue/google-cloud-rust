@@ -1867,39 +1867,6 @@ impl Messaging {
         super::builder::messaging::ListBlurbs::new(self.inner.clone())
     }
 
-    /// This method searches through all blurbs across all rooms and profiles
-    /// for blurbs containing to words found in the query. Only posts that
-    /// contain an exact match of a queried word will be returned.
-    ///
-    /// # Long running operations
-    ///
-    /// This method is used to start, and/or poll a [long-running Operation].
-    /// The [Working with long-running operations] chapter in the [user guide]
-    /// covers these operations in detail.
-    ///
-    /// [long-running operation]: https://google.aip.dev/151
-    /// [user guide]: https://googleapis.github.io/google-cloud-rust/
-    /// [working with long-running operations]: https://googleapis.github.io/google-cloud-rust/working_with_long_running_operations.html
-    ///
-    /// # Example
-    /// ```
-    /// # use google_cloud_showcase_v1beta1::client::Messaging;
-    /// use google_cloud_lro::Poller;
-    /// use google_cloud_showcase_v1beta1::Result;
-    /// async fn sample(
-    ///    client: &Messaging
-    /// ) -> Result<()> {
-    ///     let response = client.search_blurbs()
-    ///         /* set fields */
-    ///         .poller().until_done().await?;
-    ///     println!("response {:?}", response);
-    ///     Ok(())
-    /// }
-    /// ```
-    pub fn search_blurbs(&self) -> super::builder::messaging::SearchBlurbs {
-        super::builder::messaging::SearchBlurbs::new(self.inner.clone())
-    }
-
     /// This returns a stream that emits the blurbs that are created for a
     /// particular chat room or user profile.
     ///

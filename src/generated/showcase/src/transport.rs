@@ -18,16 +18,16 @@
 use crate::Error;
 use crate::Result;
 
-/// Implements [Compliance](super::stub::Compliance) using a [gaxi::http::ReqwestClient].
+/// Implements [Compliance](super::stub::Compliance) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Compliance {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Compliance {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Compliance")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -35,1600 +35,6 @@ impl std::fmt::Debug for Compliance {
 impl Compliance {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
-        } else {
-            inner
-        };
-        Ok(Self { inner })
-    }
-}
-
-impl super::stub::Compliance for Compliance {
-    async fn repeat_data_body(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/repeat:body".to_string();
-                let path_template = "/v1beta1/repeat:body";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBody")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_body_info(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/repeat:bodyinfo".to_string();
-                let path_template = "/v1beta1/repeat:bodyinfo";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("serverVerify", &req.server_verify)]);
-                let builder = req.intended_binding_uri.iter().fold(builder, |builder, p| {
-                    builder.query(&[("intendedBindingUri", p)])
-                });
-                let builder = builder.query(&[("fInt32", &req.f_int32)]);
-                let builder = builder.query(&[("fInt64", &req.f_int64)]);
-                let builder = builder.query(&[("fDouble", &req.f_double)]);
-                let builder = req
-                    .p_int32
-                    .iter()
-                    .fold(builder, |builder, p| builder.query(&[("pInt32", p)]));
-                let builder = req
-                    .p_int64
-                    .iter()
-                    .fold(builder, |builder, p| builder.query(&[("pInt64", p)]));
-                let builder = req
-                    .p_double
-                    .iter()
-                    .fold(builder, |builder, p| builder.query(&[("pDouble", p)]));
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBodyInfo")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.info, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_query(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/repeat:query".to_string();
-                let path_template = "/v1beta1/repeat:query";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = builder.query(&[("name", &req.name)]);
-                    let builder = req
-                        .info
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "info")
-                        });
-                    let builder = builder.query(&[("serverVerify", &req.server_verify)]);
-                    let builder = req.intended_binding_uri.iter().fold(builder, |builder, p| {
-                        builder.query(&[("intendedBindingUri", p)])
-                    });
-                    let builder = builder.query(&[("fInt32", &req.f_int32)]);
-                    let builder = builder.query(&[("fInt64", &req.f_int64)]);
-                    let builder = builder.query(&[("fDouble", &req.f_double)]);
-                    let builder = req
-                        .p_int32
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("pInt32", p)]));
-                    let builder = req
-                        .p_int64
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("pInt64", p)]));
-                    let builder = req
-                        .p_double
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("pDouble", p)]));
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataQuery")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_simple_path(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_info_f_string = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()), &[Segment::SingleWildcard])?;
-            let var_info_f_int32 = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_int32), &[Segment::SingleWildcard])?;
-            let var_info_f_double = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_double), &[Segment::SingleWildcard])?;
-            let var_info_f_bool = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_bool), &[Segment::SingleWildcard])?;
-            let var_info_f_kingdom = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_kingdom), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/v1beta1/repeat/{}/{}/{}/{}/{}:simplepath",
-                var_info_f_string,
-                var_info_f_int32,
-                var_info_f_double,
-                var_info_f_bool,
-                var_info_f_kingdom,
-            );
-            let path_template = "/v1beta1/repeat/{info.f_string}/{info.f_int32}/{info.f_double}/{info.f_bool}/{info.f_kingdom}:simplepath";
-
-            let builder = self.inner.builder(Method::GET, path);
-            let builder = (|| {
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = req.info.as_ref().map(|p| serde_json::to_value(p).map_err(Error::ser) ).transpose()?.into_iter().fold(builder, |builder, v| { use gaxi::query_parameter::QueryParameter; v.add(builder, "info") });
-                let builder = builder.query(&[("serverVerify", &req.server_verify)]);
-                let builder = req.intended_binding_uri.iter().fold(builder, |builder, p| builder.query(&[("intendedBindingUri", p)]));
-                let builder = builder.query(&[("fInt32", &req.f_int32)]);
-                let builder = builder.query(&[("fInt64", &req.f_int64)]);
-                let builder = builder.query(&[("fDouble", &req.f_double)]);
-                let builder = req.p_int32.iter().fold(builder, |builder, p| builder.query(&[("pInt32", p)]));
-                let builder = req.p_int64.iter().fold(builder, |builder, p| builder.query(&[("pInt64", p)]));
-                let builder = req.p_double.iter().fold(builder, |builder, p| builder.query(&[("pDouble", p)]));
-                Ok(builder)
-            })();
-            Some(builder.map(|b| (b, Method::GET, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()),
-                    &[Segment::SingleWildcard],
-                    "info.f_string",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_int32),
-                    &[Segment::SingleWildcard],
-                    "info.f_int32",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_double),
-                    &[Segment::SingleWildcard],
-                    "info.f_double",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_bool),
-                    &[Segment::SingleWildcard],
-                    "info.f_bool",
-                    "*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_kingdom),
-                    &[Segment::SingleWildcard],
-                    "info.f_kingdom",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataSimplePath")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_path_resource(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-        .or_else(|| {
-            let var_info_f_string = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()), &[Segment::Literal("first/"), Segment::SingleWildcard])?;
-            let var_info_f_child_f_string = try_match(Some(&req).and_then(|m| m.info.as_ref()).and_then(|m| m.f_child.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()), &[Segment::Literal("second/"), Segment::SingleWildcard])?;
-            let var_info_f_bool = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_bool), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/v1beta1/repeat/{}/{}/bool/{}:pathresource",
-                var_info_f_string,
-                var_info_f_child_f_string,
-                var_info_f_bool,
-            );
-            let path_template = "/v1beta1/repeat/{info.f_string}/{info.f_child.f_string}/bool/{info.f_bool}:pathresource";
-
-            let builder = self.inner.builder(Method::GET, path);
-            let builder = (|| {
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = req.info.as_ref().map(|p| serde_json::to_value(p).map_err(Error::ser) ).transpose()?.into_iter().fold(builder, |builder, v| { use gaxi::query_parameter::QueryParameter; v.add(builder, "info") });
-                let builder = builder.query(&[("serverVerify", &req.server_verify)]);
-                let builder = req.intended_binding_uri.iter().fold(builder, |builder, p| builder.query(&[("intendedBindingUri", p)]));
-                let builder = builder.query(&[("fInt32", &req.f_int32)]);
-                let builder = builder.query(&[("fInt64", &req.f_int64)]);
-                let builder = builder.query(&[("fDouble", &req.f_double)]);
-                let builder = req.p_int32.iter().fold(builder, |builder, p| builder.query(&[("pInt32", p)]));
-                let builder = req.p_int64.iter().fold(builder, |builder, p| builder.query(&[("pInt64", p)]));
-                let builder = req.p_double.iter().fold(builder, |builder, p| builder.query(&[("pDouble", p)]));
-                Ok(builder)
-            })();
-            Some(builder.map(|b| (b, Method::GET, path_template)))
-        })
-        .or_else(|| {
-            let var_info_f_child_f_string = try_match(Some(&req).and_then(|m| m.info.as_ref()).and_then(|m| m.f_child.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()), &[Segment::Literal("first/"), Segment::SingleWildcard])?;
-            let var_info_f_string = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()), &[Segment::Literal("second/"), Segment::SingleWildcard])?;
-            let var_info_f_bool = try_match(Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_bool), &[Segment::SingleWildcard])?;
-            let path = format!(
-                "/v1beta1/repeat/{}/{}/bool/{}:childfirstpathresource",
-                var_info_f_child_f_string,
-                var_info_f_string,
-                var_info_f_bool,
-            );
-            let path_template = "/v1beta1/repeat/{info.f_child.f_string}/{info.f_string}/bool/{info.f_bool}:childfirstpathresource";
-
-            let builder = self.inner.builder(Method::GET, path);
-            let builder = (|| {
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = req.info.as_ref().map(|p| serde_json::to_value(p).map_err(Error::ser) ).transpose()?.into_iter().fold(builder, |builder, v| { use gaxi::query_parameter::QueryParameter; v.add(builder, "info") });
-                let builder = builder.query(&[("serverVerify", &req.server_verify)]);
-                let builder = req.intended_binding_uri.iter().fold(builder, |builder, p| builder.query(&[("intendedBindingUri", p)]));
-                let builder = builder.query(&[("fInt32", &req.f_int32)]);
-                let builder = builder.query(&[("fInt64", &req.f_int64)]);
-                let builder = builder.query(&[("fDouble", &req.f_double)]);
-                let builder = req.p_int32.iter().fold(builder, |builder, p| builder.query(&[("pInt32", p)]));
-                let builder = req.p_int64.iter().fold(builder, |builder, p| builder.query(&[("pInt64", p)]));
-                let builder = req.p_double.iter().fold(builder, |builder, p| builder.query(&[("pDouble", p)]));
-                Ok(builder)
-            })();
-            Some(builder.map(|b| (b, Method::GET, path_template)))
-        })
-        .ok_or_else(|| {
-            let mut paths = Vec::new();
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()),
-                    &[Segment::Literal("first/"), Segment::SingleWildcard],
-                    "info.f_string",
-                    "first/*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).and_then(|m| m.f_child.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()),
-                    &[Segment::Literal("second/"), Segment::SingleWildcard],
-                    "info.f_child.f_string",
-                    "second/*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_bool),
-                    &[Segment::SingleWildcard],
-                    "info.f_bool",
-                    "*");
-                paths.push(builder.build());
-            }
-            {
-                let builder = PathMismatchBuilder::default();
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).and_then(|m| m.f_child.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()),
-                    &[Segment::Literal("first/"), Segment::SingleWildcard],
-                    "info.f_child.f_string",
-                    "first/*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_string).map(|s| s.as_str()),
-                    &[Segment::Literal("second/"), Segment::SingleWildcard],
-                    "info.f_string",
-                    "second/*");
-                let builder = builder.maybe_add(
-                    Some(&req).and_then(|m| m.info.as_ref()).map(|m| &m.f_bool),
-                    &[Segment::SingleWildcard],
-                    "info.f_bool",
-                    "*");
-                paths.push(builder.build());
-            }
-            google_cloud_gax::error::Error::binding(BindingError { paths })
-        })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataPathResource")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_path_trailing_resource(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_info_f_string = try_match(
-                    Some(&req)
-                        .and_then(|m| m.info.as_ref())
-                        .map(|m| &m.f_string)
-                        .map(|s| s.as_str()),
-                    &[Segment::Literal("first/"), Segment::SingleWildcard],
-                )?;
-                let var_info_f_child_f_string = try_match(
-                    Some(&req)
-                        .and_then(|m| m.info.as_ref())
-                        .and_then(|m| m.f_child.as_ref())
-                        .map(|m| &m.f_string)
-                        .map(|s| s.as_str()),
-                    &[Segment::Literal("second"), Segment::TrailingMultiWildcard],
-                )?;
-                let path = format!(
-                    "/v1beta1/repeat/{}/{}:pathtrailingresource",
-                    var_info_f_string, var_info_f_child_f_string,
-                );
-                let path_template =
-                    "/v1beta1/repeat/{info.f_string}/{info.f_child.f_string}:pathtrailingresource";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = builder.query(&[("name", &req.name)]);
-                    let builder = req
-                        .info
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "info")
-                        });
-                    let builder = builder.query(&[("serverVerify", &req.server_verify)]);
-                    let builder = req.intended_binding_uri.iter().fold(builder, |builder, p| {
-                        builder.query(&[("intendedBindingUri", p)])
-                    });
-                    let builder = builder.query(&[("fInt32", &req.f_int32)]);
-                    let builder = builder.query(&[("fInt64", &req.f_int64)]);
-                    let builder = builder.query(&[("fDouble", &req.f_double)]);
-                    let builder = req
-                        .p_int32
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("pInt32", p)]));
-                    let builder = req
-                        .p_int64
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("pInt64", p)]));
-                    let builder = req
-                        .p_double
-                        .iter()
-                        .fold(builder, |builder, p| builder.query(&[("pDouble", p)]));
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req)
-                            .and_then(|m| m.info.as_ref())
-                            .map(|m| &m.f_string)
-                            .map(|s| s.as_str()),
-                        &[Segment::Literal("first/"), Segment::SingleWildcard],
-                        "info.f_string",
-                        "first/*",
-                    );
-                    let builder = builder.maybe_add(
-                        Some(&req)
-                            .and_then(|m| m.info.as_ref())
-                            .and_then(|m| m.f_child.as_ref())
-                            .map(|m| &m.f_string)
-                            .map(|s| s.as_str()),
-                        &[Segment::Literal("second"), Segment::TrailingMultiWildcard],
-                        "info.f_child.f_string",
-                        "second/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.showcase.v1beta1.Compliance/RepeatDataPathTrailingResource",
-                    )
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_body_put(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/repeat:bodyput".to_string();
-                let path_template = "/v1beta1/repeat:bodyput";
-
-                let builder = self.inner.builder(Method::PUT, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PUT, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBodyPut")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn repeat_data_body_patch(
-        &self,
-        req: crate::model::RepeatRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/repeat:bodypatch".to_string();
-                let path_template = "/v1beta1/repeat:bodypatch";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBodyPatch")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_enum(
-        &self,
-        req: crate::model::EnumRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::EnumResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/compliance/enum".to_string();
-                let path_template = "/v1beta1/compliance/enum";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("unknownEnum", &req.unknown_enum)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/GetEnum")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn verify_enum(
-        &self,
-        req: crate::model::EnumResponse,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::EnumResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/compliance/enum".to_string();
-                let path_template = "/v1beta1/compliance/enum";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = (|| {
-                    let builder = req
-                        .request
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "request")
-                        });
-                    let builder = builder.query(&[("continent", &req.continent)]);
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Compliance/VerifyEnum")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn list_locations(
-        &self,
-        req: google_cloud_location::model::ListLocationsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/locations", var_name,);
-                let path_template = "/v1beta1/{name}/locations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                        "name",
-                        "projects/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/ListLocations")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_location(
-        &self,
-        req: google_cloud_location::model::GetLocationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_location::model::Location>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("projects/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/locations/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("projects/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/locations/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "projects/*/locations/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/GetLocation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn set_iam_policy(
-        &self,
-        req: google_cloud_iam_v1::model::SetIamPolicyRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_iam_policy(
-        &self,
-        req: google_cloud_iam_v1::model::GetIamPolicyRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn test_iam_permissions(
-        &self,
-        req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn list_operations(
-        &self,
-        req: google_cloud_longrunning::model::ListOperationsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/operations".to_string();
-                let path_template = "/v1beta1/operations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder =
-                    builder.query(&[("returnPartialSuccess", &req.return_partial_success)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/ListOperations")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_operation(
-        &self,
-        req: google_cloud_longrunning::model::GetOperationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/GetOperation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn delete_operation(
-        &self,
-        req: google_cloud_longrunning::model::DeleteOperationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/DeleteOperation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
-            .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
-    }
-
-    async fn cancel_operation(
-        &self,
-        req: google_cloud_longrunning::model::CancelOperationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:cancel", var_name,);
-                let path_template = "/v1beta1/{name}:cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/CancelOperation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
-            .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
-    }
-}
-
-/// Implements [Echo](super::stub::Echo) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
-#[derive(Clone)]
-pub struct Echo {
-    inner: gaxi::http::ReqwestClient,
-    grpc_inner: gaxi::grpc::Client,
-}
-
-impl std::fmt::Debug for Echo {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("Echo")
-            .field("inner", &self.inner)
-            .field("grpc_inner", &self.grpc_inner)
-            .finish()
-    }
-}
-
-impl Echo {
-    pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
-        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
-        } else {
-            inner
-        };
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
@@ -1639,7 +45,981 @@ impl Echo {
         } else {
             gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner, grpc_inner })
+        Ok(Self { grpc_inner })
+    }
+}
+
+impl super::stub::Compliance for Compliance {
+    async fn repeat_data_body(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataBody",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataBody",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBody");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_body_info(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataBodyInfo",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataBodyInfo",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBodyInfo");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_query(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataQuery",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataQuery",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataQuery");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_simple_path(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataSimplePath",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataSimplePath",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_string)
+                .map(|s| s.as_str())
+                .map(|v| format!("info.f_string={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_int32)
+                .map(|v| format!("info.f_int32={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_double)
+                .map(|v| format!("info.f_double={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_bool)
+                .map(|v| format!("info.f_bool={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_kingdom)
+                .map(|v| format!("info.f_kingdom={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataSimplePath");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_path_resource(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataPathResource",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataPathResource",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_string)
+                .map(|s| s.as_str())
+                .map(|v| format!("info.f_string={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .and_then(|m| m.f_child.as_ref())
+                .map(|m| &m.f_string)
+                .map(|s| s.as_str())
+                .map(|v| format!("info.f_child.f_string={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_bool)
+                .map(|v| format!("info.f_bool={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataPathResource");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_path_trailing_resource(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataPathTrailingResource",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataPathTrailingResource",
+        );
+        let x_goog_request_params = [
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .map(|m| &m.f_string)
+                .map(|s| s.as_str())
+                .map(|v| format!("info.f_string={v}")),
+            Some(&req)
+                .and_then(|m| m.info.as_ref())
+                .and_then(|m| m.f_child.as_ref())
+                .map(|m| &m.f_string)
+                .map(|s| s.as_str())
+                .map(|v| format!("info.f_child.f_string={v}")),
+        ]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.showcase.v1beta1.Compliance/RepeatDataPathTrailingResource",
+                );
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_body_put(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataBodyPut",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataBodyPut",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBodyPut");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn repeat_data_body_patch(
+        &self,
+        req: crate::model::RepeatRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::RepeatResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "RepeatDataBodyPatch",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Compliance/RepeatDataBodyPatch",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::RepeatResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/RepeatDataBodyPatch");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::RepeatResponse>)
+    }
+
+    async fn get_enum(
+        &self,
+        req: crate::model::EnumRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::EnumResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "GetEnum",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Compliance/GetEnum");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::EnumResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/GetEnum");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::EnumResponse>)
+    }
+
+    async fn verify_enum(
+        &self,
+        req: crate::model::EnumResponse,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::EnumResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Compliance",
+                "VerifyEnum",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Compliance/VerifyEnum");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::EnumResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Compliance/VerifyEnum");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::EnumResponse>)
+    }
+
+    async fn list_locations(
+        &self,
+        req: google_cloud_location::model::ListLocationsRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "ListLocations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/ListLocations");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::ListLocationsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/ListLocations");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_location::model::ListLocationsResponse,
+                >,
+            )
+    }
+
+    async fn get_location(
+        &self,
+        req: google_cloud_location::model::GetLocationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_location::model::Location>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "GetLocation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/GetLocation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::Location;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/GetLocation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_location::model::Location>)
+    }
+
+    async fn set_iam_policy(
+        &self,
+        req: google_cloud_iam_v1::model::SetIamPolicyRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "SetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/SetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
+    }
+
+    async fn get_iam_policy(
+        &self,
+        req: google_cloud_iam_v1::model::GetIamPolicyRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "GetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/GetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
+    }
+
+    async fn test_iam_permissions(
+        &self,
+        req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.iam.v1.IAMPolicy",
+                "TestIamPermissions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/TestIamPermissions");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::TestIamPermissionsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_iam_v1::model::TestIamPermissionsResponse,
+                >,
+            )
+    }
+
+    async fn list_operations(
+        &self,
+        req: google_cloud_longrunning::model::ListOperationsRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "ListOperations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/ListOperations");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::ListOperationsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/ListOperations");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_longrunning::model::ListOperationsResponse,
+                >,
+            )
+    }
+
+    async fn get_operation(
+        &self,
+        req: google_cloud_longrunning::model::GetOperationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "GetOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/GetOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/GetOperation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
+    }
+
+    async fn delete_operation(
+        &self,
+        req: google_cloud_longrunning::model::DeleteOperationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<()>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "DeleteOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/DeleteOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/DeleteOperation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
+    }
+
+    async fn cancel_operation(
+        &self,
+        req: google_cloud_longrunning::model::CancelOperationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<()>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "CancelOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/CancelOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/CancelOperation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
+    }
+}
+
+/// Implements [Echo](super::stub::Echo) using a [gaxi::grpc::Client].
+#[derive(Clone)]
+pub struct Echo {
+    grpc_inner: gaxi::grpc::Client,
+}
+
+impl std::fmt::Debug for Echo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        f.debug_struct("Echo")
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
+    }
+}
+
+impl Echo {
+    pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -1649,47 +1029,122 @@ impl super::stub::Echo for Echo {
         req: crate::model::EchoRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::EchoResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
         let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:echo".to_string();
-                let path_template = "/v1beta1/echo:echo";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.showcase.v1beta1.Echo", "Echo"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/Echo");
+        let x_goog_request_params = {
+            use gaxi::routing_parameter::Segment;
+            gaxi::routing_parameter::format(&[
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.other_header).map(|s| s.as_str()),
+                        &[],
+                        &[Segment::MultiWildcard],
+                        &[],
+                    )
+                })
+                .map(|v| ("baz", v)),
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.header).map(|s| s.as_str()),
+                        &[],
+                        &[Segment::MultiWildcard],
+                        &[],
+                    )
+                })
+                .map(|v| ("header", v)),
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.header).map(|s| s.as_str()),
+                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
+                        &[Segment::Literal("instances/"), Segment::SingleWildcard],
+                        &[Segment::MultiWildcard],
+                    )
+                })
+                .map(|v| ("instance_id", v)),
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.other_header).map(|s| s.as_str()),
+                        &[],
+                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
+                        &[Segment::MultiWildcard],
+                    )
+                })
+                .map(|v| ("qux", v)),
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.header).map(|s| s.as_str()),
+                        &[],
+                        &[Segment::MultiWildcard],
+                        &[],
+                    )
+                })
+                .map(|v| ("routing_id", v)),
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.header).map(|s| s.as_str()),
+                        &[],
+                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
+                        &[Segment::MultiWildcard],
+                    )
+                })
+                .map(|v| ("super_id", v)),
+                None.or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.header).map(|s| s.as_str()),
+                        &[],
+                        &[
+                            Segment::Literal("projects/"),
+                            Segment::SingleWildcard,
+                            Segment::Literal("/instances/"),
+                            Segment::SingleWildcard,
+                            Segment::TrailingMultiWildcard,
+                        ],
+                        &[],
+                    )
+                })
+                .or_else(|| {
+                    gaxi::routing_parameter::value(
+                        Some(&req).map(|m| &m.header).map(|s| s.as_str()),
+                        &[],
+                        &[
+                            Segment::Literal("regions/"),
+                            Segment::SingleWildcard,
+                            Segment::Literal("/zones/"),
+                            Segment::SingleWildcard,
+                            Segment::TrailingMultiWildcard,
+                        ],
+                        &[],
+                    )
+                })
+                .map(|v| ("table_name", v)),
+            ])
+        };
+        type TR = crate::prost::google::showcase::v1beta1::EchoResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/Echo")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/Echo");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::EchoResponse>)
     }
 
     async fn echo_error_details(
@@ -1697,46 +1152,42 @@ impl super::stub::Echo for Echo {
         req: crate::model::EchoErrorDetailsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::EchoErrorDetailsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:error-details".to_string();
-                let path_template = "/v1beta1/echo:error-details";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Echo",
+                "EchoErrorDetails",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/EchoErrorDetails");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::EchoErrorDetailsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/EchoErrorDetails")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/EchoErrorDetails");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::EchoErrorDetailsResponse>)
     }
 
     async fn fail_echo_with_details(
@@ -1744,46 +1195,43 @@ impl super::stub::Echo for Echo {
         req: crate::model::FailEchoWithDetailsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::FailEchoWithDetailsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:failWithDetails".to_string();
-                let path_template = "/v1beta1/echo:failWithDetails";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/FailEchoWithDetails")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Echo",
+                "FailEchoWithDetails",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Echo/FailEchoWithDetails",
         );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::FailEchoWithDetailsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/FailEchoWithDetails");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::FailEchoWithDetailsResponse>)
     }
 
     async fn expand(
@@ -1862,46 +1310,42 @@ impl super::stub::Echo for Echo {
         req: crate::model::PagedExpandRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::PagedExpandResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:pagedExpand".to_string();
-                let path_template = "/v1beta1/echo:pagedExpand";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Echo",
+                "PagedExpand",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/PagedExpand");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::PagedExpandResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/PagedExpand")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/PagedExpand");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::PagedExpandResponse>)
     }
 
     async fn paged_expand_legacy(
@@ -1909,46 +1353,42 @@ impl super::stub::Echo for Echo {
         req: crate::model::PagedExpandLegacyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::PagedExpandResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:pagedExpandLegacy".to_string();
-                let path_template = "/v1beta1/echo:pagedExpandLegacy";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Echo",
+                "PagedExpandLegacy",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/PagedExpandLegacy");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::PagedExpandResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/PagedExpandLegacy")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/PagedExpandLegacy");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::PagedExpandResponse>)
     }
 
     async fn paged_expand_legacy_mapped(
@@ -1956,46 +1396,45 @@ impl super::stub::Echo for Echo {
         req: crate::model::PagedExpandRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::PagedExpandLegacyMappedResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:pagedExpandLegacyMapped".to_string();
-                let path_template = "/v1beta1/echo:pagedExpandLegacyMapped";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/PagedExpandLegacyMapped")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Echo",
+                "PagedExpandLegacyMapped",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.Echo/PagedExpandLegacyMapped",
         );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::PagedExpandLegacyMappedResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/PagedExpandLegacyMapped");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<TR, crate::model::PagedExpandLegacyMappedResponse>,
+            )
     }
 
     async fn wait(
@@ -2003,46 +1442,38 @@ impl super::stub::Echo for Echo {
         req: crate::model::WaitRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:wait".to_string();
-                let path_template = "/v1beta1/echo:wait";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.showcase.v1beta1.Echo", "Wait"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/Wait");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/Wait")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/Wait");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
     }
 
     async fn block(
@@ -2050,46 +1481,38 @@ impl super::stub::Echo for Echo {
         req: crate::model::BlockRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::BlockResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/echo:block".to_string();
-                let path_template = "/v1beta1/echo:block";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.showcase.v1beta1.Echo", "Block"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Echo/Block");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::BlockResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Echo/Block")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Echo/Block");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder
-            .query(&[("$alt", "json;enum-encoding=int")])
-            .query(&[("$apiVersion", "v1_20240408")])
-            .header(
-                "x-goog-api-client",
-                HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-            );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::BlockResponse>)
     }
 
     async fn list_locations(
@@ -2097,58 +1520,50 @@ impl super::stub::Echo for Echo {
         req: google_cloud_location::model::ListLocationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/locations", var_name,);
-                let path_template = "/v1beta1/{name}/locations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                        "name",
-                        "projects/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "ListLocations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/ListLocations");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::ListLocationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/ListLocations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/ListLocations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_location::model::ListLocationsResponse,
+                >,
+            )
     }
 
     async fn get_location(
@@ -2156,65 +1571,45 @@ impl super::stub::Echo for Echo {
         req: google_cloud_location::model::GetLocationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::Location>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("projects/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/locations/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("projects/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/locations/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "projects/*/locations/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "GetLocation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/GetLocation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::Location;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/GetLocation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/GetLocation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_location::model::Location>)
     }
 
     async fn set_iam_policy(
@@ -2222,141 +1617,52 @@ impl super::stub::Echo for Echo {
         req: google_cloud_iam_v1::model::SetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "SetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/SetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn get_iam_policy(
@@ -2364,184 +1670,52 @@ impl super::stub::Echo for Echo {
         req: google_cloud_iam_v1::model::GetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "GetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/GetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn test_iam_permissions(
@@ -2549,141 +1723,61 @@ impl super::stub::Echo for Echo {
         req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.iam.v1.IAMPolicy",
+                "TestIamPermissions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/TestIamPermissions");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::TestIamPermissionsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_iam_v1::model::TestIamPermissionsResponse,
+                >,
+            )
     }
 
     async fn list_operations(
@@ -2691,49 +1785,47 @@ impl super::stub::Echo for Echo {
         req: google_cloud_longrunning::model::ListOperationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/operations".to_string();
-                let path_template = "/v1beta1/operations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder =
-                    builder.query(&[("returnPartialSuccess", &req.return_partial_success)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "ListOperations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/ListOperations");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::ListOperationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/ListOperations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/ListOperations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_longrunning::model::ListOperationsResponse,
+                >,
+            )
     }
 
     async fn get_operation(
@@ -2741,61 +1833,45 @@ impl super::stub::Echo for Echo {
         req: google_cloud_longrunning::model::GetOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "GetOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/GetOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/GetOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/GetOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
     }
 
     async fn delete_operation(
@@ -2803,67 +1879,45 @@ impl super::stub::Echo for Echo {
         req: google_cloud_longrunning::model::DeleteOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "DeleteOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/DeleteOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/DeleteOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/DeleteOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn cancel_operation(
@@ -2871,94 +1925,72 @@ impl super::stub::Echo for Echo {
         req: google_cloud_longrunning::model::CancelOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:cancel", var_name,);
-                let path_template = "/v1beta1/{name}:cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "CancelOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/CancelOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/CancelOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/CancelOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     fn get_polling_error_policy(
         &self,
         options: &crate::RequestOptions,
     ) -> std::sync::Arc<dyn google_cloud_gax::polling_error_policy::PollingErrorPolicy> {
-        self.inner.get_polling_error_policy(options)
+        self.grpc_inner.get_polling_error_policy(options)
     }
 
     fn get_polling_backoff_policy(
         &self,
         options: &crate::RequestOptions,
     ) -> std::sync::Arc<dyn google_cloud_gax::polling_backoff_policy::PollingBackoffPolicy> {
-        self.inner.get_polling_backoff_policy(options)
+        self.grpc_inner.get_polling_backoff_policy(options)
     }
 }
 
-/// Implements [Identity](super::stub::Identity) using a [gaxi::http::ReqwestClient].
+/// Implements [Identity](super::stub::Identity) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Identity {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Identity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Identity")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -2966,1171 +1998,6 @@ impl std::fmt::Debug for Identity {
 impl Identity {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
-        } else {
-            inner
-        };
-        Ok(Self { inner })
-    }
-}
-
-impl super::stub::Identity for Identity {
-    async fn create_user(
-        &self,
-        req: crate::model::CreateUserRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::User>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/users".to_string();
-                let path_template = "/v1beta1/users";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Identity/CreateUser")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_user(
-        &self,
-        req: crate::model::GetUserRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::User>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "name",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Identity/GetUser")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn update_user(
-        &self,
-        req: crate::model::UpdateUserRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::User>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_user_name = try_match(
-                    Some(&req)
-                        .and_then(|m| m.user.as_ref())
-                        .map(|m| &m.name)
-                        .map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_user_name,);
-                let path_template = "/v1beta1/{user.name}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = (|| {
-                    let builder = req
-                        .update_mask
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "updateMask")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req)
-                            .and_then(|m| m.user.as_ref())
-                            .map(|m| &m.name)
-                            .map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "user.name",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Identity/UpdateUser")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.user, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn delete_user(
-        &self,
-        req: crate::model::DeleteUserRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "name",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Identity/DeleteUser")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
-            .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
-    }
-
-    async fn list_users(
-        &self,
-        req: crate::model::ListUsersRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<crate::model::ListUsersResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/users".to_string();
-                let path_template = "/v1beta1/users";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Identity/ListUsers")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn list_locations(
-        &self,
-        req: google_cloud_location::model::ListLocationsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/locations", var_name,);
-                let path_template = "/v1beta1/{name}/locations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                        "name",
-                        "projects/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/ListLocations")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_location(
-        &self,
-        req: google_cloud_location::model::GetLocationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_location::model::Location>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("projects/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/locations/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("projects/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/locations/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "projects/*/locations/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/GetLocation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn set_iam_policy(
-        &self,
-        req: google_cloud_iam_v1::model::SetIamPolicyRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_iam_policy(
-        &self,
-        req: google_cloud_iam_v1::model::GetIamPolicyRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn test_iam_permissions(
-        &self,
-        req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn list_operations(
-        &self,
-        req: google_cloud_longrunning::model::ListOperationsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/operations".to_string();
-                let path_template = "/v1beta1/operations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder =
-                    builder.query(&[("returnPartialSuccess", &req.return_partial_success)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/ListOperations")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn get_operation(
-        &self,
-        req: google_cloud_longrunning::model::GetOperationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/GetOperation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn delete_operation(
-        &self,
-        req: google_cloud_longrunning::model::DeleteOperationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/DeleteOperation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
-            .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
-    }
-
-    async fn cancel_operation(
-        &self,
-        req: google_cloud_longrunning::model::CancelOperationRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:cancel", var_name,);
-                let path_template = "/v1beta1/{name}:cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/CancelOperation")
-                    .set_url_template(_path_template),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
-            .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
-    }
-}
-
-/// Implements [Messaging](super::stub::Messaging) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
-#[derive(Clone)]
-pub struct Messaging {
-    inner: gaxi::http::ReqwestClient,
-    grpc_inner: gaxi::grpc::Client,
-}
-
-impl std::fmt::Debug for Messaging {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_struct("Messaging")
-            .field("inner", &self.inner)
-            .field("grpc_inner", &self.grpc_inner)
-            .finish()
-    }
-}
-
-impl Messaging {
-    pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
-        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
-        } else {
-            inner
-        };
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
@@ -4141,7 +2008,738 @@ impl Messaging {
         } else {
             gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner, grpc_inner })
+        Ok(Self { grpc_inner })
+    }
+}
+
+impl super::stub::Identity for Identity {
+    async fn create_user(
+        &self,
+        req: crate::model::CreateUserRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::User>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Identity",
+                "CreateUser",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Identity/CreateUser");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::User;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Identity/CreateUser");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::User>)
+    }
+
+    async fn get_user(
+        &self,
+        req: crate::model::GetUserRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::User>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Identity",
+                "GetUser",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Identity/GetUser");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::User;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Identity/GetUser");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::User>)
+    }
+
+    async fn update_user(
+        &self,
+        req: crate::model::UpdateUserRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::User>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Identity",
+                "UpdateUser",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Identity/UpdateUser");
+        let x_goog_request_params = [Some(&req)
+            .and_then(|m| m.user.as_ref())
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("user.name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::User;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Identity/UpdateUser");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::User>)
+    }
+
+    async fn delete_user(
+        &self,
+        req: crate::model::DeleteUserRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<()>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Identity",
+                "DeleteUser",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Identity/DeleteUser");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Identity/DeleteUser");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
+    }
+
+    async fn list_users(
+        &self,
+        req: crate::model::ListUsersRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<crate::model::ListUsersResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Identity",
+                "ListUsers",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Identity/ListUsers");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::ListUsersResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Identity/ListUsers");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListUsersResponse>)
+    }
+
+    async fn list_locations(
+        &self,
+        req: google_cloud_location::model::ListLocationsRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "ListLocations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/ListLocations");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::ListLocationsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/ListLocations");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_location::model::ListLocationsResponse,
+                >,
+            )
+    }
+
+    async fn get_location(
+        &self,
+        req: google_cloud_location::model::GetLocationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_location::model::Location>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "GetLocation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/GetLocation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::Location;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/GetLocation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_location::model::Location>)
+    }
+
+    async fn set_iam_policy(
+        &self,
+        req: google_cloud_iam_v1::model::SetIamPolicyRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "SetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/SetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
+    }
+
+    async fn get_iam_policy(
+        &self,
+        req: google_cloud_iam_v1::model::GetIamPolicyRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "GetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/GetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
+    }
+
+    async fn test_iam_permissions(
+        &self,
+        req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.iam.v1.IAMPolicy",
+                "TestIamPermissions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/TestIamPermissions");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::TestIamPermissionsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_iam_v1::model::TestIamPermissionsResponse,
+                >,
+            )
+    }
+
+    async fn list_operations(
+        &self,
+        req: google_cloud_longrunning::model::ListOperationsRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "ListOperations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/ListOperations");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::ListOperationsResponse;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/ListOperations");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_longrunning::model::ListOperationsResponse,
+                >,
+            )
+    }
+
+    async fn get_operation(
+        &self,
+        req: google_cloud_longrunning::model::GetOperationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "GetOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/GetOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/GetOperation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
+    }
+
+    async fn delete_operation(
+        &self,
+        req: google_cloud_longrunning::model::DeleteOperationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<()>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "DeleteOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/DeleteOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/DeleteOperation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
+    }
+
+    async fn cancel_operation(
+        &self,
+        req: google_cloud_longrunning::model::CancelOperationRequest,
+        options: crate::RequestOptions,
+    ) -> Result<crate::Response<()>> {
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "CancelOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/CancelOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
+        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/CancelOperation");
+            recorder.on_client_request(attributes);
+        }
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
+    }
+}
+
+/// Implements [Messaging](super::stub::Messaging) using a [gaxi::grpc::Client].
+#[derive(Clone)]
+pub struct Messaging {
+    grpc_inner: gaxi::grpc::Client,
+}
+
+impl std::fmt::Debug for Messaging {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        f.debug_struct("Messaging")
+            .field("grpc_inner", &self.grpc_inner)
+            .finish()
+    }
+}
+
+impl Messaging {
+    pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
+        let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
+        } else {
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
+        };
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -4151,43 +2749,42 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::CreateRoomRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Room>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/rooms".to_string();
-                let path_template = "/v1beta1/rooms";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "CreateRoom",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/CreateRoom");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Room;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/CreateRoom")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/CreateRoom");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Room>)
     }
 
     async fn get_room(
@@ -4195,57 +2792,56 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::GetRoomRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Room>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "name",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "GetRoom",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/GetRoom");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Room;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/GetRoom")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/GetRoom");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Room>)
     }
 
     async fn update_room(
@@ -4253,73 +2849,46 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::UpdateRoomRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Room>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_room_name = try_match(
-                    Some(&req)
-                        .and_then(|m| m.room.as_ref())
-                        .map(|m| &m.name)
-                        .map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_room_name,);
-                let path_template = "/v1beta1/{room.name}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = (|| {
-                    let builder = req
-                        .update_mask
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "updateMask")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req)
-                            .and_then(|m| m.room.as_ref())
-                            .map(|m| &m.name)
-                            .map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "room.name",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "UpdateRoom",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/UpdateRoom");
+        let x_goog_request_params = [Some(&req)
+            .and_then(|m| m.room.as_ref())
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("room.name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Room;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/UpdateRoom")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/UpdateRoom");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.room, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Room>)
     }
 
     async fn delete_room(
@@ -4327,63 +2896,56 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::DeleteRoomRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "name",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "DeleteRoom",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/DeleteRoom");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/DeleteRoom")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/DeleteRoom");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn list_rooms(
@@ -4391,45 +2953,42 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::ListRoomsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListRoomsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/rooms".to_string();
-                let path_template = "/v1beta1/rooms";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "ListRooms",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/ListRooms");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::ListRoomsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/ListRooms")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/ListRooms");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListRoomsResponse>)
     }
 
     async fn create_blurb(
@@ -4437,91 +2996,56 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::CreateBlurbRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Blurb>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/blurbs", var_parent,);
-                let path_template = "/v1beta1/{parent}/blurbs";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.parent));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("users/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/profile"),
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}/blurbs", var_parent,);
-                let path_template = "/v1beta1/{parent}/blurbs";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.parent));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "parent",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("users/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/profile"),
-                        ],
-                        "parent",
-                        "users/*/profile",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "CreateBlurb",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/CreateBlurb");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.parent)
+            .map(|s| s.as_str())
+            .map(|v| format!("parent={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Blurb;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/CreateBlurb")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/CreateBlurb");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.parent).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Blurb>)
     }
 
     async fn get_blurb(
@@ -4529,100 +3053,56 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::GetBlurbRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Blurb>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("users/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/profile/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("users/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/profile/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "users/*/profile/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "GetBlurb",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/GetBlurb");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Blurb;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/GetBlurb")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/GetBlurb");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Blurb>)
     }
 
     async fn update_blurb(
@@ -4630,133 +3110,46 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::UpdateBlurbRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Blurb>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_blurb_name = try_match(
-                    Some(&req)
-                        .and_then(|m| m.blurb.as_ref())
-                        .map(|m| &m.name)
-                        .map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_blurb_name,);
-                let path_template = "/v1beta1/{blurb.name}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = (|| {
-                    let builder = req
-                        .update_mask
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "updateMask")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .or_else(|| {
-                let var_blurb_name = try_match(
-                    Some(&req)
-                        .and_then(|m| m.blurb.as_ref())
-                        .map(|m| &m.name)
-                        .map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("users/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/profile/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_blurb_name,);
-                let path_template = "/v1beta1/{blurb.name}";
-
-                let builder = self.inner.builder(Method::PATCH, path);
-                let builder = (|| {
-                    let builder = req
-                        .update_mask
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "updateMask")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::PATCH, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req)
-                            .and_then(|m| m.blurb.as_ref())
-                            .map(|m| &m.name)
-                            .map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "blurb.name",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req)
-                            .and_then(|m| m.blurb.as_ref())
-                            .map(|m| &m.name)
-                            .map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("users/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/profile/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "blurb.name",
-                        "users/*/profile/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "UpdateBlurb",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/UpdateBlurb");
+        let x_goog_request_params = [Some(&req)
+            .and_then(|m| m.blurb.as_ref())
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("blurb.name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Blurb;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/UpdateBlurb")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/UpdateBlurb");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.blurb, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Blurb>)
     }
 
     async fn delete_blurb(
@@ -4764,106 +3157,56 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::DeleteBlurbRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("users/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/profile/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("users/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/profile/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "users/*/profile/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "DeleteBlurb",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/DeleteBlurb");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/DeleteBlurb")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/DeleteBlurb");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn list_blurbs(
@@ -4871,187 +3214,56 @@ impl super::stub::Messaging for Messaging {
         req: crate::model::ListBlurbsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListBlurbsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/blurbs", var_parent,);
-                let path_template = "/v1beta1/{parent}/blurbs";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("users/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/profile"),
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}/blurbs", var_parent,);
-                let path_template = "/v1beta1/{parent}/blurbs";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "parent",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("users/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/profile"),
-                        ],
-                        "parent",
-                        "users/*/profile",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Messaging",
+                "ListBlurbs",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Messaging/ListBlurbs");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.parent)
+            .map(|s| s.as_str())
+            .map(|v| format!("parent={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::ListBlurbsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/ListBlurbs")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Messaging/ListBlurbs");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.parent).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
-    }
-
-    async fn search_blurbs(
-        &self,
-        req: crate::model::SearchBlurbsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/blurbs:search", var_parent,);
-                let path_template = "/v1beta1/{parent}/blurbs:search";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.parent));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("users/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/profile"),
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}/blurbs:search", var_parent,);
-                let path_template = "/v1beta1/{parent}/blurbs:search";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.parent));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = builder.query(&[("query", &req.query)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "parent",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("users/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/profile"),
-                        ],
-                        "parent",
-                        "users/*/profile",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
-        if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Messaging/SearchBlurbs")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
-        }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListBlurbsResponse>)
     }
 
     async fn stream_blurbs(
@@ -5136,58 +3348,50 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_location::model::ListLocationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/locations", var_name,);
-                let path_template = "/v1beta1/{name}/locations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                        "name",
-                        "projects/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "ListLocations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/ListLocations");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::ListLocationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/ListLocations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/ListLocations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_location::model::ListLocationsResponse,
+                >,
+            )
     }
 
     async fn get_location(
@@ -5195,65 +3399,45 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_location::model::GetLocationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::Location>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("projects/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/locations/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("projects/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/locations/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "projects/*/locations/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "GetLocation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/GetLocation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::Location;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/GetLocation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/GetLocation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_location::model::Location>)
     }
 
     async fn set_iam_policy(
@@ -5261,141 +3445,52 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_iam_v1::model::SetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "SetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/SetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn get_iam_policy(
@@ -5403,184 +3498,52 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_iam_v1::model::GetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "GetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/GetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn test_iam_permissions(
@@ -5588,141 +3551,61 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.iam.v1.IAMPolicy",
+                "TestIamPermissions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/TestIamPermissions");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::TestIamPermissionsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_iam_v1::model::TestIamPermissionsResponse,
+                >,
+            )
     }
 
     async fn list_operations(
@@ -5730,49 +3613,47 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_longrunning::model::ListOperationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/operations".to_string();
-                let path_template = "/v1beta1/operations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder =
-                    builder.query(&[("returnPartialSuccess", &req.return_partial_success)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "ListOperations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/ListOperations");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::ListOperationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/ListOperations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/ListOperations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_longrunning::model::ListOperationsResponse,
+                >,
+            )
     }
 
     async fn get_operation(
@@ -5780,61 +3661,45 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_longrunning::model::GetOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "GetOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/GetOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/GetOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/GetOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
     }
 
     async fn delete_operation(
@@ -5842,67 +3707,45 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_longrunning::model::DeleteOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "DeleteOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/DeleteOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/DeleteOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/DeleteOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn cancel_operation(
@@ -5910,95 +3753,57 @@ impl super::stub::Messaging for Messaging {
         req: google_cloud_longrunning::model::CancelOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:cancel", var_name,);
-                let path_template = "/v1beta1/{name}:cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "CancelOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/CancelOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/CancelOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/CancelOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
-    }
-
-    fn get_polling_error_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_error_policy::PollingErrorPolicy> {
-        self.inner.get_polling_error_policy(options)
-    }
-
-    fn get_polling_backoff_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_backoff_policy::PollingBackoffPolicy> {
-        self.inner.get_polling_backoff_policy(options)
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 }
 
-/// Implements [SequenceService](super::stub::SequenceService) using a [gaxi::http::ReqwestClient] and a [gaxi::grpc::Client].
+/// Implements [SequenceService](super::stub::SequenceService) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct SequenceService {
-    inner: gaxi::http::ReqwestClient,
     grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for SequenceService {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("SequenceService")
-            .field("inner", &self.inner)
             .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
@@ -6007,12 +3812,6 @@ impl std::fmt::Debug for SequenceService {
 impl SequenceService {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config.clone(), crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
-        } else {
-            inner
-        };
         let grpc_inner = if tracing_is_enabled {
             gaxi::grpc::Client::new_with_instrumentation(
                 config,
@@ -6023,7 +3822,7 @@ impl SequenceService {
         } else {
             gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner, grpc_inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -6033,43 +3832,43 @@ impl super::stub::SequenceService for SequenceService {
         req: crate::model::CreateSequenceRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Sequence>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/sequences".to_string();
-                let path_template = "/v1beta1/sequences";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.SequenceService",
+                "CreateSequence",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.SequenceService/CreateSequence",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Sequence;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.SequenceService/CreateSequence")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.SequenceService/CreateSequence");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.sequence, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Sequence>)
     }
 
     async fn create_streaming_sequence(
@@ -6077,45 +3876,43 @@ impl super::stub::SequenceService for SequenceService {
         req: crate::model::CreateStreamingSequenceRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::StreamingSequence>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/streamingSequences".to_string();
-                let path_template = "/v1beta1/streamingSequences";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.SequenceService",
+                "CreateStreamingSequence",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.SequenceService/CreateStreamingSequence",
+        );
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::StreamingSequence;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.showcase.v1beta1.SequenceService/CreateStreamingSequence",
-                    )
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.SequenceService/CreateStreamingSequence");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.streaming_sequence, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::StreamingSequence>)
     }
 
     async fn get_sequence_report(
@@ -6123,65 +3920,57 @@ impl super::stub::SequenceService for SequenceService {
         req: crate::model::GetSequenceReportRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::SequenceReport>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("sequences/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/sequenceReport"),
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("sequences/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/sequenceReport"),
-                        ],
-                        "name",
-                        "sequences/*/sequenceReport",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.SequenceService",
+                "GetSequenceReport",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.SequenceService/GetSequenceReport",
+        );
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::SequenceReport;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.SequenceService/GetSequenceReport")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.SequenceService/GetSequenceReport");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::SequenceReport>)
     }
 
     async fn get_streaming_sequence_report(
@@ -6189,67 +3978,59 @@ impl super::stub::SequenceService for SequenceService {
         req: crate::model::GetStreamingSequenceReportRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::StreamingSequenceReport>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("streamingSequences/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/streamingSequenceReport"),
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("streamingSequences/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/streamingSequenceReport"),
-                        ],
-                        "name",
-                        "streamingSequences/*/streamingSequenceReport",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.SequenceService",
+                "GetStreamingSequenceReport",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.SequenceService/GetStreamingSequenceReport",
+        );
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::StreamingSequenceReport;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method(
-                        "google.showcase.v1beta1.SequenceService/GetStreamingSequenceReport",
-                    )
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method(
+                    "google.showcase.v1beta1.SequenceService/GetStreamingSequenceReport",
+                );
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::StreamingSequenceReport>)
     }
 
     async fn attempt_sequence(
@@ -6257,65 +4038,57 @@ impl super::stub::SequenceService for SequenceService {
         req: crate::model::AttemptSequenceRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.name));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "name",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.SequenceService",
+                "AttemptSequence",
+            ));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static(
+            "/google.showcase.v1beta1.SequenceService/AttemptSequence",
+        );
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.SequenceService/AttemptSequence")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.SequenceService/AttemptSequence");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn attempt_streaming_sequence(
@@ -6367,58 +4140,50 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_location::model::ListLocationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/locations", var_name,);
-                let path_template = "/v1beta1/{name}/locations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                        "name",
-                        "projects/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "ListLocations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/ListLocations");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::ListLocationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/ListLocations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/ListLocations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_location::model::ListLocationsResponse,
+                >,
+            )
     }
 
     async fn get_location(
@@ -6426,65 +4191,45 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_location::model::GetLocationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::Location>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("projects/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/locations/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("projects/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/locations/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "projects/*/locations/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "GetLocation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/GetLocation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::Location;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/GetLocation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/GetLocation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_location::model::Location>)
     }
 
     async fn set_iam_policy(
@@ -6492,141 +4237,52 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_iam_v1::model::SetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "SetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/SetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn get_iam_policy(
@@ -6634,184 +4290,52 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_iam_v1::model::GetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "GetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/GetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn test_iam_permissions(
@@ -6819,141 +4343,61 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.iam.v1.IAMPolicy",
+                "TestIamPermissions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/TestIamPermissions");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::TestIamPermissionsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_iam_v1::model::TestIamPermissionsResponse,
+                >,
+            )
     }
 
     async fn list_operations(
@@ -6961,49 +4405,47 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_longrunning::model::ListOperationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/operations".to_string();
-                let path_template = "/v1beta1/operations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder =
-                    builder.query(&[("returnPartialSuccess", &req.return_partial_success)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "ListOperations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/ListOperations");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::ListOperationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/ListOperations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/ListOperations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_longrunning::model::ListOperationsResponse,
+                >,
+            )
     }
 
     async fn get_operation(
@@ -7011,61 +4453,45 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_longrunning::model::GetOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "GetOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/GetOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/GetOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/GetOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
     }
 
     async fn delete_operation(
@@ -7073,67 +4499,45 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_longrunning::model::DeleteOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "DeleteOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/DeleteOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/DeleteOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/DeleteOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn cancel_operation(
@@ -7141,80 +4545,58 @@ impl super::stub::SequenceService for SequenceService {
         req: google_cloud_longrunning::model::CancelOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:cancel", var_name,);
-                let path_template = "/v1beta1/{name}:cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "CancelOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/CancelOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/CancelOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/CancelOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 }
 
-/// Implements [Testing](super::stub::Testing) using a [gaxi::http::ReqwestClient].
+/// Implements [Testing](super::stub::Testing) using a [gaxi::grpc::Client].
 #[derive(Clone)]
 pub struct Testing {
-    inner: gaxi::http::ReqwestClient,
+    grpc_inner: gaxi::grpc::Client,
 }
 
 impl std::fmt::Debug for Testing {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         f.debug_struct("Testing")
-            .field("inner", &self.inner)
+            .field("grpc_inner", &self.grpc_inner)
             .finish()
     }
 }
@@ -7222,13 +4604,17 @@ impl std::fmt::Debug for Testing {
 impl Testing {
     pub async fn new(config: gaxi::options::ClientConfig) -> crate::ClientBuilderResult<Self> {
         let tracing_is_enabled = gaxi::options::tracing_enabled(&config);
-        let inner = gaxi::http::ReqwestClient::new(config, crate::DEFAULT_HOST).await?;
-        let inner = if tracing_is_enabled {
-            inner.with_instrumentation(&super::tracing::info::INSTRUMENTATION_CLIENT_INFO)
+        let grpc_inner = if tracing_is_enabled {
+            gaxi::grpc::Client::new_with_instrumentation(
+                config,
+                crate::DEFAULT_HOST,
+                &super::tracing::info::INSTRUMENTATION_CLIENT_INFO,
+            )
+            .await?
         } else {
-            inner
+            gaxi::grpc::Client::new(config, crate::DEFAULT_HOST).await?
         };
-        Ok(Self { inner })
+        Ok(Self { grpc_inner })
     }
 }
 
@@ -7238,43 +4624,42 @@ impl super::stub::Testing for Testing {
         req: crate::model::CreateSessionRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Session>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/sessions".to_string();
-                let path_template = "/v1beta1/sessions";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "CreateSession",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/CreateSession");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Session;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/CreateSession")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/CreateSession");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(req.session, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Session>)
     }
 
     async fn get_session(
@@ -7282,57 +4667,56 @@ impl super::stub::Testing for Testing {
         req: crate::model::GetSessionRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::Session>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                        "name",
-                        "sessions/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "GetSession",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/GetSession");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::Session;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/GetSession")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/GetSession");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::Session>)
     }
 
     async fn list_sessions(
@@ -7340,45 +4724,42 @@ impl super::stub::Testing for Testing {
         req: crate::model::ListSessionsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListSessionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/sessions".to_string();
-                let path_template = "/v1beta1/sessions";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "ListSessions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/ListSessions");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::ListSessionsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/ListSessions")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/ListSessions");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListSessionsResponse>)
     }
 
     async fn delete_session(
@@ -7386,63 +4767,56 @@ impl super::stub::Testing for Testing {
         req: crate::model::DeleteSessionRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                        "name",
-                        "sessions/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "DeleteSession",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/DeleteSession");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/DeleteSession")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/DeleteSession");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn report_session(
@@ -7450,57 +4824,56 @@ impl super::stub::Testing for Testing {
         req: crate::model::ReportSessionRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ReportSessionResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:report", var_name,);
-                let path_template = "/v1beta1/{name}:report";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                        "name",
-                        "sessions/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "ReportSession",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/ReportSession");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::ReportSessionResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/ReportSession")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/ReportSession");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ReportSessionResponse>)
     }
 
     async fn list_tests(
@@ -7508,59 +4881,56 @@ impl super::stub::Testing for Testing {
         req: crate::model::ListTestsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::ListTestsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_parent = try_match(
-                    Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                    &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/tests", var_parent,);
-                let path_template = "/v1beta1/{parent}/tests";
-
-                let resource_name = format!("//localhost:7469/{}", var_parent,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.parent).map(|s| s.as_str()),
-                        &[Segment::Literal("sessions/"), Segment::SingleWildcard],
-                        "parent",
-                        "sessions/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "ListTests",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/ListTests");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.parent)
+            .map(|s| s.as_str())
+            .map(|v| format!("parent={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::ListTestsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/ListTests")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/ListTests");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.parent).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::ListTestsResponse>)
     }
 
     async fn delete_test(
@@ -7568,73 +4938,56 @@ impl super::stub::Testing for Testing {
         req: crate::model::DeleteTestRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("sessions/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/tests/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("sessions/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/tests/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "sessions/*/tests/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "DeleteTest",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/DeleteTest");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/DeleteTest")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/DeleteTest");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn verify_test(
@@ -7642,72 +4995,56 @@ impl super::stub::Testing for Testing {
         req: crate::model::VerifyTestRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<crate::model::VerifyTestResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("sessions/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/tests/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:check", var_name,);
-                let path_template = "/v1beta1/{name}:check";
-
-                let resource_name = format!("//localhost:7469/{}", var_name,);
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = builder.query(&[("answer", &req.answer)]);
-                let builder = req
-                    .answers
-                    .iter()
-                    .fold(builder, |builder, p| builder.query(&[("answers", p)]));
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("sessions/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/tests/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "sessions/*/tests/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.showcase.v1beta1.Testing",
+                "VerifyTest",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.showcase.v1beta1.Testing/VerifyTest");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::showcase::v1beta1::VerifyTestResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.showcase.v1beta1.Testing/VerifyTest")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.showcase.v1beta1.Testing/VerifyTest");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.name).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, crate::model::VerifyTestResponse>)
     }
 
     async fn list_locations(
@@ -7715,58 +5052,50 @@ impl super::stub::Testing for Testing {
         req: google_cloud_location::model::ListLocationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::ListLocationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}/locations", var_name,);
-                let path_template = "/v1beta1/{name}/locations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[Segment::Literal("projects/"), Segment::SingleWildcard],
-                        "name",
-                        "projects/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "ListLocations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/ListLocations");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::ListLocationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/ListLocations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/ListLocations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_location::model::ListLocationsResponse,
+                >,
+            )
     }
 
     async fn get_location(
@@ -7774,65 +5103,45 @@ impl super::stub::Testing for Testing {
         req: google_cloud_location::model::GetLocationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_location::model::Location>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("projects/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/locations/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("projects/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/locations/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "name",
-                        "projects/*/locations/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.cloud.location.Locations",
+                "GetLocation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.cloud.location.Locations/GetLocation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::cloud::location::Location;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.cloud.location.Locations/GetLocation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.cloud.location.Locations/GetLocation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_location::model::Location>)
     }
 
     async fn set_iam_policy(
@@ -7840,141 +5149,52 @@ impl super::stub::Testing for Testing {
         req: google_cloud_iam_v1::model::SetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:setIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:setIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "SetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/SetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/SetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn get_iam_policy(
@@ -7982,184 +5202,52 @@ impl super::stub::Testing for Testing {
         req: google_cloud_iam_v1::model::GetIamPolicyRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::Policy>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:getIamPolicy", var_resource,);
-                let path_template = "/v1beta1/{resource}:getIamPolicy";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = (|| {
-                    let builder = req
-                        .options
-                        .as_ref()
-                        .map(|p| serde_json::to_value(p).map_err(Error::ser))
-                        .transpose()?
-                        .into_iter()
-                        .fold(builder, |builder, v| {
-                            use gaxi::query_parameter::QueryParameter;
-                            v.add(builder, "options")
-                        });
-                    Ok(builder)
-                })();
-                Some(builder.map(|b| (b, Method::GET, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new("google.iam.v1.IAMPolicy", "GetIamPolicy"));
+            e
+        };
+        let path = http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/GetIamPolicy");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::Policy;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/GetIamPolicy");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_iam_v1::model::Policy>)
     }
 
     async fn test_iam_permissions(
@@ -8167,141 +5255,61 @@ impl super::stub::Testing for Testing {
         req: google_cloud_iam_v1::model::TestIamPermissionsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_iam_v1::model::TestIamPermissionsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let mut req = req;
-        let (builder, method, _path_template, _resource_name) = None
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("users/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("rooms/"),
-                        Segment::SingleWildcard,
-                        Segment::Literal("/blurbs/"),
-                        Segment::SingleWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .or_else(|| {
-                let var_resource = try_match(
-                    Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                    &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                )?;
-                let path = format!("/v1beta1/{}:testIamPermissions", var_resource,);
-                let path_template = "/v1beta1/{resource}:testIamPermissions";
-
-                let resource_name = format!("//localhost:7469/{}", var_resource,);
-                let _ = Some(&mut req).map(|m| std::mem::take(&mut m.resource));
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template, resource_name)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("users/"), Segment::SingleWildcard],
-                        "resource",
-                        "users/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("rooms/"), Segment::SingleWildcard],
-                        "resource",
-                        "rooms/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("rooms/"),
-                            Segment::SingleWildcard,
-                            Segment::Literal("/blurbs/"),
-                            Segment::SingleWildcard,
-                        ],
-                        "resource",
-                        "rooms/*/blurbs/*",
-                    );
-                    paths.push(builder.build());
-                }
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.resource).map(|s| s.as_str()),
-                        &[Segment::Literal("sequences/"), Segment::SingleWildcard],
-                        "resource",
-                        "sequences/*",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.iam.v1.IAMPolicy",
+                "TestIamPermissions",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.iam.v1.IAMPolicy/TestIamPermissions");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.resource)
+            .map(|s| s.as_str())
+            .map(|v| format!("resource={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::iam::v1::TestIamPermissionsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions")
-                    .set_url_template(_path_template)
-                    .set_resource_name(_resource_name),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.iam.v1.IAMPolicy/TestIamPermissions");
+            let resource_name = (|| {
+                Some(format!(
+                    "//localhost:7469/{}",
+                    Some(&req).map(|m| &m.resource).map(|s| s.as_str())?,
+                ))
+            })();
+            let attributes = if let Some(rn) = resource_name.filter(|s| !s.is_empty()) {
+                attributes.set_resource_name(rn)
+            } else {
+                attributes
+            };
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(Some(req), &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_iam_v1::model::TestIamPermissionsResponse,
+                >,
+            )
     }
 
     async fn list_operations(
@@ -8309,49 +5317,47 @@ impl super::stub::Testing for Testing {
         req: google_cloud_longrunning::model::ListOperationsRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::ListOperationsResponse>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let path = "/v1beta1/operations".to_string();
-                let path_template = "/v1beta1/operations";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = builder.query(&[("name", &req.name)]);
-                let builder = builder.query(&[("filter", &req.filter)]);
-                let builder = builder.query(&[("pageSize", &req.page_size)]);
-                let builder = builder.query(&[("pageToken", &req.page_token)]);
-                let builder =
-                    builder.query(&[("returnPartialSuccess", &req.return_partial_success)]);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "ListOperations",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/ListOperations");
+        let x_goog_request_params = [None::<String>; 0]
+            .into_iter()
+            .flatten()
+            .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::ListOperationsResponse;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/ListOperations")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/ListOperations");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(
+                gaxi::grpc::to_gax_response::<
+                    TR,
+                    google_cloud_longrunning::model::ListOperationsResponse,
+                >,
+            )
     }
 
     async fn get_operation(
@@ -8359,61 +5365,45 @@ impl super::stub::Testing for Testing {
         req: google_cloud_longrunning::model::GetOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::GET, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::GET, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "GetOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/GetOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = crate::prost::google::longrunning::Operation;
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/GetOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/GetOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner.execute(builder, body, options).await
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
+            .await
+            .and_then(gaxi::grpc::to_gax_response::<TR, google_cloud_longrunning::model::Operation>)
     }
 
     async fn delete_operation(
@@ -8421,67 +5411,45 @@ impl super::stub::Testing for Testing {
         req: google_cloud_longrunning::model::DeleteOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}", var_name,);
-                let path_template = "/v1beta1/{name}";
-
-                let builder = self.inner.builder(Method::DELETE, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::DELETE, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, true);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "DeleteOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/DeleteOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/DeleteOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/DeleteOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 
     async fn cancel_operation(
@@ -8489,66 +5457,44 @@ impl super::stub::Testing for Testing {
         req: google_cloud_longrunning::model::CancelOperationRequest,
         options: crate::RequestOptions,
     ) -> Result<crate::Response<()>> {
-        use gaxi::http::reqwest::{HeaderValue, Method};
-        use gaxi::path_parameter::PathMismatchBuilder;
-        use gaxi::path_parameter::try_match;
-        use gaxi::routing_parameter::Segment;
-        use google_cloud_gax::error::binding::BindingError;
-        let (builder, method, _path_template) = None
-            .or_else(|| {
-                let var_name = try_match(
-                    Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                    &[
-                        Segment::Literal("operations"),
-                        Segment::TrailingMultiWildcard,
-                    ],
-                )?;
-                let path = format!("/v1beta1/{}:cancel", var_name,);
-                let path_template = "/v1beta1/{name}:cancel";
-
-                let builder = self.inner.builder(Method::POST, path);
-                let builder = Ok(builder);
-                Some(builder.map(|b| (b, Method::POST, path_template)))
-            })
-            .ok_or_else(|| {
-                let mut paths = Vec::new();
-                {
-                    let builder = PathMismatchBuilder::default();
-                    let builder = builder.maybe_add(
-                        Some(&req).map(|m| &m.name).map(|s| s.as_str()),
-                        &[
-                            Segment::Literal("operations"),
-                            Segment::TrailingMultiWildcard,
-                        ],
-                        "name",
-                        "operations/**",
-                    );
-                    paths.push(builder.build());
-                }
-                google_cloud_gax::error::Error::binding(BindingError { paths })
-            })??;
+        use gaxi::{
+            grpc::tonic::{Extensions, GrpcMethod},
+            prost::ToProto,
+        };
+        let options = google_cloud_gax::options::internal::set_default_idempotency(options, false);
+        let extensions = {
+            let mut e = Extensions::new();
+            e.insert(GrpcMethod::new(
+                "google.longrunning.Operations",
+                "CancelOperation",
+            ));
+            e
+        };
+        let path =
+            http::uri::PathAndQuery::from_static("/google.longrunning.Operations/CancelOperation");
+        let x_goog_request_params = [Some(&req)
+            .map(|m| &m.name)
+            .map(|s| s.as_str())
+            .map(|v| format!("name={v}"))]
+        .into_iter()
+        .flatten()
+        .fold(String::new(), |b, p| b + "&" + &p);
+        type TR = ();
         if let Some(recorder) = gaxi::observability::RequestRecorder::current() {
-            recorder.on_client_request(
-                gaxi::observability::ClientRequestAttributes::default()
-                    .set_rpc_method("google.longrunning.Operations/CancelOperation")
-                    .set_url_template(_path_template),
-            );
+            let attributes = gaxi::observability::ClientRequestAttributes::default()
+                .set_rpc_method("google.longrunning.Operations/CancelOperation");
+            recorder.on_client_request(attributes);
         }
-        let options = google_cloud_gax::options::internal::set_default_idempotency(
-            options,
-            gaxi::http::default_idempotency(&method),
-        );
-        let builder = builder.query(&[("$alt", "json;enum-encoding=int")]).header(
-            "x-goog-api-client",
-            HeaderValue::from_static(&crate::info::X_GOOG_API_CLIENT_HEADER),
-        );
-        let body = gaxi::http::handle_empty(None::<gaxi::http::NoBody>, &method);
-        self.inner
-            .execute(builder, body, options)
+        self.grpc_inner
+            .execute(
+                extensions,
+                path,
+                req.to_proto().map_err(Error::deser)?,
+                options,
+                &crate::info::X_GOOG_API_CLIENT_GRPC_HEADER,
+                &x_goog_request_params,
+            )
             .await
-            .map(|r: crate::Response<wkt::Empty>| {
-                let (parts, _) = r.into_parts();
-                crate::Response::from_parts(parts, ())
-            })
+            .and_then(gaxi::grpc::to_gax_response::<TR, ()>)
     }
 }

@@ -1463,6 +1463,14 @@ libraries:
     roots:
       - showcase
       - googleapis
+    rust:
+      default_transport: grpc
+      skipped_ids:
+        - .google.showcase.v1beta1.Messaging.SearchBlurbs
+      allow_grpc_any_fields:
+        - .google.cloud.location.Location.metadata
+        - .google.showcase.v1beta1.EchoErrorDetailsResponse.multiple_details.error.details
+        - .google.showcase.v1beta1.EchoErrorDetailsResponse.single_detail.error.details
     skip_release: true
   - name: google-cloud-spanner
     version: 0.34.8-preview

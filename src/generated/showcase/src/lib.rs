@@ -114,15 +114,6 @@ const DEFAULT_HOST: &str = "https://localhost:7469/";
 pub(crate) mod info {
     const NAME: &str = env!("CARGO_PKG_NAME");
     const VERSION: &str = env!("CARGO_PKG_VERSION");
-    pub(crate) static X_GOOG_API_CLIENT_HEADER: std::sync::LazyLock<String> =
-        std::sync::LazyLock::new(|| {
-            let ac = gaxi::api_header::XGoogApiClient {
-                name: NAME,
-                version: VERSION,
-                library_type: gaxi::api_header::GAPIC,
-            };
-            ac.rest_header_value()
-        });
     pub(crate) static X_GOOG_API_CLIENT_GRPC_HEADER: std::sync::LazyLock<String> =
         std::sync::LazyLock::new(|| {
             let ac = gaxi::api_header::XGoogApiClient {

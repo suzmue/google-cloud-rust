@@ -786,17 +786,6 @@ pub trait Messaging: std::fmt::Debug + Send + Sync {
         gaxi::unimplemented::unimplemented_stub()
     }
 
-    /// Implements [super::client::Messaging::search_blurbs].
-    fn search_blurbs(
-        &self,
-        _req: crate::model::SearchBlurbsRequest,
-        _options: crate::RequestOptions,
-    ) -> impl std::future::Future<
-        Output = crate::Result<crate::Response<google_cloud_longrunning::model::Operation>>,
-    > + Send {
-        gaxi::unimplemented::unimplemented_stub()
-    }
-
     /// Implements [super::client::Messaging::stream_blurbs].
     fn stream_blurbs(
         &self,
@@ -920,40 +909,6 @@ pub trait Messaging: std::fmt::Debug + Send + Sync {
         _options: crate::RequestOptions,
     ) -> impl std::future::Future<Output = crate::Result<crate::Response<()>>> + Send {
         gaxi::unimplemented::unimplemented_stub()
-    }
-
-    /// Returns the polling error policy.
-    ///
-    /// When mocking, this method is typically irrelevant. Do not try to verify
-    /// it is called by your mocks.
-    fn get_polling_error_policy(
-        &self,
-        _options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_error_policy::PollingErrorPolicy> {
-        std::sync::Arc::new(google_cloud_gax::polling_error_policy::Aip194Strict)
-    }
-
-    /// Returns the polling backoff policy.
-    ///
-    /// When mocking, this method is typically irrelevant. Do not try to verify
-    /// it is called by your mocks.
-    fn get_polling_backoff_policy(
-        &self,
-        _options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_backoff_policy::PollingBackoffPolicy> {
-        std::sync::Arc::new(google_cloud_gax::exponential_backoff::ExponentialBackoff::default())
-    }
-
-    #[doc(hidden)]
-    /// Returns the poller options.
-    ///
-    /// When mocking, this method is typically irrelevant. Do not try to verify
-    /// it is called by your mocks.
-    fn get_poller_options(
-        &self,
-        _options: &crate::RequestOptions,
-    ) -> google_cloud_lro::PollerOptions {
-        google_cloud_lro::PollerOptions::default()
     }
 }
 

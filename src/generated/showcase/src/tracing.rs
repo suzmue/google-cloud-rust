@@ -1127,20 +1127,6 @@ where
         pending.await
     }
 
-    #[tracing::instrument(level = tracing::Level::DEBUG, ret)]
-    async fn search_blurbs(
-        &self,
-        req: crate::model::SearchBlurbsRequest,
-        options: crate::RequestOptions,
-    ) -> Result<crate::Response<google_cloud_longrunning::model::Operation>> {
-        let (_span, pending) = gaxi::client_request_signals!(
-            metric: self.duration.clone(),
-            info: *info::INSTRUMENTATION_CLIENT_INFO,
-            method: "client::Messaging::search_blurbs",
-            self.inner.search_blurbs(req, options));
-        pending.await
-    }
-
     async fn stream_blurbs(
         &self,
         req: crate::model::StreamBlurbsRequest,
@@ -1324,31 +1310,6 @@ where
             method: "client::Messaging::cancel_operation",
             self.inner.cancel_operation(req, options));
         pending.await
-    }
-
-    fn get_polling_error_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_error_policy::PollingErrorPolicy> {
-        self.inner.get_polling_error_policy(options)
-    }
-
-    fn get_polling_backoff_policy(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> std::sync::Arc<dyn google_cloud_gax::polling_backoff_policy::PollingBackoffPolicy> {
-        self.inner.get_polling_backoff_policy(options)
-    }
-
-    #[doc(hidden)]
-    fn get_poller_options(
-        &self,
-        options: &crate::RequestOptions,
-    ) -> google_cloud_lro::PollerOptions {
-        let mut opts = self.inner.get_poller_options(options);
-        let details = google_cloud_lro::TracingDetails::default();
-        opts.tracing = Some(details);
-        opts
     }
 }
 
