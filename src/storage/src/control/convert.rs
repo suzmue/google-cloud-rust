@@ -45,7 +45,7 @@ impl ToProto<google::longrunning::Operation> for google_cloud_longrunning::model
         let result = self
             .result
             .map(|result| match result {
-                M::Error(status) => status.to_proto().map(P::Error),
+                M::Error(status) => ToProto::<google::rpc::Status>::to_proto(*status).map(P::Error),
                 M::Response(any) => lro_any_to_prost(*any).map(P::Response),
                 _ => unreachable!(),
             })
@@ -186,7 +186,10 @@ mod tests {
         prost: google::longrunning::Operation,
         wkt: google_cloud_longrunning::model::Operation,
     ) -> anyhow::Result<()> {
-        assert_eq!(prost, wkt.clone().to_proto()?);
+        assert_eq!(
+            prost,
+            ToProto::<google::longrunning::Operation>::to_proto(wkt.clone())?
+        );
         assert_eq!(wkt, prost.cnv()?);
         Ok(())
     }
@@ -195,7 +198,7 @@ mod tests {
     fn lro_to_prost_unknown_metadata() -> anyhow::Result<()> {
         let wkt = google_cloud_longrunning::model::Operation::new()
             .set_metadata(wkt::Any::from_msg(&wkt::Duration::default())?);
-        let prost = wkt.to_proto();
+        let prost = ToProto::<google::longrunning::Operation>::to_proto(wkt);
         assert!(matches!(prost, Err(ConvertError::UnexpectedTypeUrl(_))));
         Ok(())
     }
@@ -204,7 +207,7 @@ mod tests {
     fn lro_to_prost_unknown_response() -> anyhow::Result<()> {
         let wkt = google_cloud_longrunning::model::Operation::new()
             .set_response(wkt::Any::from_msg(&wkt::Duration::default())?);
-        let prost = wkt.to_proto();
+        let prost = ToProto::<google::longrunning::Operation>::to_proto(wkt);
         assert!(matches!(prost, Err(ConvertError::UnexpectedTypeUrl(_))));
         Ok(())
     }

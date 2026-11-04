@@ -17,6 +17,7 @@ use super::super::append_response::to_result;
 use super::super::error::AppendError;
 use super::super::runner::WriteRequest;
 use crate::Error;
+use crate::google::cloud::bigquery::storage::v1::AppendRowsRequest as AppendRowsRequestProto;
 use crate::model::AppendRowsRequest;
 use gaxi::prost::{FromProto, ToProto};
 use tokio::sync::{mpsc, oneshot};
@@ -92,7 +93,7 @@ impl AppendWithOffset {
     /// ```
     pub fn send(self) -> AppendFuture {
         let (resp_tx, resp_rx) = oneshot::channel();
-        let req = match self.req.to_proto().map_err(Error::ser) {
+        let req = match ToProto::<AppendRowsRequestProto>::to_proto(self.req).map_err(Error::ser) {
             Ok(req) => req,
             Err(e) => return AppendFuture::from_future(async move { Err(e.into()) }),
         };

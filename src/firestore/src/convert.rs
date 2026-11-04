@@ -52,7 +52,7 @@ mod tests {
             longitude: 34.5,
         };
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::r#type::LatLng>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.cnv()?;
@@ -69,7 +69,9 @@ mod tests {
             ..Default::default()
         };
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::structured_query::FieldFilter>::to_proto(
+            sidekick.clone(),
+        )?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;
@@ -95,7 +97,9 @@ mod tests {
             ..Default::default()
         };
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::structured_query::UnaryFilter>::to_proto(
+            sidekick.clone(),
+        )?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;
@@ -108,7 +112,7 @@ mod tests {
         let sidekick = model::value::ValueType::NullValue(wkt::NullValue);
         let proto = google::firestore::v1::value::ValueType::NullValue(0);
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::value::ValueType>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;
@@ -121,7 +125,7 @@ mod tests {
         let sidekick = model::value::ValueType::BooleanValue(true);
         let proto = google::firestore::v1::value::ValueType::BooleanValue(true);
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::value::ValueType>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;
@@ -139,7 +143,7 @@ mod tests {
                 nanos: 456,
             });
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::value::ValueType>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;
@@ -176,7 +180,7 @@ mod tests {
             },
         );
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::value::ValueType>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;
@@ -224,7 +228,7 @@ mod tests {
                 ]),
             });
 
-        let got = sidekick.clone().to_proto()?;
+        let got = ToProto::<google::firestore::v1::value::ValueType>::to_proto(sidekick.clone())?;
         assert_eq!(got, proto);
 
         let got = proto.clone().cnv()?;

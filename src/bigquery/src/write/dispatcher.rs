@@ -58,7 +58,7 @@ impl Dispatcher {
     ///
     /// Evicts and updates its cached stream on terminal stream errors.
     pub(crate) async fn send(&self, req: AppendRowsRequest) -> AppendResult<AppendResponse> {
-        let req = req.to_proto().map_err(Error::ser)?;
+        let req = ToProto::<AppendRowsRequestProto>::to_proto(req).map_err(Error::ser)?;
 
         // The default stream has at-least-once semantics, so all writes are
         // idempotent.
